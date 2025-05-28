@@ -1,0 +1,14 @@
+*.config.js
+**/*.js
+.eslintrc.js
+.idea
+.husky
+.nyc_output
+.serverless
+.vscode
+.esbuild
+build
+coverage
+dist
+node_modules
+.aws-sam

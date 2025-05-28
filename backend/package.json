@@ -1,0 +1,47 @@
+{
+  "name": "my-wage-growth-backend",
+  "version": "1.0.0",
+  "description": "hello world sample for NodeJS",
+  "main": "app.js",
+  "repository": "https://github.com/aws/aws-sam-cli-app-templates/tree/master/nodejs22.x/hello-ts-pt",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.0.3",
+    "@aws-lambda-powertools/metrics": "^2.0.3",
+    "@aws-lambda-powertools/parameters": "^2.20.0",
+    "@aws-lambda-powertools/parser": "^2.20.0",
+    "@aws-lambda-powertools/tracer": "^2.0.3",
+    "@aws-sdk/client-appconfigdata": "^3.817.0",
+    "@aws-sdk/client-s3": "^3.817.0",
+    "@middy/core": "^6.3.0",
+    "p-limit": "^6.2.0",
+    "p-retry": "^6.2.1",
+    "zod": "^3.25.32"
+  },
+  "scripts": {
+    "unit": "vitest",
+    "lint": "prettier --write 'src/**/*.{js,ts}' && eslint --fix 'src/**/*.{js,ts}'",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit",
+    "local-us-cpi-data": "sam build && sam local invoke GetUSCPIDataFunction -e events/get-us-cpi-data-event.json -n config/sandbox.json | jq"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@eslint/json": "^0.12.0",
+    "@types/aws-lambda": "^8.10.109",
+    "@types/node": "^22.15.23",
+    "@typescript-eslint/eslint-plugin": "^8.33.0",
+    "@typescript-eslint/parser": "^8.33.0",
+    "esbuild": "^0.25.5",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
+  }
+}

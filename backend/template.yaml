@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Real Wage Growth Backend
+
+  SAM Template for wage-growth-backend
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Runtime: nodejs22.x
+    Tracing: Active
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: myWageGrowth
+        POWERTOOLS_METRICS_NAMESPACE: myWageGrowth
+        LOG_LEVEL: INFO
+        APPCONFIG_APP_ID: !Ref AppConfigApplication
+        APPCONFIG_ENV_ID: !Ref AppConfigEnvironment
+        APPCONFIG_PROFILE_ID: !Ref AppConfigConfigurationProfile
+
+Resources:
+  GetUSCPIDataFunction:
+    Type: AWS::Serverless::Function
+    Description: Get US CPI-U Data Lambda Function
+    Properties:
+      Handler: get-us-cpi-data.handler
+      Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: esm
+        Minify: true
+        OutExtension:
+          - .js=.mjs
+        Target: "es2022"
+        Sourcemap: true
+        Banner:
+          - js=const require = (await import('node:module')).createRequire(import.meta.url);const __filename = (await import('node:url')).fileURLToPath(import.meta.url);const __dirname = (await import('node:path')).dirname(__filename);
+        EntryPoints:
+          - src/handlers/get-us-cpi-data.ts
+        External:
+          - "@aws-sdk/client-sso"
+          - "@aws-sdk/client-sso-oidc"
+          - "@aws-sdk/credential-provider-ini"
+          - "@aws-sdk/credential-provider-process"
+          - "@aws-sdk/credential-provider-sso"
+          - "@aws-sdk/credential-provider-web-identity"
+          - "@aws-sdk/token-providers"
+
+  # AppConfig
+  AppConfigApplication:
+    Type: AWS::AppConfig::Application
+    Properties:
+      Name: !Sub ${AWS::StackName}-appconfig
+      Description: Configuration settings for SC-Transcriptions
+
+  AppConfigEnvironment:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref AppConfigApplication
+      Name: !Sub ${AWS::StackName}-environment
+      Description: 'The environment for SC-Transcriptions'
+
+  AppConfigConfigurationProfile:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref AppConfigApplication
+      Name: !Sub ${AWS::StackName}-profile
+      LocationUri: hosted
+      Type: AWS.Freeform
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: "true"
+
+Outputs:
+  GetUSCPIDataFunction:
+    Description: GetUSCPIData Lambda Function ARN
+    Value: !GetAtt GetUSCPIDataFunction.Arn
+  GetUSCPIDataFunctionRole:
+    Description: Implicit IAM Role created for GetUSCPIData function
+    Value: !GetAtt GetUSCPIDataFunctionRole.Arn
+  AppConfigApplication:
+    Description: AppConfig Application ID
+    Value: !Ref AppConfigApplication
+  AppConfigEnvironment:
+    Description: AppConfig Environment ID
+    Value: !Ref AppConfigEnvironment
+  AppConfigConfigurationProfile:
+    Description: AppConfig Configuration Profile ID
+    Value: !Ref AppConfigConfigurationProfile
+  ApplicationResourceGroup:
+    Description: Application Resource Group Name
+    Value: !Ref ApplicationResourceGroup
+  ApplicationInsightsMonitoring:
+    Description: Application Insights Application Name
+    Value: !Ref ApplicationInsightsMonitoring
