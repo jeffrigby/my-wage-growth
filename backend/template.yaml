@@ -49,6 +49,55 @@ Resources:
           - "@aws-sdk/credential-provider-web-identity"
           - "@aws-sdk/token-providers"
 
+  # S3
+  WageGrowthBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: FrontendFiles
+            Status: Enabled
+            Prefix: "static/"
+            NoncurrentVersionExpirationInDays: 30
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+          - Id: CPIDataFiles
+            Status: Enabled
+            Prefix: "data/"
+            Transitions:
+              - StorageClass: INTELLIGENT_TIERING
+                TransitionInDays: 30
+            NoncurrentVersionTransitions:
+              - StorageClass: INTELLIGENT_TIERING
+                TransitionInDays: 1
+            NoncurrentVersionExpirationInDays: 7
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+          - Id: GeneralCleanup
+            Status: Enabled
+            Prefix: ""
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+
+  WageGrowthBucketBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WageGrowthBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${WageGrowthBucket}/*
+            # Condition:
+            #   StringEquals:
+            #     AWS:SourceArn:
+            #       - !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
+
   # AppConfig
   AppConfigApplication:
     Type: AWS::AppConfig::Application
@@ -61,7 +110,7 @@ Resources:
     Properties:
       ApplicationId: !Ref AppConfigApplication
       Name: !Sub ${AWS::StackName}-environment
-      Description: 'The environment for SC-Transcriptions'
+      Description: "The environment for SC-Transcriptions"
 
   AppConfigConfigurationProfile:
     Type: AWS::AppConfig::ConfigurationProfile
@@ -89,21 +138,55 @@ Outputs:
   GetUSCPIDataFunction:
     Description: GetUSCPIData Lambda Function ARN
     Value: !GetAtt GetUSCPIDataFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetUSCPIDataFunctionArn
   GetUSCPIDataFunctionRole:
     Description: Implicit IAM Role created for GetUSCPIData function
     Value: !GetAtt GetUSCPIDataFunctionRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetUSCPIDataFunctionRoleArn
+  WageGrowthBucket:
+    Description: S3 Bucket for storing CPI data and static frontend files
+    Value: !Ref WageGrowthBucket
+    Export:
+      Name: !Sub ${AWS::StackName}-WageGrowthBucketName
+  WageGrowthBucketArn:
+    Description: S3 Bucket ARN
+    Value: !GetAtt WageGrowthBucket.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-WageGrowthBucketArn
+  WageGrowthBucketDomainName:
+    Description: S3 Bucket Domain Name for CloudFront origin
+    Value: !GetAtt WageGrowthBucket.RegionalDomainName
+    Export:
+      Name: !Sub ${AWS::StackName}-WageGrowthBucketDomainName
+  WageGrowthBucketPolicy:
+    Description: S3 Bucket Policy for CloudFront access
+    Value: !Ref WageGrowthBucketBucketPolicy
+    Export:
+      Name: !Sub ${AWS::StackName}-WageGrowthBucketPolicy
   AppConfigApplication:
     Description: AppConfig Application ID
     Value: !Ref AppConfigApplication
+    Export:
+      Name: !Sub ${AWS::StackName}-AppConfigApplicationId
   AppConfigEnvironment:
     Description: AppConfig Environment ID
     Value: !Ref AppConfigEnvironment
+    Export:
+      Name: !Sub ${AWS::StackName}-AppConfigEnvironmentId
   AppConfigConfigurationProfile:
     Description: AppConfig Configuration Profile ID
     Value: !Ref AppConfigConfigurationProfile
+    Export:
+      Name: !Sub ${AWS::StackName}-AppConfigConfigurationProfileId
   ApplicationResourceGroup:
     Description: Application Resource Group Name
     Value: !Ref ApplicationResourceGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-ApplicationResourceGroupName
   ApplicationInsightsMonitoring:
     Description: Application Insights Application Name
     Value: !Ref ApplicationInsightsMonitoring
+    Export:
+      Name: !Sub ${AWS::StackName}-ApplicationInsightsApplicationName
