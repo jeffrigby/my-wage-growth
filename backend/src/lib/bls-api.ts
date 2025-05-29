@@ -139,7 +139,7 @@ function processApiResponse(response: BlsApiResponse): CpiDataPoint[] {
  */
 async function fetchDataChunk(
   config: Required<BlsConfig>,
-  seriesId: string,
+  seriesIds: string[],
   startYear: number,
   endYear: number,
 ): Promise<CpiDataPoint[]> {
@@ -148,7 +148,7 @@ async function fetchDataChunk(
   return pRetry(
     async () => {
       const requestBody = {
-        seriesid: [seriesId],
+        seriesid: seriesIds,
         startyear: startYear.toString(),
         endyear: endYear.toString(),
         registrationkey: config.apiKey,
@@ -205,11 +205,54 @@ export async function fetchAllCpiData(
   for (const yearRange of yearRanges) {
     const data = await fetchDataChunk(
       config,
-      seriesId,
+      [seriesId],
       yearRange.start,
       yearRange.end,
     );
     allData.push(...data);
+  }
+
+  // Return data sorted chronologically
+  return allData.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+/**
+ * Fetches CPI data for multiple series and date range
+ * Automatically handles API pagination, rate limiting, and series batching
+ */
+export async function fetchMultipleCpiData(
+  apiKey: string,
+  seriesIds: CpiSeriesId[],
+  startYear: number = 1913,
+  endYear: number = new Date().getFullYear(),
+): Promise<CpiDataPoint[]> {
+  const config = getConfig({ apiKey });
+  const allData: CpiDataPoint[] = [];
+
+  // BLS API allows up to 50 series per request with API key, 25 without
+  // We'll use 25 to be safe and work with both registered and unregistered keys
+  const maxSeriesPerRequest = 25;
+
+  // Split series into batches
+  const seriesBatches: string[][] = [];
+  for (let i = 0; i < seriesIds.length; i += maxSeriesPerRequest) {
+    seriesBatches.push(seriesIds.slice(i, i + maxSeriesPerRequest));
+  }
+
+  // BLS API allows up to 20 years per request
+  const yearRanges = createYearRanges(startYear, endYear, 20);
+
+  // Process each combination of series batch and year range
+  for (const seriesBatch of seriesBatches) {
+    for (const yearRange of yearRanges) {
+      const data = await fetchDataChunk(
+        config,
+        seriesBatch,
+        yearRange.start,
+        yearRange.end,
+      );
+      allData.push(...data);
+    }
   }
 
   // Return data sorted chronologically

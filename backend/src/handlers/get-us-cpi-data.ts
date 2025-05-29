@@ -5,7 +5,7 @@ import middy from "@middy/core";
 import { z } from "zod";
 import { getLogger } from "@/lib/logger";
 import { getWageGrowthConfig } from "@/lib/aws.appconfig";
-import { fetchAllCpiData, CpiSeriesId, CpiDataPoint } from "@/lib/bls-api";
+import { fetchMultipleCpiData, CpiSeriesId, CpiDataPoint } from "@/lib/bls-api";
 
 const logger = getLogger();
 
@@ -22,19 +22,23 @@ const cpiExportEventSchema = z.object({
     .max(new Date().getFullYear())
     .optional()
     .default(new Date().getFullYear()),
-  seriesId: z
-    .string()
+  seriesIds: z
+    .array(z.string())
+    .min(1, "At least one series ID is required")
+    .max(50, "Maximum 50 series IDs allowed")
     .optional()
-    .default("CPI_U_ALL")
-    .transform((key): CpiSeriesId => {
-      // Validate that the key exists in the enum
-      if (!(key in CpiSeriesId)) {
-        throw new Error(
-          `Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(", ")}`,
-        );
-      }
-      // Return the actual enum value
-      return CpiSeriesId[key as keyof typeof CpiSeriesId];
+    .default(["CPI_U_ALL"])
+    .transform((keys): CpiSeriesId[] => {
+      return keys.map((key) => {
+        // Validate that the key exists in the enum
+        if (!(key in CpiSeriesId)) {
+          throw new Error(
+            `Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(", ")}`,
+          );
+        }
+        // Return the actual enum value
+        return CpiSeriesId[key as keyof typeof CpiSeriesId];
+      });
     }),
 });
 
@@ -44,8 +48,14 @@ type SimplifiedCpiData = {
   months: Record<string, number>;
 };
 
+type MultiSeriesSimplifiedCpiData = {
+  lastUpdated: string;
+  sources: string[];
+  series: Record<string, SimplifiedCpiData>;
+};
+
 type CpiExportEvent = {
-  seriesId: CpiSeriesId;
+  seriesIds: CpiSeriesId[];
 };
 
 type CPILambdaResponse = {
@@ -54,7 +64,7 @@ type CPILambdaResponse = {
   bucket?: string;
   key?: string;
   error?: string;
-  data?: SimplifiedCpiData;
+  data?: MultiSeriesSimplifiedCpiData;
 };
 
 /**
@@ -85,36 +95,74 @@ function transformCpiDataForLookup(
   };
 }
 
+/**
+ * Transforms multiple series CPI data into a structured format
+ * @param cpiData Array of CPI data points from BLS API for multiple series
+ * @param seriesIds Array of series IDs that were requested
+ * @returns Multi-series simplified CPI data structure
+ */
+function transformMultiSeriesCpiData(
+  cpiData: CpiDataPoint[],
+  seriesIds: CpiSeriesId[],
+): MultiSeriesSimplifiedCpiData {
+  const series: Record<string, SimplifiedCpiData> = {};
+  const sources: string[] = [];
+
+  // Group data by series ID
+  const dataBySeriesId = new Map<string, CpiDataPoint[]>();
+  for (const dataPoint of cpiData) {
+    if (!dataBySeriesId.has(dataPoint.seriesId)) {
+      dataBySeriesId.set(dataPoint.seriesId, []);
+    }
+    dataBySeriesId.get(dataPoint.seriesId)!.push(dataPoint);
+  }
+
+  // Transform each series
+  for (const seriesId of seriesIds) {
+    const seriesData = dataBySeriesId.get(seriesId) || [];
+    const transformedData = transformCpiDataForLookup(seriesData, seriesId);
+    series[seriesId] = transformedData;
+    sources.push(transformedData.source);
+  }
+
+  return {
+    lastUpdated: new Date().toISOString(),
+    sources,
+    series,
+  };
+}
+
 export const lambdaHandler = async (
   event: CpiExportEvent,
   context: Context,
 ): Promise<CPILambdaResponse> => {
   try {
     const config = await getWageGrowthConfig();
-    const { seriesId } = event;
+    const { seriesIds } = event;
     const { blsApiKey } = config;
 
     if (!blsApiKey) {
       throw new Error("BLS API key is not set");
     }
 
-    const blsData = await fetchAllCpiData(blsApiKey, seriesId);
+    const blsData = await fetchMultipleCpiData(blsApiKey, seriesIds);
 
     // Transform the data into simplified format
-    const simplifiedData = transformCpiDataForLookup(blsData, seriesId);
+    const simplifiedData = transformMultiSeriesCpiData(blsData, seriesIds);
 
     logger.info("BLS Data fetched and transformed", {
+      requestedSeries: seriesIds.length,
       originalDataPoints: blsData.length,
-      transformedMonths: Object.keys(simplifiedData.months).length,
-      dateRange: {
-        earliest: Object.keys(simplifiedData.months).sort()[0],
-        latest: Object.keys(simplifiedData.months).sort().slice(-1)[0],
-      },
+      seriesProcessed: Object.keys(simplifiedData.series).length,
+      totalMonthsAcrossAllSeries: Object.values(simplifiedData.series).reduce(
+        (total, series) => total + Object.keys(series.months).length,
+        0,
+      ),
     });
 
     return {
       status: "success",
-      message: "CPI Data downloaded and transformed successfully",
+      message: `CPI Data for ${seriesIds.length} series downloaded and transformed successfully`,
       bucket: "us-cpi-data",
       key: "cpi-data.json",
       data: simplifiedData,
