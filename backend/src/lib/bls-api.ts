@@ -93,13 +93,13 @@ function createYearRanges(
 function periodToDate(year: string, period: string): Date | null {
   const yearNum = parseInt(year);
 
+  if (period === 'M13') {
+    return new Date(yearNum, 11, 31);
+  }
+
   if (period.startsWith('M')) {
     const month = parseInt(period.substring(1)) - 1;
     return new Date(yearNum, month, 1);
-  }
-
-  if (period === 'M13') {
-    return new Date(yearNum, 11, 31);
   }
 
   return null;

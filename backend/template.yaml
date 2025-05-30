@@ -186,14 +186,14 @@ Resources:
     Type: AWS::AppConfig::Application
     Properties:
       Name: !Sub ${AWS::StackName}-appconfig
-      Description: Configuration settings for SC-Transcriptions
+      Description: Configuration settings for My Wage Growth Calculator
 
   AppConfigEnvironment:
     Type: AWS::AppConfig::Environment
     Properties:
       ApplicationId: !Ref AppConfigApplication
       Name: !Sub ${AWS::StackName}-environment
-      Description: "The environment for SC-Transcriptions"
+      Description: "The environment for My Wage Growth Calculator"
 
   AppConfigConfigurationProfile:
     Type: AWS::AppConfig::ConfigurationProfile

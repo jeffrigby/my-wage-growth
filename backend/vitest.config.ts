@@ -8,6 +8,7 @@ export default defineConfig({
     env: {
       APPCONFIG_APP_ID: 'test-app-id',
       APPCONFIG_ENV_ID: 'test-env-id',
+      APPCONFIG_PROFILE_ID: 'test-profile-id',
       WAGE_GROWTH_BUCKET: 'test-bucket',
       AWS_REGION: 'us-east-1',
     },

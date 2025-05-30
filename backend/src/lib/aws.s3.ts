@@ -1,4 +1,5 @@
 import {
+  CompleteMultipartUploadCommandOutput,
   CopyObjectCommand,
   GetObjectCommand,
   GetObjectCommandOutput,
@@ -234,7 +235,7 @@ export const generateSignedUrl = async (objectParams: PutObjectCommand | GetObje
 export class S3StreamUploader {
   private readonly stream: PassThrough;
   private upload: Upload;
-  private readonly uploadPromise: Promise<any>;
+  private readonly uploadPromise: Promise<CompleteMultipartUploadCommandOutput>;
 
   /**
    * Creates a new streaming upload to S3
@@ -286,7 +287,7 @@ export class S3StreamUploader {
    * @returns - A promise that resolves to the upload result
    * @throws - Throws an error if unable to complete the upload
    */
-  async complete(): Promise<any> {
+  async complete(): Promise<CompleteMultipartUploadCommandOutput> {
     logger.info('Completing S3 stream upload');
 
     // End the stream to signal no more data

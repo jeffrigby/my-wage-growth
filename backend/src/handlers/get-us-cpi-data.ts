@@ -188,5 +188,4 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
 
 export const handler = middy(lambdaHandler)
   .use(parser({ schema: cpiExportEventSchema }))
-  .use(injectLambdaContext(logger, { logEvent: true }))
-  .use(injectLambdaContext(logger));
+  .use(injectLambdaContext(logger, { logEvent: true }));
