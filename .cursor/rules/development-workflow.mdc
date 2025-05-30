@@ -1,0 +1,168 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Workflow & Infrastructure
+
+## Development Phases
+
+### Phase 1A: Backend Infrastructure (Build First)
+The backend must be completed before frontend development can begin, as the frontend requires the CPI data URL.
+
+#### AWS Infrastructure Components
+- **S3 Buckets**: Static site hosting + CPI JSON file storage
+- **Lambda Function**: Monthly CPI data fetching from BLS API
+- **EventBridge**: Scheduled monthly Lambda execution (15th of each month)
+- **CloudFront**: Content delivery with proper caching policies
+
+#### Infrastructure as Code
+- Use **AWS SAM** (Serverless Application Model) for infrastructure
+- All resources defined in `template.yaml`
+- Environment-specific parameter files
+- Automated deployment pipeline
+
+### Phase 1B: Frontend Development (Build Second)
+Cannot begin until backend provides the CPI data CloudFront URL.
+
+#### Required Environment Variables
+```env
+VITE_CPI_DATA_URL=https://[cloudfront-id].cloudfront.net/data/cpi-latest.json
+```
+
+## Development Standards
+
+### Code Quality Requirements
+- **Always run `npm run lint`** after any code changes
+- Fix all prettier and eslint errors before committing
+- Use TypeScript strict mode with zero type errors
+- Implement proper error handling for all async operations
+
+### Git Workflow
+- Use feature branches for all development
+- Require clean lint/build before merging
+- Include meaningful commit messages
+- Tag releases for deployment
+
+### Testing Strategy
+- Unit tests for calculation utilities
+- Component testing for React components
+- Integration tests for CPI data fetching
+- E2E tests for critical user workflows
+
+## Backend Development Guide
+
+### Lambda Function Structure
+```python
+# CPI Lambda should be structured for future expansion
+def lambda_handler(event, context):
+    try:
+        # Fetch from BLS API (Series: CUUR0000SA0)
+        cpi_data = fetch_bls_data()
+        
+        # Transform to application format
+        formatted_data = transform_cpi_data(cpi_data)
+        
+        # Write to S3 with proper caching headers
+        upload_to_s3(formatted_data)
+        
+        return {"statusCode": 200}
+    except Exception as e:
+        # Log error and send alert
+        handle_error(e)
+```
+
+### Error Handling & Monitoring
+- CloudWatch logging for all Lambda executions
+- SNS alerts for failed CPI updates
+- Retry logic for BLS API failures
+- Health check endpoint for monitoring
+
+### Caching Strategy
+- **Static Assets**: Long-term caching (1 year)
+- **CPI Data**: 24-hour cache with revalidation
+- **HTML**: No cache for SPA shell
+
+## Frontend Development Guide
+
+### Project Structure
+```
+src/
+├── components/          # Reusable UI components
+├── features/           # Feature-based modules
+│   ├── wage-entry/     # Wage input forms and list
+│   ├── calculations/   # CPI utilities and calculations
+│   ├── visualizations/ # Charts and statistics
+│   └── sharing/        # URL-based sharing logic
+├── store/              # Redux store and slices
+├── types/              # TypeScript type definitions
+├── utils/              # General utilities
+└── hooks/              # Custom React hooks
+```
+
+### State Management Patterns
+- **Redux Toolkit** for global state
+- **Redux Persist** for wage entries only (not CPI data)
+- **React Query/SWR** for CPI data fetching (consider for future)
+- Local component state for form inputs
+
+### Performance Optimization
+- **Lazy loading** for chart components (large bundle)
+- **Code splitting** at route level
+- **Service worker** for offline CPI data access
+- **Bundle analysis** to monitor size
+
+## Deployment Process
+
+### Backend Deployment
+1. Run SAM build and validate
+2. Deploy to staging environment first
+3. Test CPI data fetching manually
+4. Deploy to production
+5. Verify CloudFront URL accessibility
+
+### Frontend Deployment
+1. Update environment variables with production CPI URL
+2. Run production build
+3. Deploy to S3 static hosting
+4. Invalidate CloudFront cache
+5. Test full application workflow
+
+### Environment Management
+- **Development**: Local development with mock CPI data
+- **Staging**: Full AWS stack with test data
+- **Production**: Live BLS data with monitoring
+
+## Future Development Considerations
+
+### Phase 2 Planning
+The codebase should be structured to easily accommodate:
+- **Multiple countries**: Additional CPI data sources
+- **User accounts**: API Gateway + DynamoDB + Cognito
+- **Advanced features**: CSV import, PDF exports, saved calculations
+
+### Code Organization for Expansion
+- Keep calculation logic country-agnostic
+- Use dependency injection for data sources
+- Design components to accept locale/currency props
+- Structure types to accommodate multiple data sources
+
+### Monitoring & Analytics
+- CloudWatch dashboards for infrastructure health
+- Error tracking for frontend exceptions
+- Usage analytics for feature prioritization
+- Performance monitoring for user experience
+
+## Security Considerations
+
+### Data Privacy
+- No PII stored in Phase 1 (wage data only in browser)
+- HTTPS enforcement via CloudFront
+- Content Security Policy headers
+- No third-party tracking scripts
+
+### Infrastructure Security
+- S3 bucket policies with least privilege
+- Lambda execution roles with minimal permissions
+- CloudFront security headers
+- VPC considerations for future database access

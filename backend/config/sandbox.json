@@ -2,6 +2,7 @@
   "Parameters": {
     "APPCONFIG_APP_ID": "toh51yd",
     "APPCONFIG_ENV_ID": "1uqkvb3",
-    "APPCONFIG_PROFILE_ID": "qdut1bh"
+    "APPCONFIG_PROFILE_ID": "qdut1bh",
+    "WAGE_GROWTH_BUCKET": "wage-growth-backend-sandbox-wagegrowthbucket-tcupnd3tstow"
   }
 }

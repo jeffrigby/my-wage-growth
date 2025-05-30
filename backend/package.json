@@ -15,14 +15,20 @@
     "@aws-lambda-powertools/tracer": "^2.0.3",
     "@aws-sdk/client-appconfigdata": "^3.817.0",
     "@aws-sdk/client-s3": "^3.817.0",
+    "@aws-sdk/lib-storage": "^3.817.0",
+    "@aws-sdk/s3-request-presigner": "^3.817.0",
     "@middy/core": "^6.3.0",
     "p-limit": "^6.2.0",
     "p-retry": "^6.2.1",
     "zod": "^3.25.32"
   },
   "scripts": {
-    "unit": "vitest",
+    "unit": "vitest run",
+    "unit:watch": "vitest",
+    "unit:ui": "vitest --ui",
+    "coverage": "vitest run --coverage",
     "lint": "prettier --write 'src/**/*.{js,ts}' && eslint --fix 'src/**/*.{js,ts}'",
+    "lint:sam": "sam validate --lint",
     "compile": "tsc",
     "test": "npm run compile && npm run unit",
     "local-us-cpi-data": "sam build && sam local invoke GetUSCPIDataFunction -e events/get-us-cpi-data-event.json -n config/sandbox.json | jq"
@@ -34,6 +40,8 @@
     "@types/node": "^22.15.23",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
+    "@vitest/coverage-v8": "^3.1.4",
+    "@vitest/ui": "^3.1.4",
     "esbuild": "^0.25.5",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
@@ -42,6 +50,7 @@
     "prettier": "^3.5.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0"
+    "typescript-eslint": "^8.33.0",
+    "vitest": "^3.1.4"
   }
 }

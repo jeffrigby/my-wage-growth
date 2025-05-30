@@ -19,11 +19,16 @@ Globals:
         APPCONFIG_APP_ID: !Ref AppConfigApplication
         APPCONFIG_ENV_ID: !Ref AppConfigEnvironment
         APPCONFIG_PROFILE_ID: !Ref AppConfigConfigurationProfile
+        WAGE_GROWTH_BUCKET: !Ref WageGrowthBucket
 
 Resources:
   GetUSCPIDataFunction:
     Type: AWS::Serverless::Function
     Description: Get US CPI-U Data Lambda Function
+    Policies:
+      - VPCAccessPolicy: {}
+      - S3CrudPolicy:
+          BucketName: !Ref WageGrowthBucket
     Properties:
       Handler: get-us-cpi-data.handler
       Tracing: Active
@@ -93,10 +98,88 @@ Resources:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
             Resource: !Sub arn:aws:s3:::${WageGrowthBucket}/*
-            # Condition:
-            #   StringEquals:
-            #     AWS:SourceArn:
-            #       - !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
+
+  # CloudFront
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub ${AWS::StackName}-OAC
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub ${AWS::StackName} CloudFront Distribution
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt WageGrowthBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !Ref CloudFrontOriginAccessControl
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
+          ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+        CacheBehaviors:
+          - PathPattern: "/static/*"
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
+            OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
+            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+          - PathPattern: "/data/*"
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # Managed-CachingDisabled (for frequently updated data)
+            OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
+            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /static/index.html
+            ErrorCachingMinTTL: 300
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /static/index.html
+            ErrorCachingMinTTL: 300
 
   # AppConfig
   AppConfigApplication:
@@ -190,3 +273,18 @@ Outputs:
     Value: !Ref ApplicationInsightsMonitoring
     Export:
       Name: !Sub ${AWS::StackName}-ApplicationInsightsApplicationName
+  CloudFrontDistribution:
+    Description: CloudFront Distribution ID
+    Value: !Ref CloudFrontDistribution
+    Export:
+      Name: !Sub ${AWS::StackName}-CloudFrontDistributionId
+  CloudFrontDistributionDomainName:
+    Description: CloudFront Distribution Domain Name
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub ${AWS::StackName}-CloudFrontDistributionDomainName
+  CloudFrontOriginAccessControl:
+    Description: CloudFront Origin Access Control ID
+    Value: !Ref CloudFrontOriginAccessControl
+    Export:
+      Name: !Sub ${AWS::StackName}-CloudFrontOriginAccessControlId

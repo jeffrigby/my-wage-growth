@@ -1,12 +1,12 @@
-import { getAppConfig } from "@aws-lambda-powertools/parameters/appconfig";
-import { getLogger } from "./logger";
-import { checkEnvVar } from "./utils";
+import { getAppConfig } from '@aws-lambda-powertools/parameters/appconfig';
+import { getLogger } from './logger';
+import { checkEnvVar } from './utils';
 
 const logger = getLogger();
 
-const APPCONFIG_APP_ID = checkEnvVar("APPCONFIG_APP_ID");
-const APPCONFIG_ENV_ID = checkEnvVar("APPCONFIG_ENV_ID");
-const APPCONFIG_PROFILE_ID = checkEnvVar("APPCONFIG_PROFILE_ID");
+const APPCONFIG_APP_ID = checkEnvVar('APPCONFIG_APP_ID');
+const APPCONFIG_ENV_ID = checkEnvVar('APPCONFIG_ENV_ID');
+const APPCONFIG_PROFILE_ID = checkEnvVar('APPCONFIG_PROFILE_ID');
 
 type WageGrowthConfig = {
   blsApiKey: string;
@@ -30,7 +30,7 @@ export async function getAppConfigProfile(
   const config = await getAppConfig(profileId, {
     environment: environment,
     application: application,
-    transform: jsonTransform ? "json" : undefined,
+    transform: jsonTransform ? 'json' : undefined,
     maxAge: maxAge,
   });
   if (config !== null && config !== undefined) {
@@ -44,11 +44,7 @@ export async function getAppConfigProfile(
  * @return A promise that resolves to the transcription configuration.
  */
 export async function getWageGrowthConfig(): Promise<WageGrowthConfig> {
-  logger.info("Getting wage growth config");
-  const config = await getAppConfigProfile(
-    APPCONFIG_PROFILE_ID,
-    APPCONFIG_ENV_ID,
-    APPCONFIG_APP_ID,
-  );
+  logger.info('Getting wage growth config');
+  const config = await getAppConfigProfile(APPCONFIG_PROFILE_ID, APPCONFIG_ENV_ID, APPCONFIG_APP_ID);
   return config as WageGrowthConfig;
 }

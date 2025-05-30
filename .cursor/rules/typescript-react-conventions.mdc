@@ -1,0 +1,121 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TypeScript & React Development Conventions
+
+## TypeScript Configuration
+- Use **strict mode** TypeScript configuration
+- Enable all strict type checking options
+- Use explicit return types for functions where clarity is needed
+- Prefer `interface` over `type` for object definitions
+- Use `const assertions` for immutable data structures
+
+## Core Type Definitions
+
+### Essential Interfaces
+```typescript
+interface WageEntry {
+  id: string;
+  date: Date;
+  amount: number;
+  entryType: 'point-in-time' | 'annual-simple' | 'annual-averaged';
+  label?: string;
+  // Future: countryCode?: string;
+  // Future: currencyCode?: string;
+}
+
+interface CPIData {
+  lastUpdated: string;
+  source: string;
+  months: Record<string, number>;
+  // Future: currency?: string;
+  // Future: countryCode?: string;
+}
+```
+
+### Redux State Shape
+```typescript
+interface RootState {
+  cpiData: CPIData | null;
+  wageEntries: WageEntry[];
+  ui: {
+    theme: 'light' | 'dark';
+    isLoading: boolean;
+    error: string | null;
+  };
+  settings: {
+    // Future: selectedCountry: string;
+    // Future: preferredCurrency: string;
+  };
+}
+```
+
+## React Component Conventions
+
+### Component Structure
+- Use **functional components** with hooks
+- Prefer `const` arrow functions for component definitions
+- Use TypeScript `React.FC` type only when children prop is explicitly needed
+- Extract custom hooks for complex state logic
+
+### Props and State
+- Always define props interfaces explicitly
+- Use optional chaining (`?.`) for optional object properties
+- Destructure props at component level for clarity
+- Use `useState` with explicit types when TypeScript can't infer
+
+### Example Component Pattern
+```typescript
+interface WageEntryFormProps {
+  onSubmit: (entry: Omit<WageEntry, 'id'>) => void;
+  editingEntry?: WageEntry;
+  cpiData: CPIData | null;
+}
+
+const WageEntryForm: React.FC<WageEntryFormProps> = ({
+  onSubmit,
+  editingEntry,
+  cpiData
+}) => {
+  // Component implementation
+};
+```
+
+## Redux Toolkit Patterns
+
+### Slice Definitions
+- Use `createSlice` from Redux Toolkit
+- Define initial state with explicit types
+- Use `PayloadAction<T>` for action types
+- Include prepare functions for complex action payloads
+
+### Async Actions
+- Use `createAsyncThunk` for async operations
+- Handle loading, success, and error states in extraReducers
+- Type async thunk return values explicitly
+
+## Error Handling
+- Use type guards for runtime type checking
+- Implement error boundaries for component error handling
+- Use Result/Either pattern for operations that can fail
+- Always handle Promise rejections explicitly
+
+## Performance Considerations
+- Use `React.memo` for components that receive stable props
+- Implement `useMemo` and `useCallback` judiciously (not by default)
+- Lazy load heavy components like charts
+- Use proper dependency arrays in hooks
+
+## Import/Export Conventions
+- Use named exports for components and utilities
+- Use default exports only for pages/routes
+- Group imports: external libraries, internal utilities, then components
+- Use absolute imports for shared utilities and components
+
+## Testing Considerations
+- Write components to be easily testable
+- Avoid inline functions in JSX when testing event handlers
+- Use data-testid attributes for component testing
+- Mock external dependencies like CPI data fetching

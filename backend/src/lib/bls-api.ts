@@ -1,4 +1,4 @@
-import { setTimeout } from "node:timers/promises";
+import { setTimeout } from 'node:timers/promises';
 
 interface BlsConfig {
   apiKey: string;
@@ -38,22 +38,22 @@ export interface CpiDataPoint {
  * CPI series IDs for different categories and regions
  */
 export enum CpiSeriesId {
-  CPI_U_ALL = "CUUR0000SA0",
-  CPI_U_FOOD = "CUUR0000SAF",
-  CPI_U_ENERGY = "CUUR0000SAE",
-  CPI_U_HOUSING = "CUUR0000SAH",
-  CPI_U_TRANSPORTATION = "CUUR0000SAT",
-  CPI_U_MEDICAL = "CUUR0000SAM",
-  CPI_U_RECREATION = "CUUR0000SAR",
-  CPI_U_EDUCATION = "CUUR0000SAE1",
-  CPI_U_APPAREL = "CUUR0000SAA",
-  CPI_W_ALL = "CWUR0000SA0",
-  CPI_U_CORE = "CUUR0000SA0L1E",
-  CPI_U_NYC = "CUURA101SA0",
-  CPI_U_LA = "CUURA103SA0",
-  CPI_U_CHICAGO = "CUURA207SA0",
-  CPI_U_DALLAS = "CUURA316SA0",
-  CPI_U_PHILADELPHIA = "CUURA102SA0",
+  CPI_U_ALL = 'CUUR0000SA0',
+  CPI_U_FOOD = 'CUUR0000SAF',
+  CPI_U_ENERGY = 'CUUR0000SAE',
+  CPI_U_HOUSING = 'CUUR0000SAH',
+  CPI_U_TRANSPORTATION = 'CUUR0000SAT',
+  CPI_U_MEDICAL = 'CUUR0000SAM',
+  CPI_U_RECREATION = 'CUUR0000SAR',
+  CPI_U_EDUCATION = 'CUUR0000SAE1',
+  CPI_U_APPAREL = 'CUUR0000SAA',
+  CPI_W_ALL = 'CWUR0000SA0',
+  CPI_U_CORE = 'CUUR0000SA0L1E',
+  CPI_U_NYC = 'CUURA101SA0',
+  CPI_U_LA = 'CUURA103SA0',
+  CPI_U_CHICAGO = 'CUURA207SA0',
+  CPI_U_DALLAS = 'CUURA316SA0',
+  CPI_U_PHILADELPHIA = 'CUURA102SA0',
 }
 
 /**
@@ -61,7 +61,7 @@ export enum CpiSeriesId {
  */
 function getConfig(config: BlsConfig): Required<BlsConfig> {
   return {
-    baseUrl: "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+    baseUrl: 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
     retryAttempts: 3,
     ...config,
   };
@@ -93,12 +93,12 @@ function createYearRanges(
 function periodToDate(year: string, period: string): Date | null {
   const yearNum = parseInt(year);
 
-  if (period.startsWith("M")) {
+  if (period.startsWith('M')) {
     const month = parseInt(period.substring(1)) - 1;
     return new Date(yearNum, month, 1);
   }
 
-  if (period === "M13") {
+  if (period === 'M13') {
     return new Date(yearNum, 11, 31);
   }
 
@@ -143,7 +143,7 @@ async function fetchDataChunk(
   startYear: number,
   endYear: number,
 ): Promise<CpiDataPoint[]> {
-  const { default: pRetry } = await import("p-retry");
+  const { default: pRetry } = await import('p-retry');
 
   return pRetry(
     async () => {
@@ -155,8 +155,8 @@ async function fetchDataChunk(
       };
 
       const response = await fetch(config.baseUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       });
 
@@ -166,8 +166,8 @@ async function fetchDataChunk(
 
       const data = (await response.json()) as BlsApiResponse;
 
-      if (data.status !== "REQUEST_SUCCEEDED") {
-        throw new Error(`BLS API Error: ${data.message.join(", ")}`);
+      if (data.status !== 'REQUEST_SUCCEEDED') {
+        throw new Error(`BLS API Error: ${data.message.join(', ')}`);
       }
 
       // Rate limiting to be respectful to the API
@@ -178,9 +178,7 @@ async function fetchDataChunk(
     {
       retries: config.retryAttempts,
       onFailedAttempt: (error) => {
-        console.warn(
-          `Attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`,
-        );
+        console.warn(`Attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
       },
     },
   );
@@ -203,12 +201,7 @@ export async function fetchAllCpiData(
   const yearRanges = createYearRanges(startYear, endYear, 20);
 
   for (const yearRange of yearRanges) {
-    const data = await fetchDataChunk(
-      config,
-      [seriesId],
-      yearRange.start,
-      yearRange.end,
-    );
+    const data = await fetchDataChunk(config, [seriesId], yearRange.start, yearRange.end);
     allData.push(...data);
   }
 
@@ -245,12 +238,7 @@ export async function fetchMultipleCpiData(
   // Process each combination of series batch and year range
   for (const seriesBatch of seriesBatches) {
     for (const yearRange of yearRanges) {
-      const data = await fetchDataChunk(
-        config,
-        seriesBatch,
-        yearRange.start,
-        yearRange.end,
-      );
+      const data = await fetchDataChunk(config, seriesBatch, yearRange.start, yearRange.end);
       allData.push(...data);
     }
   }

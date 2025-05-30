@@ -1,0 +1,103 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Backend Code Structure
+
+## Directory Organization
+
+### Source Code Structure
+```
+backend/src/
+├── lib/              # Shared utility modules
+│   ├── utils.ts      # General utility functions
+│   ├── logger.ts     # Logging configuration
+│   ├── bls-api.ts    # BLS API integration
+│   ├── aws.s3.ts     # S3 operations
+│   └── aws.appconfig.ts # AppConfig operations
+└── handlers/         # Lambda function handlers
+    └── get-us-cpi-data.ts # CPI data handler
+```
+
+### Test Structure
+Tests mirror the source structure in `backend/src/test/` - see [backend-testing-conventions.mdc](mdc:.cursor/rules/backend-testing-conventions.mdc)
+
+## Module Patterns
+
+### Utility Modules (`src/lib/`)
+- **Environment Variables**: Use [utils.ts](mdc:backend/src/lib/utils.ts) `checkEnvVar()` for environment variable validation
+- **Logging**: Use [logger.ts](mdc:backend/src/lib/logger.ts) `getLogger()` for AWS Lambda Powertools logger
+- **AWS Services**: Separate modules for each AWS service (S3, AppConfig)
+- **External APIs**: Dedicated modules for external integrations (BLS API)
+
+### Handler Modules (`src/handlers/`)
+- Each Lambda function has its own handler file
+- Handlers import utilities from `@/lib/` using path aliases
+- Follow the pattern: input validation → business logic → output formatting
+- Reference [get-us-cpi-data.ts](mdc:backend/src/handlers/get-us-cpi-data.ts) for handler structure
+
+## Import Patterns
+
+### Path Aliases
+Use configured path aliases for clean imports:
+```typescript
+// ✅ DO: Use path aliases
+import { getLogger } from '@/lib/logger';
+import { checkEnvVar } from '@/lib/utils';
+
+// ❌ DON'T: Use relative paths
+import { getLogger } from '../lib/logger';
+```
+
+### External Dependencies
+- AWS SDK v3 for AWS services
+- AWS Lambda Powertools for logging, metrics, tracing
+- Zod for input validation and parsing
+- p-retry for API retry logic
+
+## Configuration Files
+
+### Build and Runtime
+- [tsconfig.json](mdc:backend/tsconfig.json) - TypeScript configuration with path mapping
+- [package.json](mdc:backend/package.json) - Dependencies and scripts
+- [vitest.config.ts](mdc:backend/vitest.config.ts) - Test configuration
+
+### AWS Deployment
+- [template.yaml](mdc:backend/template.yaml) - SAM template for AWS resources
+- `config/` - Environment-specific configuration
+- `events/` - Sample events for local testing
+
+## Code Quality
+
+### Linting and Formatting
+- ESLint with TypeScript support
+- Prettier for code formatting
+- Run `npm run lint` to fix formatting and linting issues
+
+### Type Safety
+- Strict TypeScript configuration
+- Zod schemas for runtime validation
+- Proper typing for AWS SDK operations
+
+## Best Practices
+
+### Error Handling
+- Use try-catch blocks in handlers
+- Log errors with context using the logger
+- Return structured error responses
+
+### Environment Variables
+- Always validate environment variables using `checkEnvVar()`
+- Set defaults when appropriate
+- Document required environment variables
+
+### AWS Integration
+- Use AWS SDK v3 for better tree-shaking
+- Implement retry logic for API calls
+- Use AWS Lambda Powertools for observability
+
+### Data Transformation
+- Validate input data with Zod schemas
+- Transform data close to the boundary (API → internal format)
+- Keep business logic pure when possible

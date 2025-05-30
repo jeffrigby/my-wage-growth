@@ -1,0 +1,72 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Real Wage Growth Calculator - Project Overview
+
+## Project Purpose
+This web application helps users understand their **real wage growth versus inflation** over time. Many people don't realize that inflation erodes purchasing power - even if they're earning more money nominally, they might actually be earning less in real terms. This tool makes that invisible loss visible through clear visualizations and calculations.
+
+## Architecture Overview
+- **Frontend**: React SPA with TypeScript, hosted on S3/CloudFront
+- **Backend**: AWS Lambda fetching monthly CPI data from Bureau of Labor Statistics
+- **Data Flow**: Lambda → S3 JSON file → CloudFront → Frontend fetches on load
+- **State Management**: Redux Toolkit with persistence for user entries
+- **Styling**: Tailwind CSS with custom design system
+
+## Key Technical Concepts
+
+### Wage Entry Types
+The application supports three types of wage entries that must be consistent across all user inputs:
+
+1. **Point-in-time**: Specific date with exact CPI matching
+2. **Annual-Simple**: Full year earnings using December CPI
+3. **Annual-Averaged**: Full year earnings using 12-month average CPI
+
+### CPI Data Structure
+Consumer Price Index data from BLS API (Series: CUUR0000SA0) stored as:
+```json
+{
+  "lastUpdated": "2024-05-15T12:00:00Z",
+  "source": "BLS Series CUUR0000SA0",
+  "months": {
+    "2024-04": 313.548,
+    "2024-03": 312.332
+  }
+}
+```
+
+### Core Calculations
+- **Nominal wages**: Actual dollars earned
+- **Real wages**: Inflation-adjusted to today's dollars using CPI
+- **Year-over-year growth rates**: Comparing real purchasing power
+- **Inflation impact**: Total purchasing power gained or lost
+
+## Development Guidelines
+
+### File Organization
+- Components should be organized by feature/domain
+- Utilities for CPI calculations should be centralized
+- Types should be defined with future international expansion in mind
+- Redux slices: `cpiData`, `wageEntries`, `ui`, `settings`
+
+### Code Standards
+- Use TypeScript with strict mode
+- All currency formatting should use `Intl.NumberFormat` for future multi-currency support
+- Design components to be country-agnostic where possible
+- Always run `npm run lint` after code changes to fix prettier and eslint errors
+
+### Future Considerations (Phase 2)
+- International expansion with multiple countries' inflation data
+- Multi-currency support
+- User accounts and data persistence
+- The codebase should be structured to easily accommodate these features
+
+## Key User Requirements
+- Minimum 2 wage entries required
+- All entries must be pre-tax and use consistent time periods
+- No user accounts needed for Phase 1
+- URL-based sharing using compressed data in hash
+- Dark mode support from day one
+- Responsive design for desktop and mobile

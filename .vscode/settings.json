@@ -1,0 +1,24 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.allowIncompleteCompletions": true,
+  "typescript.suggest.paths": true,
+  "typescript.tsc.autoDetect": "on",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.workspaceSymbols.scope": "allOpenProjects",
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+  "typescript.suggest.includeCompletionsForImportStatements": true,
+  "eslint.workingDirectories": [
+    "backend"
+  ],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.aws-sam": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.aws-sam/**": true
+  },
+  "typescript.format.enable": true,
+  "typescript.validate.enable": true
+} 

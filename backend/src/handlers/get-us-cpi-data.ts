@@ -1,43 +1,38 @@
-import { Context } from "aws-lambda";
-import { injectLambdaContext } from "@aws-lambda-powertools/logger/middleware";
-import { parser } from "@aws-lambda-powertools/parser/middleware";
-import middy from "@middy/core";
-import { z } from "zod";
-import { getLogger } from "@/lib/logger";
-import { getWageGrowthConfig } from "@/lib/aws.appconfig";
-import { fetchMultipleCpiData, CpiSeriesId, CpiDataPoint } from "@/lib/bls-api";
+import { Context } from 'aws-lambda';
+import { injectLambdaContext } from '@aws-lambda-powertools/logger/middleware';
+import { parser } from '@aws-lambda-powertools/parser/middleware';
+import middy from '@middy/core';
+import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+import { getWageGrowthConfig } from '@/lib/aws.appconfig';
+import { fetchMultipleCpiData, CpiSeriesId, CpiDataPoint } from '@/lib/bls-api';
+import { putS3Object } from '@/lib/aws.s3';
+import { checkEnvVar } from '@/lib/utils';
+
+const WAGE_GROWTH_BUCKET = checkEnvVar('WAGE_GROWTH_BUCKET');
 
 const logger = getLogger();
 
 const cpiExportEventSchema = z.object({
-  startYear: z
-    .number()
-    .min(1913)
-    .max(new Date().getFullYear())
-    .optional()
-    .default(1913),
-  endYear: z
-    .number()
-    .min(1913)
-    .max(new Date().getFullYear())
-    .optional()
-    .default(new Date().getFullYear()),
+  startYear: z.number().min(1913).max(new Date().getFullYear()).optional().default(1913),
+  endYear: z.number().min(1913).max(new Date().getFullYear()).optional().default(new Date().getFullYear()),
   seriesIds: z
     .array(z.string())
-    .min(1, "At least one series ID is required")
-    .max(50, "Maximum 50 series IDs allowed")
+    .min(1, 'At least one series ID is required')
+    .max(50, 'Maximum 50 series IDs allowed')
     .optional()
-    .default(["CPI_U_ALL"])
-    .transform((keys): CpiSeriesId[] => {
+    .default(['CPI_U_ALL'])
+    .transform((keys): { key: string; enumValue: CpiSeriesId }[] => {
       return keys.map((key) => {
         // Validate that the key exists in the enum
         if (!(key in CpiSeriesId)) {
-          throw new Error(
-            `Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(", ")}`,
-          );
+          throw new Error(`Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`);
         }
-        // Return the actual enum value
-        return CpiSeriesId[key as keyof typeof CpiSeriesId];
+        // Return both the original key and the enum value
+        return {
+          key,
+          enumValue: CpiSeriesId[key as keyof typeof CpiSeriesId],
+        };
       });
     }),
 });
@@ -55,14 +50,14 @@ type MultiSeriesSimplifiedCpiData = {
 };
 
 type CpiExportEvent = {
-  seriesIds: CpiSeriesId[];
+  seriesIds: { key: string; enumValue: CpiSeriesId }[];
 };
 
 type CPILambdaResponse = {
   status: string;
   message: string;
   bucket?: string;
-  key?: string;
+  keys?: string[];
   error?: string;
   data?: MultiSeriesSimplifiedCpiData;
 };
@@ -73,17 +68,14 @@ type CPILambdaResponse = {
  * @param seriesId The series ID used for the data
  * @returns Simplified CPI data structure
  */
-function transformCpiDataForLookup(
-  cpiData: CpiDataPoint[],
-  seriesId: CpiSeriesId,
-): SimplifiedCpiData {
+function transformCpiDataForLookup(cpiData: CpiDataPoint[], seriesId: CpiSeriesId): SimplifiedCpiData {
   const months: Record<string, number> = {};
 
   // Convert each data point to YYYY-MM format with CPI value
   for (const dataPoint of cpiData) {
     // Format date as YYYY-MM for easy lookup
     const year = dataPoint.date.getFullYear();
-    const month = (dataPoint.date.getMonth() + 1).toString().padStart(2, "0");
+    const month = (dataPoint.date.getMonth() + 1).toString().padStart(2, '0');
     const monthKey = `${year}-${month}`;
     months[monthKey] = dataPoint.value;
   }
@@ -101,10 +93,7 @@ function transformCpiDataForLookup(
  * @param seriesIds Array of series IDs that were requested
  * @returns Multi-series simplified CPI data structure
  */
-function transformMultiSeriesCpiData(
-  cpiData: CpiDataPoint[],
-  seriesIds: CpiSeriesId[],
-): MultiSeriesSimplifiedCpiData {
+function transformMultiSeriesCpiData(cpiData: CpiDataPoint[], seriesIds: CpiSeriesId[]): MultiSeriesSimplifiedCpiData {
   const series: Record<string, SimplifiedCpiData> = {};
   const sources: string[] = [];
 
@@ -132,25 +121,28 @@ function transformMultiSeriesCpiData(
   };
 }
 
-export const lambdaHandler = async (
-  event: CpiExportEvent,
-  context: Context,
-): Promise<CPILambdaResponse> => {
+export const lambdaHandler = async (event: CpiExportEvent, context: Context): Promise<CPILambdaResponse> => {
   try {
     const config = await getWageGrowthConfig();
     const { seriesIds } = event;
     const { blsApiKey } = config;
 
     if (!blsApiKey) {
-      throw new Error("BLS API key is not set");
+      throw new Error('BLS API key is not set');
     }
 
-    const blsData = await fetchMultipleCpiData(blsApiKey, seriesIds);
+    const blsData = await fetchMultipleCpiData(
+      blsApiKey,
+      seriesIds.map((e) => e.enumValue),
+    );
 
     // Transform the data into simplified format
-    const simplifiedData = transformMultiSeriesCpiData(blsData, seriesIds);
+    const simplifiedData = transformMultiSeriesCpiData(
+      blsData,
+      seriesIds.map((e) => e.enumValue),
+    );
 
-    logger.info("BLS Data fetched and transformed", {
+    logger.info('BLS Data fetched and transformed', {
       requestedSeries: seriesIds.length,
       originalDataPoints: blsData.length,
       seriesProcessed: Object.keys(simplifiedData.series).length,
@@ -159,20 +151,35 @@ export const lambdaHandler = async (
         0,
       ),
     });
+    // Upload each series to s3
+    const keys: string[] = [];
+    for (const series of seriesIds) {
+      const simplifiedSeriesData = simplifiedData.series[series.enumValue];
+      const s3Key = `data/${series.key}.json`;
+      keys.push(s3Key);
+      logger.info('Uploading CPI data to S3', {
+        bucket: WAGE_GROWTH_BUCKET,
+        key: s3Key,
+      });
+      await putS3Object({
+        Bucket: WAGE_GROWTH_BUCKET,
+        Key: s3Key,
+        Body: JSON.stringify(simplifiedSeriesData),
+      });
+    }
 
     return {
-      status: "success",
+      status: 'success',
       message: `CPI Data for ${seriesIds.length} series downloaded and transformed successfully`,
-      bucket: "us-cpi-data",
-      key: "cpi-data.json",
-      data: simplifiedData,
+      bucket: WAGE_GROWTH_BUCKET,
+      keys,
     };
   } catch (error) {
-    logger.error("Error downloading CPI data", { error, event, context });
+    logger.error('Error downloading CPI data', { error, event, context });
     return {
-      status: "error",
-      message: "Failed to download CPI data",
-      error: error instanceof Error ? error.message : "Unknown error",
+      status: 'error',
+      message: 'Failed to download CPI data',
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   } finally {
     // Clean up resources if needed

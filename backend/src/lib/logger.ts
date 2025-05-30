@@ -1,4 +1,4 @@
-import { Logger } from "@aws-lambda-powertools/logger";
+import { Logger } from '@aws-lambda-powertools/logger';
 
 // Singleton instance of the logger
 // So that we can use the same logger instance across the entire application

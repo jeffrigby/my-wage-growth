@@ -8,12 +8,9 @@
  *
  * @throws Error  Throws an error if the environment variable is not defined and no default value is provided.
  */
-export const checkEnvVar = (
-  varName: string,
-  defaultValue: string = "",
-): string => {
+export const checkEnvVar = (varName: string, defaultValue: string = ''): string => {
   const value = process.env[varName];
   if (value !== undefined) return value;
-  if (defaultValue !== "") return defaultValue;
+  if (defaultValue !== '') return defaultValue;
   throw new Error(`Environment variable '${varName}' is not defined`);
 };
