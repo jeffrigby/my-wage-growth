@@ -73,3 +73,7 @@ backend/src/
 ## Development Guidelines
 
 - Always run linting after modifying code. If changing the SAM template run `sam validate --lint`
+
+## Claude Code Guidelines
+
+- Always present me a todo or implementation plan before proceeding. I would like to approve it first.

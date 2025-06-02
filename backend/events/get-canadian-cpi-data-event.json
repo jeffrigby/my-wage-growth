@@ -1,0 +1,14 @@
+{
+  "seriesIds": [
+    "CPI_CA_ALL",
+    "CPI_CA_FOOD",
+    "CPI_CA_SHELTER",
+    "CPI_CA_HOUSEHOLD",
+    "CPI_CA_CLOTHING",
+    "CPI_CA_TRANSPORTATION",
+    "CPI_CA_HEALTH",
+    "CPI_CA_RECREATION",
+    "CPI_CA_ALCOHOL_TOBACCO",
+    "CPI_CA_CORE"
+  ]
+}

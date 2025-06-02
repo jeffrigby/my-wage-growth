@@ -24,14 +24,13 @@ Globals:
 Resources:
   GetUSCPIDataFunction:
     Type: AWS::Serverless::Function
-    Description: Get US CPI-U Data Lambda Function
-    Policies:
-      - VPCAccessPolicy: {}
-      - S3CrudPolicy:
-          BucketName: !Ref WageGrowthBucket
     Properties:
+      Description: Get US CPI-U Data Lambda Function
       Handler: get-us-cpi-data.handler
-      Tracing: Active
+      Policies:
+        - VPCAccessPolicy: {}
+        - S3CrudPolicy:
+            BucketName: !Ref WageGrowthBucket
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -45,6 +44,39 @@ Resources:
           - js=const require = (await import('node:module')).createRequire(import.meta.url);const __filename = (await import('node:url')).fileURLToPath(import.meta.url);const __dirname = (await import('node:path')).dirname(__filename);
         EntryPoints:
           - src/handlers/get-us-cpi-data.ts
+        External:
+          - "@aws-sdk/client-sso"
+          - "@aws-sdk/client-sso-oidc"
+          - "@aws-sdk/credential-provider-ini"
+          - "@aws-sdk/credential-provider-process"
+          - "@aws-sdk/credential-provider-sso"
+          - "@aws-sdk/credential-provider-web-identity"
+          - "@aws-sdk/token-providers"
+
+  GetCanadianCPIDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Get Canadian CPI Data Lambda Function
+      Handler: get-canadian-cpi-data.handler
+      Timeout: 120 # Increased timeout for downloading large CSV file
+      MemorySize: 1024 # Increased memory for processing CSV data
+      Policies:
+        - VPCAccessPolicy: {}
+        - S3CrudPolicy:
+            BucketName: !Ref WageGrowthBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: esm
+        Minify: true
+        OutExtension:
+          - .js=.mjs
+        Target: "es2022"
+        Sourcemap: true
+        Banner:
+          - js=const require = (await import('node:module')).createRequire(import.meta.url);const __filename = (await import('node:url')).fileURLToPath(import.meta.url);const __dirname = (await import('node:path')).dirname(__filename);
+        EntryPoints:
+          - src/handlers/get-canadian-cpi-data.ts
         External:
           - "@aws-sdk/client-sso"
           - "@aws-sdk/client-sso-oidc"
@@ -70,7 +102,7 @@ Resources:
               DaysAfterInitiation: 1
           - Id: CPIDataFiles
             Status: Enabled
-            Prefix: "data/"
+            Prefix: "cpi/"
             Transitions:
               - StorageClass: INTELLIGENT_TIERING
                 TransitionInDays: 30
@@ -157,7 +189,7 @@ Resources:
             CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
             OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
             ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
-          - PathPattern: "/data/*"
+          - PathPattern: "/cpi/*"
             TargetOriginId: S3Origin
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods:
@@ -228,6 +260,16 @@ Outputs:
     Value: !GetAtt GetUSCPIDataFunctionRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-GetUSCPIDataFunctionRoleArn
+  GetCanadianCPIDataFunction:
+    Description: GetCanadianCPIData Lambda Function ARN
+    Value: !GetAtt GetCanadianCPIDataFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetCanadianCPIDataFunctionArn
+  GetCanadianCPIDataFunctionRole:
+    Description: Implicit IAM Role created for GetCanadianCPIData function
+    Value: !GetAtt GetCanadianCPIDataFunctionRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetCanadianCPIDataFunctionRoleArn
   WageGrowthBucket:
     Description: S3 Bucket for storing CPI data and static frontend files
     Value: !Ref WageGrowthBucket
