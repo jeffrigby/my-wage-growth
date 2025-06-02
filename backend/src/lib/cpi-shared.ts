@@ -44,6 +44,10 @@ export interface SeriesMapping {
 
 /**
  * Transforms CPI data into a simplified format for quick lookups
+ * @param cpiData - Array of CPI data points from external API
+ * @param seriesId - The series ID identifier for the data
+ * @param sourcePrefix - Source name prefix (e.g., "BLS Series", "Statistics Canada Series")
+ * @returns Simplified CPI data structure with monthly lookup format
  */
 export function transformCpiDataForLookup(
   cpiData: CpiDataPoint[],
@@ -68,6 +72,10 @@ export function transformCpiDataForLookup(
 
 /**
  * Transforms multiple series CPI data into a structured format
+ * @param cpiData - Array of CPI data points from external API for multiple series
+ * @param seriesIds - Array of series IDs that were requested
+ * @param sourcePrefix - Source name prefix (e.g., "BLS Series", "Statistics Canada Series")
+ * @returns Multi-series simplified CPI data structure
  */
 export function transformMultiSeriesCpiData<T extends string>(
   cpiData: CpiDataPoint[],
@@ -103,6 +111,11 @@ export function transformMultiSeriesCpiData<T extends string>(
 
 /**
  * Saves raw CPI data for troubleshooting purposes
+ * @param rawData - Array of raw CPI data points from external API
+ * @param seriesIds - Array of series mappings that were requested
+ * @param country - Country code for S3 path (e.g., "us", "ca", "uk")
+ * @param dataSourceName - Name of the data source (e.g., "BLS Series", "Statistics Canada Series")
+ * @returns Array of S3 keys where raw data was stored
  */
 export async function saveRawCpiData(
   rawData: CpiDataPoint[],
@@ -152,6 +165,11 @@ export async function saveRawCpiData(
 
 /**
  * Saves processed CPI data to S3
+ * @param simplifiedData - Transformed CPI data ready for frontend consumption
+ * @param seriesIds - Array of series mappings that were requested
+ * @param country - Country code for S3 path (e.g., "us", "ca", "uk")
+ * @param dataSourceName - Name of the data source for logging (e.g., "BLS", "Statistics Canada")
+ * @returns Array of S3 keys where processed data was stored
  */
 export async function saveProcessedCpiData(
   simplifiedData: MultiSeriesSimplifiedCpiData,
