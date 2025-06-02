@@ -23,7 +23,6 @@ describe('bls-api', () => {
       expect(CpiSeriesId.CPI_U_FOOD).toBe('CUUR0000SAF');
       expect(CpiSeriesId.CPI_U_ENERGY).toBe('CUUR0000SAE');
       expect(CpiSeriesId.CPI_U_HOUSING).toBe('CUUR0000SAH');
-      expect(CpiSeriesId.CPI_U_NYC).toBe('CUURA101SA0');
     });
   });
 

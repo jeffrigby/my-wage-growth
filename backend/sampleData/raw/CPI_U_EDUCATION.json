@@ -1,0 +1,4276 @@
+{
+  "lastUpdated": "2025-05-30T03:17:46.307Z",
+  "source": "BLS Series CUUR0000SAE1",
+  "seriesId": "CUUR0000SAE1",
+  "dataPoints": [
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M01",
+      "periodName": "January",
+      "value": 76.5,
+      "date": "1993-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M02",
+      "periodName": "February",
+      "value": 76.6,
+      "date": "1993-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M03",
+      "periodName": "March",
+      "value": 76.6,
+      "date": "1993-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M04",
+      "periodName": "April",
+      "value": 76.7,
+      "date": "1993-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M05",
+      "periodName": "May",
+      "value": 76.8,
+      "date": "1993-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M06",
+      "periodName": "June",
+      "value": 77,
+      "date": "1993-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M07",
+      "periodName": "July",
+      "value": 77.3,
+      "date": "1993-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M08",
+      "periodName": "August",
+      "value": 78.6,
+      "date": "1993-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M09",
+      "periodName": "September",
+      "value": 80.8,
+      "date": "1993-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M10",
+      "periodName": "October",
+      "value": 81.1,
+      "date": "1993-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M11",
+      "periodName": "November",
+      "value": 81.2,
+      "date": "1993-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1993,
+      "period": "M12",
+      "periodName": "December",
+      "value": 81.2,
+      "date": "1993-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M01",
+      "periodName": "January",
+      "value": 81.5,
+      "date": "1994-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M02",
+      "periodName": "February",
+      "value": 81.6,
+      "date": "1994-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M03",
+      "periodName": "March",
+      "value": 81.7,
+      "date": "1994-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M04",
+      "periodName": "April",
+      "value": 81.7,
+      "date": "1994-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M05",
+      "periodName": "May",
+      "value": 81.8,
+      "date": "1994-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M06",
+      "periodName": "June",
+      "value": 82,
+      "date": "1994-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M07",
+      "periodName": "July",
+      "value": 82.3,
+      "date": "1994-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M08",
+      "periodName": "August",
+      "value": 83.5,
+      "date": "1994-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M09",
+      "periodName": "September",
+      "value": 85.6,
+      "date": "1994-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M10",
+      "periodName": "October",
+      "value": 85.8,
+      "date": "1994-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M11",
+      "periodName": "November",
+      "value": 85.9,
+      "date": "1994-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1994,
+      "period": "M12",
+      "periodName": "December",
+      "value": 85.9,
+      "date": "1994-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M01",
+      "periodName": "January",
+      "value": 86.2,
+      "date": "1995-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M02",
+      "periodName": "February",
+      "value": 86.5,
+      "date": "1995-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M03",
+      "periodName": "March",
+      "value": 86.5,
+      "date": "1995-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M04",
+      "periodName": "April",
+      "value": 86.5,
+      "date": "1995-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M05",
+      "periodName": "May",
+      "value": 86.5,
+      "date": "1995-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M06",
+      "periodName": "June",
+      "value": 86.6,
+      "date": "1995-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M07",
+      "periodName": "July",
+      "value": 86.9,
+      "date": "1995-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M08",
+      "periodName": "August",
+      "value": 88.4,
+      "date": "1995-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M09",
+      "periodName": "September",
+      "value": 90.4,
+      "date": "1995-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M10",
+      "periodName": "October",
+      "value": 90.5,
+      "date": "1995-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M11",
+      "periodName": "November",
+      "value": 90.6,
+      "date": "1995-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1995,
+      "period": "M12",
+      "periodName": "December",
+      "value": 90.7,
+      "date": "1995-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M01",
+      "periodName": "January",
+      "value": 91,
+      "date": "1996-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M02",
+      "periodName": "February",
+      "value": 91.1,
+      "date": "1996-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M03",
+      "periodName": "March",
+      "value": 91.2,
+      "date": "1996-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M04",
+      "periodName": "April",
+      "value": 91.3,
+      "date": "1996-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M05",
+      "periodName": "May",
+      "value": 91.3,
+      "date": "1996-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M06",
+      "periodName": "June",
+      "value": 91.4,
+      "date": "1996-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M07",
+      "periodName": "July",
+      "value": 91.6,
+      "date": "1996-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M08",
+      "periodName": "August",
+      "value": 93.1,
+      "date": "1996-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M09",
+      "periodName": "September",
+      "value": 94.9,
+      "date": "1996-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M10",
+      "periodName": "October",
+      "value": 95,
+      "date": "1996-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M11",
+      "periodName": "November",
+      "value": 95.1,
+      "date": "1996-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1996,
+      "period": "M12",
+      "periodName": "December",
+      "value": 95.1,
+      "date": "1996-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M01",
+      "periodName": "January",
+      "value": 95.5,
+      "date": "1997-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M02",
+      "periodName": "February",
+      "value": 95.6,
+      "date": "1997-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M03",
+      "periodName": "March",
+      "value": 95.6,
+      "date": "1997-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M04",
+      "periodName": "April",
+      "value": 95.6,
+      "date": "1997-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M05",
+      "periodName": "May",
+      "value": 95.8,
+      "date": "1997-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M06",
+      "periodName": "June",
+      "value": 95.9,
+      "date": "1997-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M07",
+      "periodName": "July",
+      "value": 96.2,
+      "date": "1997-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M08",
+      "periodName": "August",
+      "value": 97.8,
+      "date": "1997-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M09",
+      "periodName": "September",
+      "value": 99.6,
+      "date": "1997-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M10",
+      "periodName": "October",
+      "value": 99.9,
+      "date": "1997-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M11",
+      "periodName": "November",
+      "value": 99.9,
+      "date": "1997-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1997,
+      "period": "M12",
+      "periodName": "December",
+      "value": 100,
+      "date": "1997-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M01",
+      "periodName": "January",
+      "value": 100.3,
+      "date": "1998-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M02",
+      "periodName": "February",
+      "value": 100.4,
+      "date": "1998-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M03",
+      "periodName": "March",
+      "value": 100.5,
+      "date": "1998-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M04",
+      "periodName": "April",
+      "value": 100.7,
+      "date": "1998-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M05",
+      "periodName": "May",
+      "value": 100.9,
+      "date": "1998-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M06",
+      "periodName": "June",
+      "value": 100.8,
+      "date": "1998-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M07",
+      "periodName": "July",
+      "value": 101,
+      "date": "1998-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M08",
+      "periodName": "August",
+      "value": 102.6,
+      "date": "1998-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M09",
+      "periodName": "September",
+      "value": 104.3,
+      "date": "1998-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M10",
+      "periodName": "October",
+      "value": 104.5,
+      "date": "1998-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M11",
+      "periodName": "November",
+      "value": 104.6,
+      "date": "1998-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1998,
+      "period": "M12",
+      "periodName": "December",
+      "value": 104.7,
+      "date": "1998-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M01",
+      "periodName": "January",
+      "value": 105,
+      "date": "1999-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M02",
+      "periodName": "February",
+      "value": 105.3,
+      "date": "1999-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M03",
+      "periodName": "March",
+      "value": 105.4,
+      "date": "1999-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M04",
+      "periodName": "April",
+      "value": 105.5,
+      "date": "1999-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M05",
+      "periodName": "May",
+      "value": 105.6,
+      "date": "1999-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M06",
+      "periodName": "June",
+      "value": 105.7,
+      "date": "1999-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M07",
+      "periodName": "July",
+      "value": 106,
+      "date": "1999-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M08",
+      "periodName": "August",
+      "value": 107.5,
+      "date": "1999-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M09",
+      "periodName": "September",
+      "value": 109.4,
+      "date": "1999-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M10",
+      "periodName": "October",
+      "value": 109.6,
+      "date": "1999-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M11",
+      "periodName": "November",
+      "value": 109.3,
+      "date": "1999-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 1999,
+      "period": "M12",
+      "periodName": "December",
+      "value": 109.3,
+      "date": "1999-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M01",
+      "periodName": "January",
+      "value": 110.2,
+      "date": "2000-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M02",
+      "periodName": "February",
+      "value": 110.6,
+      "date": "2000-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M03",
+      "periodName": "March",
+      "value": 110.6,
+      "date": "2000-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M04",
+      "periodName": "April",
+      "value": 110.7,
+      "date": "2000-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M05",
+      "periodName": "May",
+      "value": 110.9,
+      "date": "2000-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M06",
+      "periodName": "June",
+      "value": 111.5,
+      "date": "2000-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M07",
+      "periodName": "July",
+      "value": 111.8,
+      "date": "2000-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M08",
+      "periodName": "August",
+      "value": 113,
+      "date": "2000-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M09",
+      "periodName": "September",
+      "value": 114.9,
+      "date": "2000-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M10",
+      "periodName": "October",
+      "value": 115.3,
+      "date": "2000-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M11",
+      "periodName": "November",
+      "value": 115.4,
+      "date": "2000-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2000,
+      "period": "M12",
+      "periodName": "December",
+      "value": 115.5,
+      "date": "2000-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M01",
+      "periodName": "January",
+      "value": 115.8,
+      "date": "2001-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M02",
+      "periodName": "February",
+      "value": 116,
+      "date": "2001-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M03",
+      "periodName": "March",
+      "value": 116.1,
+      "date": "2001-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M04",
+      "periodName": "April",
+      "value": 116.1,
+      "date": "2001-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M05",
+      "periodName": "May",
+      "value": 116.4,
+      "date": "2001-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M06",
+      "periodName": "June",
+      "value": 116.9,
+      "date": "2001-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M07",
+      "periodName": "July",
+      "value": 117.2,
+      "date": "2001-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M08",
+      "periodName": "August",
+      "value": 119.5,
+      "date": "2001-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M09",
+      "periodName": "September",
+      "value": 121.7,
+      "date": "2001-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M10",
+      "periodName": "October",
+      "value": 122.2,
+      "date": "2001-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M11",
+      "periodName": "November",
+      "value": 122.3,
+      "date": "2001-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2001,
+      "period": "M12",
+      "periodName": "December",
+      "value": 122,
+      "date": "2001-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M01",
+      "periodName": "January",
+      "value": 122.6,
+      "date": "2002-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M02",
+      "periodName": "February",
+      "value": 123.2,
+      "date": "2002-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M03",
+      "periodName": "March",
+      "value": 123.3,
+      "date": "2002-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M04",
+      "periodName": "April",
+      "value": 123.3,
+      "date": "2002-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M05",
+      "periodName": "May",
+      "value": 123.5,
+      "date": "2002-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M06",
+      "periodName": "June",
+      "value": 124.3,
+      "date": "2002-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M07",
+      "periodName": "July",
+      "value": 124.8,
+      "date": "2002-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M08",
+      "periodName": "August",
+      "value": 127.1,
+      "date": "2002-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M09",
+      "periodName": "September",
+      "value": 129.6,
+      "date": "2002-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M10",
+      "periodName": "October",
+      "value": 129.9,
+      "date": "2002-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M11",
+      "periodName": "November",
+      "value": 130,
+      "date": "2002-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2002,
+      "period": "M12",
+      "periodName": "December",
+      "value": 130,
+      "date": "2002-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M01",
+      "periodName": "January",
+      "value": 130.6,
+      "date": "2003-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M02",
+      "periodName": "February",
+      "value": 131,
+      "date": "2003-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M03",
+      "periodName": "March",
+      "value": 131.1,
+      "date": "2003-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M04",
+      "periodName": "April",
+      "value": 131.2,
+      "date": "2003-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M05",
+      "periodName": "May",
+      "value": 131.4,
+      "date": "2003-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M06",
+      "periodName": "June",
+      "value": 132,
+      "date": "2003-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M07",
+      "periodName": "July",
+      "value": 132.6,
+      "date": "2003-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M08",
+      "periodName": "August",
+      "value": 136.2,
+      "date": "2003-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M09",
+      "periodName": "September",
+      "value": 138.7,
+      "date": "2003-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M10",
+      "periodName": "October",
+      "value": 139.1,
+      "date": "2003-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M11",
+      "periodName": "November",
+      "value": 139,
+      "date": "2003-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2003,
+      "period": "M12",
+      "periodName": "December",
+      "value": 139.4,
+      "date": "2003-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M01",
+      "periodName": "January",
+      "value": 140.1,
+      "date": "2004-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M02",
+      "periodName": "February",
+      "value": 140.4,
+      "date": "2004-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M03",
+      "periodName": "March",
+      "value": 140.6,
+      "date": "2004-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M04",
+      "periodName": "April",
+      "value": 140.7,
+      "date": "2004-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M05",
+      "periodName": "May",
+      "value": 140.9,
+      "date": "2004-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M06",
+      "periodName": "June",
+      "value": 141.6,
+      "date": "2004-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M07",
+      "periodName": "July",
+      "value": 142.1,
+      "date": "2004-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M08",
+      "periodName": "August",
+      "value": 145.1,
+      "date": "2004-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M09",
+      "periodName": "September",
+      "value": 147.9,
+      "date": "2004-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M10",
+      "periodName": "October",
+      "value": 148.3,
+      "date": "2004-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M11",
+      "periodName": "November",
+      "value": 148.4,
+      "date": "2004-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2004,
+      "period": "M12",
+      "periodName": "December",
+      "value": 148.5,
+      "date": "2004-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M01",
+      "periodName": "January",
+      "value": 148.8,
+      "date": "2005-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M02",
+      "periodName": "February",
+      "value": 149.2,
+      "date": "2005-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M03",
+      "periodName": "March",
+      "value": 149.3,
+      "date": "2005-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M04",
+      "periodName": "April",
+      "value": 149.5,
+      "date": "2005-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M05",
+      "periodName": "May",
+      "value": 149.9,
+      "date": "2005-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M06",
+      "periodName": "June",
+      "value": 150.5,
+      "date": "2005-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M07",
+      "periodName": "July",
+      "value": 151.3,
+      "date": "2005-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M08",
+      "periodName": "August",
+      "value": 153.9,
+      "date": "2005-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M09",
+      "periodName": "September",
+      "value": 157.1,
+      "date": "2005-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M10",
+      "periodName": "October",
+      "value": 157.4,
+      "date": "2005-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M11",
+      "periodName": "November",
+      "value": 157.5,
+      "date": "2005-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2005,
+      "period": "M12",
+      "periodName": "December",
+      "value": 157.6,
+      "date": "2005-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M01",
+      "periodName": "January",
+      "value": 158.3,
+      "date": "2006-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M02",
+      "periodName": "February",
+      "value": 158.4,
+      "date": "2006-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M03",
+      "periodName": "March",
+      "value": 158.4,
+      "date": "2006-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M04",
+      "periodName": "April",
+      "value": 158.6,
+      "date": "2006-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M05",
+      "periodName": "May",
+      "value": 158.9,
+      "date": "2006-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M06",
+      "periodName": "June",
+      "value": 159.5,
+      "date": "2006-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M07",
+      "periodName": "July",
+      "value": 160.3,
+      "date": "2006-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M08",
+      "periodName": "August",
+      "value": 163.9,
+      "date": "2006-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M09",
+      "periodName": "September",
+      "value": 166.6,
+      "date": "2006-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M10",
+      "periodName": "October",
+      "value": 167.1,
+      "date": "2006-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M11",
+      "periodName": "November",
+      "value": 167.4,
+      "date": "2006-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2006,
+      "period": "M12",
+      "periodName": "December",
+      "value": 167.6,
+      "date": "2006-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M01",
+      "periodName": "January",
+      "value": 167.624,
+      "date": "2007-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M02",
+      "periodName": "February",
+      "value": 167.927,
+      "date": "2007-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M03",
+      "periodName": "March",
+      "value": 168.114,
+      "date": "2007-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M04",
+      "periodName": "April",
+      "value": 168.152,
+      "date": "2007-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M05",
+      "periodName": "May",
+      "value": 168.403,
+      "date": "2007-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M06",
+      "periodName": "June",
+      "value": 168.601,
+      "date": "2007-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M07",
+      "periodName": "July",
+      "value": 169.49,
+      "date": "2007-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M08",
+      "periodName": "August",
+      "value": 172.873,
+      "date": "2007-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M09",
+      "periodName": "September",
+      "value": 175.486,
+      "date": "2007-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M10",
+      "periodName": "October",
+      "value": 176.339,
+      "date": "2007-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M11",
+      "periodName": "November",
+      "value": 176.717,
+      "date": "2007-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2007,
+      "period": "M12",
+      "periodName": "December",
+      "value": 176.927,
+      "date": "2007-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M01",
+      "periodName": "January",
+      "value": 177.44,
+      "date": "2008-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M02",
+      "periodName": "February",
+      "value": 177.46,
+      "date": "2008-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M03",
+      "periodName": "March",
+      "value": 177.407,
+      "date": "2008-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M04",
+      "periodName": "April",
+      "value": 177.754,
+      "date": "2008-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M05",
+      "periodName": "May",
+      "value": 177.994,
+      "date": "2008-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M06",
+      "periodName": "June",
+      "value": 178.385,
+      "date": "2008-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M07",
+      "periodName": "July",
+      "value": 179.229,
+      "date": "2008-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M08",
+      "periodName": "August",
+      "value": 183.184,
+      "date": "2008-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M09",
+      "periodName": "September",
+      "value": 186.148,
+      "date": "2008-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M10",
+      "periodName": "October",
+      "value": 186.669,
+      "date": "2008-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M11",
+      "periodName": "November",
+      "value": 186.733,
+      "date": "2008-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2008,
+      "period": "M12",
+      "periodName": "December",
+      "value": 186.916,
+      "date": "2008-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M01",
+      "periodName": "January",
+      "value": 187.175,
+      "date": "2009-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M02",
+      "periodName": "February",
+      "value": 187.256,
+      "date": "2009-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M03",
+      "periodName": "March",
+      "value": 187.298,
+      "date": "2009-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M04",
+      "periodName": "April",
+      "value": 187.416,
+      "date": "2009-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M05",
+      "periodName": "May",
+      "value": 187.853,
+      "date": "2009-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M06",
+      "periodName": "June",
+      "value": 188.179,
+      "date": "2009-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M07",
+      "periodName": "July",
+      "value": 189.184,
+      "date": "2009-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M08",
+      "periodName": "August",
+      "value": 193.161,
+      "date": "2009-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M09",
+      "periodName": "September",
+      "value": 195.595,
+      "date": "2009-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M10",
+      "periodName": "October",
+      "value": 195.849,
+      "date": "2009-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M11",
+      "periodName": "November",
+      "value": 195.649,
+      "date": "2009-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2009,
+      "period": "M12",
+      "periodName": "December",
+      "value": 195.672,
+      "date": "2009-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M01",
+      "periodName": "January",
+      "value": 195.85,
+      "date": "2010-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M02",
+      "periodName": "February",
+      "value": 196.137,
+      "date": "2010-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M03",
+      "periodName": "March",
+      "value": 196.47,
+      "date": "2010-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M04",
+      "periodName": "April",
+      "value": 196.798,
+      "date": "2010-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M05",
+      "periodName": "May",
+      "value": 196.917,
+      "date": "2010-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M06",
+      "periodName": "June",
+      "value": 197.284,
+      "date": "2010-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M07",
+      "periodName": "July",
+      "value": 198.206,
+      "date": "2010-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M08",
+      "periodName": "August",
+      "value": 201.476,
+      "date": "2010-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M09",
+      "periodName": "September",
+      "value": 203.353,
+      "date": "2010-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M10",
+      "periodName": "October",
+      "value": 203.071,
+      "date": "2010-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M11",
+      "periodName": "November",
+      "value": 203.139,
+      "date": "2010-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2010,
+      "period": "M12",
+      "periodName": "December",
+      "value": 203.343,
+      "date": "2010-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M01",
+      "periodName": "January",
+      "value": 204.057,
+      "date": "2011-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M02",
+      "periodName": "February",
+      "value": 204.153,
+      "date": "2011-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M03",
+      "periodName": "March",
+      "value": 204.251,
+      "date": "2011-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M04",
+      "periodName": "April",
+      "value": 204.316,
+      "date": "2011-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M05",
+      "periodName": "May",
+      "value": 204.668,
+      "date": "2011-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M06",
+      "periodName": "June",
+      "value": 204.821,
+      "date": "2011-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M07",
+      "periodName": "July",
+      "value": 206.158,
+      "date": "2011-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M08",
+      "periodName": "August",
+      "value": 210.266,
+      "date": "2011-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M09",
+      "periodName": "September",
+      "value": 212.348,
+      "date": "2011-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M10",
+      "periodName": "October",
+      "value": 212.68,
+      "date": "2011-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M11",
+      "periodName": "November",
+      "value": 212.751,
+      "date": "2011-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2011,
+      "period": "M12",
+      "periodName": "December",
+      "value": 212.745,
+      "date": "2011-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M01",
+      "periodName": "January",
+      "value": 213.067,
+      "date": "2012-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M02",
+      "periodName": "February",
+      "value": 213.039,
+      "date": "2012-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M03",
+      "periodName": "March",
+      "value": 213.132,
+      "date": "2012-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M04",
+      "periodName": "April",
+      "value": 213.13,
+      "date": "2012-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M05",
+      "periodName": "May",
+      "value": 213.499,
+      "date": "2012-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M06",
+      "periodName": "June",
+      "value": 213.6,
+      "date": "2012-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M07",
+      "periodName": "July",
+      "value": 215.156,
+      "date": "2012-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M08",
+      "periodName": "August",
+      "value": 218.286,
+      "date": "2012-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M09",
+      "periodName": "September",
+      "value": 220.524,
+      "date": "2012-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M10",
+      "periodName": "October",
+      "value": 220.83,
+      "date": "2012-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M11",
+      "periodName": "November",
+      "value": 220.856,
+      "date": "2012-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2012,
+      "period": "M12",
+      "periodName": "December",
+      "value": 220.818,
+      "date": "2012-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M01",
+      "periodName": "January",
+      "value": 221.822,
+      "date": "2013-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M02",
+      "periodName": "February",
+      "value": 221.742,
+      "date": "2013-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M03",
+      "periodName": "March",
+      "value": 221.861,
+      "date": "2013-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M04",
+      "periodName": "April",
+      "value": 221.882,
+      "date": "2013-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M05",
+      "periodName": "May",
+      "value": 222.058,
+      "date": "2013-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M06",
+      "periodName": "June",
+      "value": 222.158,
+      "date": "2013-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M07",
+      "periodName": "July",
+      "value": 223.34,
+      "date": "2013-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M08",
+      "periodName": "August",
+      "value": 226.224,
+      "date": "2013-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M09",
+      "periodName": "September",
+      "value": 227.833,
+      "date": "2013-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M10",
+      "periodName": "October",
+      "value": 228.242,
+      "date": "2013-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M11",
+      "periodName": "November",
+      "value": 228.514,
+      "date": "2013-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2013,
+      "period": "M12",
+      "periodName": "December",
+      "value": 228.578,
+      "date": "2013-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M01",
+      "periodName": "January",
+      "value": 228.373,
+      "date": "2014-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M02",
+      "periodName": "February",
+      "value": 228.835,
+      "date": "2014-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M03",
+      "periodName": "March",
+      "value": 229.061,
+      "date": "2014-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M04",
+      "periodName": "April",
+      "value": 229.237,
+      "date": "2014-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M05",
+      "periodName": "May",
+      "value": 229.576,
+      "date": "2014-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M06",
+      "periodName": "June",
+      "value": 229.983,
+      "date": "2014-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M07",
+      "periodName": "July",
+      "value": 230.807,
+      "date": "2014-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M08",
+      "periodName": "August",
+      "value": 233.634,
+      "date": "2014-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M09",
+      "periodName": "September",
+      "value": 235.378,
+      "date": "2014-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M10",
+      "periodName": "October",
+      "value": 235.92,
+      "date": "2014-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M11",
+      "periodName": "November",
+      "value": 236.098,
+      "date": "2014-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2014,
+      "period": "M12",
+      "periodName": "December",
+      "value": 236.066,
+      "date": "2014-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M01",
+      "periodName": "January",
+      "value": 236.82,
+      "date": "2015-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M02",
+      "periodName": "February",
+      "value": 236.814,
+      "date": "2015-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M03",
+      "periodName": "March",
+      "value": 237.447,
+      "date": "2015-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M04",
+      "periodName": "April",
+      "value": 238.003,
+      "date": "2015-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M05",
+      "periodName": "May",
+      "value": 238.219,
+      "date": "2015-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M06",
+      "periodName": "June",
+      "value": 238.669,
+      "date": "2015-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M07",
+      "periodName": "July",
+      "value": 239.68,
+      "date": "2015-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M08",
+      "periodName": "August",
+      "value": 242.076,
+      "date": "2015-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M09",
+      "periodName": "September",
+      "value": 244.351,
+      "date": "2015-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M10",
+      "periodName": "October",
+      "value": 244.7,
+      "date": "2015-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M11",
+      "periodName": "November",
+      "value": 244.865,
+      "date": "2015-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2015,
+      "period": "M12",
+      "periodName": "December",
+      "value": 244.777,
+      "date": "2015-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M01",
+      "periodName": "January",
+      "value": 244.71,
+      "date": "2016-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M02",
+      "periodName": "February",
+      "value": 244.864,
+      "date": "2016-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M03",
+      "periodName": "March",
+      "value": 244.876,
+      "date": "2016-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M04",
+      "periodName": "April",
+      "value": 245.206,
+      "date": "2016-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M05",
+      "periodName": "May",
+      "value": 245.419,
+      "date": "2016-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M06",
+      "periodName": "June",
+      "value": 245.911,
+      "date": "2016-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M07",
+      "periodName": "July",
+      "value": 246.478,
+      "date": "2016-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M08",
+      "periodName": "August",
+      "value": 248.58,
+      "date": "2016-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M09",
+      "periodName": "September",
+      "value": 250.469,
+      "date": "2016-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M10",
+      "periodName": "October",
+      "value": 251.173,
+      "date": "2016-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M11",
+      "periodName": "November",
+      "value": 251.155,
+      "date": "2016-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2016,
+      "period": "M12",
+      "periodName": "December",
+      "value": 251.466,
+      "date": "2016-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M01",
+      "periodName": "January",
+      "value": 251.122,
+      "date": "2017-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M02",
+      "periodName": "February",
+      "value": 251.356,
+      "date": "2017-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M03",
+      "periodName": "March",
+      "value": 251.113,
+      "date": "2017-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M04",
+      "periodName": "April",
+      "value": 251.001,
+      "date": "2017-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M05",
+      "periodName": "May",
+      "value": 250.959,
+      "date": "2017-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M06",
+      "periodName": "June",
+      "value": 251.658,
+      "date": "2017-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M07",
+      "periodName": "July",
+      "value": 252.115,
+      "date": "2017-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M08",
+      "periodName": "August",
+      "value": 253.805,
+      "date": "2017-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M09",
+      "periodName": "September",
+      "value": 255.783,
+      "date": "2017-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M10",
+      "periodName": "October",
+      "value": 256.435,
+      "date": "2017-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M11",
+      "periodName": "November",
+      "value": 256.721,
+      "date": "2017-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2017,
+      "period": "M12",
+      "periodName": "December",
+      "value": 256.469,
+      "date": "2017-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M01",
+      "periodName": "January",
+      "value": 256.15,
+      "date": "2018-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M02",
+      "periodName": "February",
+      "value": 256.291,
+      "date": "2018-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M03",
+      "periodName": "March",
+      "value": 255.609,
+      "date": "2018-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M04",
+      "periodName": "April",
+      "value": 255.564,
+      "date": "2018-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M05",
+      "periodName": "May",
+      "value": 256.09,
+      "date": "2018-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M06",
+      "periodName": "June",
+      "value": 256.679,
+      "date": "2018-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M07",
+      "periodName": "July",
+      "value": 257.477,
+      "date": "2018-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M08",
+      "periodName": "August",
+      "value": 260.613,
+      "date": "2018-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M09",
+      "periodName": "September",
+      "value": 262.336,
+      "date": "2018-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M10",
+      "periodName": "October",
+      "value": 262.947,
+      "date": "2018-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M11",
+      "periodName": "November",
+      "value": 263.119,
+      "date": "2018-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2018,
+      "period": "M12",
+      "periodName": "December",
+      "value": 263.199,
+      "date": "2018-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M01",
+      "periodName": "January",
+      "value": 263.125,
+      "date": "2019-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M02",
+      "periodName": "February",
+      "value": 263.62,
+      "date": "2019-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M03",
+      "periodName": "March",
+      "value": 263.905,
+      "date": "2019-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M04",
+      "periodName": "April",
+      "value": 263.944,
+      "date": "2019-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M05",
+      "periodName": "May",
+      "value": 264.199,
+      "date": "2019-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M06",
+      "periodName": "June",
+      "value": 264.612,
+      "date": "2019-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M07",
+      "periodName": "July",
+      "value": 264.882,
+      "date": "2019-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M08",
+      "periodName": "August",
+      "value": 266.979,
+      "date": "2019-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M09",
+      "periodName": "September",
+      "value": 268.357,
+      "date": "2019-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M10",
+      "periodName": "October",
+      "value": 268.878,
+      "date": "2019-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M11",
+      "periodName": "November",
+      "value": 268.88,
+      "date": "2019-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2019,
+      "period": "M12",
+      "periodName": "December",
+      "value": 268.7,
+      "date": "2019-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M01",
+      "periodName": "January",
+      "value": 268.841,
+      "date": "2020-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M02",
+      "periodName": "February",
+      "value": 269.36,
+      "date": "2020-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M03",
+      "periodName": "March",
+      "value": 269.45,
+      "date": "2020-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M04",
+      "periodName": "April",
+      "value": 269.614,
+      "date": "2020-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M05",
+      "periodName": "May",
+      "value": 269.725,
+      "date": "2020-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M06",
+      "periodName": "June",
+      "value": 269.993,
+      "date": "2020-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M07",
+      "periodName": "July",
+      "value": 270.659,
+      "date": "2020-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M08",
+      "periodName": "August",
+      "value": 271.626,
+      "date": "2020-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M09",
+      "periodName": "September",
+      "value": 272.241,
+      "date": "2020-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M10",
+      "periodName": "October",
+      "value": 272.465,
+      "date": "2020-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M11",
+      "periodName": "November",
+      "value": 272.359,
+      "date": "2020-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2020,
+      "period": "M12",
+      "periodName": "December",
+      "value": 272.437,
+      "date": "2020-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M01",
+      "periodName": "January",
+      "value": 272.238,
+      "date": "2021-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M02",
+      "periodName": "February",
+      "value": 272.539,
+      "date": "2021-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M03",
+      "periodName": "March",
+      "value": 271.559,
+      "date": "2021-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M04",
+      "periodName": "April",
+      "value": 271.829,
+      "date": "2021-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M05",
+      "periodName": "May",
+      "value": 272.544,
+      "date": "2021-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M06",
+      "periodName": "June",
+      "value": 273.169,
+      "date": "2021-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M07",
+      "periodName": "July",
+      "value": 273.812,
+      "date": "2021-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M08",
+      "periodName": "August",
+      "value": 275.373,
+      "date": "2021-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M09",
+      "periodName": "September",
+      "value": 277.551,
+      "date": "2021-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M10",
+      "periodName": "October",
+      "value": 278.047,
+      "date": "2021-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M11",
+      "periodName": "November",
+      "value": 278.097,
+      "date": "2021-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2021,
+      "period": "M12",
+      "periodName": "December",
+      "value": 277.904,
+      "date": "2021-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M01",
+      "periodName": "January",
+      "value": 278.087,
+      "date": "2022-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M02",
+      "periodName": "February",
+      "value": 278.38,
+      "date": "2022-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M03",
+      "periodName": "March",
+      "value": 278.388,
+      "date": "2022-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M04",
+      "periodName": "April",
+      "value": 278.647,
+      "date": "2022-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M05",
+      "periodName": "May",
+      "value": 279.356,
+      "date": "2022-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M06",
+      "periodName": "June",
+      "value": 280.562,
+      "date": "2022-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M07",
+      "periodName": "July",
+      "value": 280.974,
+      "date": "2022-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M08",
+      "periodName": "August",
+      "value": 283.882,
+      "date": "2022-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M09",
+      "periodName": "September",
+      "value": 286.151,
+      "date": "2022-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M10",
+      "periodName": "October",
+      "value": 286.449,
+      "date": "2022-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M11",
+      "periodName": "November",
+      "value": 286.792,
+      "date": "2022-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2022,
+      "period": "M12",
+      "periodName": "December",
+      "value": 287.177,
+      "date": "2022-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M01",
+      "periodName": "January",
+      "value": 287.509,
+      "date": "2023-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M02",
+      "periodName": "February",
+      "value": 287.651,
+      "date": "2023-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M03",
+      "periodName": "March",
+      "value": 288.26,
+      "date": "2023-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M04",
+      "periodName": "April",
+      "value": 288.606,
+      "date": "2023-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M05",
+      "periodName": "May",
+      "value": 288.843,
+      "date": "2023-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M06",
+      "periodName": "June",
+      "value": 289.382,
+      "date": "2023-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M07",
+      "periodName": "July",
+      "value": 290.069,
+      "date": "2023-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M08",
+      "periodName": "August",
+      "value": 292.014,
+      "date": "2023-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M09",
+      "periodName": "September",
+      "value": 294.357,
+      "date": "2023-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M10",
+      "periodName": "October",
+      "value": 294.084,
+      "date": "2023-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M11",
+      "periodName": "November",
+      "value": 293.674,
+      "date": "2023-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2023,
+      "period": "M12",
+      "periodName": "December",
+      "value": 294.04,
+      "date": "2023-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M01",
+      "periodName": "January",
+      "value": 294.574,
+      "date": "2024-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M02",
+      "periodName": "February",
+      "value": 295.488,
+      "date": "2024-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M03",
+      "periodName": "March",
+      "value": 295.297,
+      "date": "2024-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M04",
+      "periodName": "April",
+      "value": 295.736,
+      "date": "2024-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M05",
+      "periodName": "May",
+      "value": 296.691,
+      "date": "2024-05-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M06",
+      "periodName": "June",
+      "value": 297.42,
+      "date": "2024-06-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M07",
+      "periodName": "July",
+      "value": 298.288,
+      "date": "2024-07-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M08",
+      "periodName": "August",
+      "value": 301.065,
+      "date": "2024-08-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M09",
+      "periodName": "September",
+      "value": 304.883,
+      "date": "2024-09-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M10",
+      "periodName": "October",
+      "value": 305.154,
+      "date": "2024-10-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M11",
+      "periodName": "November",
+      "value": 305.865,
+      "date": "2024-11-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2024,
+      "period": "M12",
+      "periodName": "December",
+      "value": 305.662,
+      "date": "2024-12-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2025,
+      "period": "M01",
+      "periodName": "January",
+      "value": 305.86,
+      "date": "2025-01-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2025,
+      "period": "M02",
+      "periodName": "February",
+      "value": 306.284,
+      "date": "2025-02-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2025,
+      "period": "M03",
+      "periodName": "March",
+      "value": 306.847,
+      "date": "2025-03-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    },
+    {
+      "seriesId": "CUUR0000SAE1",
+      "year": 2025,
+      "period": "M04",
+      "periodName": "April",
+      "value": 306.829,
+      "date": "2025-04-01T00:00:00.000Z",
+      "footnotes": [
+        null
+      ]
+    }
+  ],
+  "totalPoints": 388
+}

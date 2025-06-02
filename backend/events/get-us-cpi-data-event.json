@@ -1,3 +1,15 @@
 {
-  "seriesIds": ["CPI_U_ALL", "CPI_U_CORE", "CPI_U_FOOD", "CPI_U_ENERGY"]
+  "seriesIds": [
+    "CPI_U_ALL",
+    "CPI_U_FOOD",
+    "CPI_U_ENERGY",
+    "CPI_U_HOUSING",
+    "CPI_U_TRANSPORTATION",
+    "CPI_U_MEDICAL",
+    "CPI_U_RECREATION",
+    "CPI_U_EDUCATION",
+    "CPI_U_APPAREL",
+    "CPI_W_ALL",
+    "CPI_U_CORE"
+  ]
 }

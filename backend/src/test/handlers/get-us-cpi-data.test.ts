@@ -67,12 +67,12 @@ describe('get-us-cpi-data handler - unit tests', () => {
         status: 'success',
         message: expect.stringContaining('1 series'),
         bucket: 'test-bucket',
-        keys: ['data/CPI_U_ALL.json'],
+        keys: ['data/us/CPI_U_ALL.json'],
       });
 
       expect(mockPutS3Object).toHaveBeenCalledWith({
         Bucket: 'test-bucket',
-        Key: 'data/CPI_U_ALL.json',
+        Key: 'data/us/CPI_U_ALL.json',
         Body: expect.stringContaining('2023-01'),
       });
     });
@@ -100,10 +100,10 @@ describe('get-us-cpi-data handler - unit tests', () => {
         status: 'success',
         message: expect.stringContaining('2 series'),
         bucket: 'test-bucket',
-        keys: ['data/CPI_U_ALL.json', 'data/CPI_U_FOOD.json'],
+        keys: ['data/us/CPI_U_ALL.json', 'data/us/CPI_U_FOOD.json'],
       });
 
-      expect(mockPutS3Object).toHaveBeenCalledTimes(2);
+      expect(mockPutS3Object).toHaveBeenCalledTimes(4); // 2 raw + 2 processed
     });
 
     it('should handle custom year ranges', async () => {
@@ -129,11 +129,10 @@ describe('get-us-cpi-data handler - unit tests', () => {
       const result = await handler({ seriesIds: ['CPI_U_ALL'] }, mockContext);
       expect(result.status).toBe('success');
 
-      expect(mockPutS3Object).toHaveBeenCalledWith({
-        Bucket: 'test-bucket',
-        Key: 'data/CPI_U_ALL.json',
-        Body: expect.stringContaining('"months":{}'),
-      });
+      // Find the processed data call (not the raw data call)
+      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      expect(processedCall).toBeDefined();
+      expect(processedCall![0].Body).toContain('"months":{}');
     });
   });
 
@@ -271,14 +270,14 @@ describe('get-us-cpi-data handler - unit tests', () => {
 
       const s3Calls = mockPutS3Object.mock.calls;
 
-      const cpiAllCall = s3Calls.find((call) => call[0].Key === 'data/CPI_U_ALL.json');
+      const cpiAllCall = s3Calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
       expect(cpiAllCall).toBeDefined();
       const cpiAllData = JSON.parse(cpiAllCall![0].Body as string);
       expect(Object.keys(cpiAllData.months)).toHaveLength(2);
       expect(cpiAllData.months['2023-01']).toBe(307.026);
       expect(cpiAllData.months['2023-02']).toBe(308.026);
 
-      const cpiFoodCall = s3Calls.find((call) => call[0].Key === 'data/CPI_U_FOOD.json');
+      const cpiFoodCall = s3Calls.find((call) => call[0].Key === 'data/us/CPI_U_FOOD.json');
       expect(cpiFoodCall).toBeDefined();
       const cpiFoodData = JSON.parse(cpiFoodCall![0].Body as string);
       expect(Object.keys(cpiFoodData.months)).toHaveLength(1);
@@ -311,8 +310,10 @@ describe('get-us-cpi-data handler - unit tests', () => {
       const result = await handler({}, mockContext);
       expect(result.status).toBe('success');
 
-      const s3Call = mockPutS3Object.mock.calls[0];
-      const uploadedData = JSON.parse(s3Call[0].Body as string);
+      // Find the processed data call (not the raw data call)
+      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      expect(processedCall).toBeDefined();
+      const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(uploadedData.months['2023-01']).toBe(307.026);
     });
   });
@@ -340,8 +341,10 @@ describe('get-us-cpi-data handler - unit tests', () => {
       const result = await handler({}, mockContext);
       expect(result.status).toBe('success');
 
-      const s3Call = mockPutS3Object.mock.calls[0];
-      const uploadedData = JSON.parse(s3Call[0].Body as string);
+      // Find the processed data call (not the raw data call)
+      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      expect(processedCall).toBeDefined();
+      const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(Object.keys(uploadedData.months)).toHaveLength(100);
     });
 
@@ -390,7 +393,7 @@ describe('get-us-cpi-data handler - unit tests', () => {
 
       expect(result1.status).toBe('success');
       expect(result2.status).toBe('success');
-      expect(mockPutS3Object).toHaveBeenCalledTimes(2);
+      expect(mockPutS3Object).toHaveBeenCalledTimes(4); // 2 raw + 2 processed
     });
   });
 

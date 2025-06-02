@@ -58,6 +58,7 @@ type CPILambdaResponse = {
   message: string;
   bucket?: string;
   keys?: string[];
+  rawKeys?: string[];
   error?: string;
   data?: MultiSeriesSimplifiedCpiData;
 };
@@ -71,10 +72,10 @@ type CPILambdaResponse = {
 function transformCpiDataForLookup(cpiData: CpiDataPoint[], seriesId: CpiSeriesId): SimplifiedCpiData {
   const months: Record<string, number> = {};
 
-  // Convert each data point to YYYY-MM format with CPI value
+  // Convert each data point to monthly format
   for (const dataPoint of cpiData) {
-    // Format date as YYYY-MM for easy lookup
     const year = dataPoint.date.getFullYear();
+    // Monthly data - format as YYYY-MM for easy lookup
     const month = (dataPoint.date.getMonth() + 1).toString().padStart(2, '0');
     const monthKey = `${year}-${month}`;
     months[monthKey] = dataPoint.value;
@@ -121,6 +122,55 @@ function transformMultiSeriesCpiData(cpiData: CpiDataPoint[], seriesIds: CpiSeri
   };
 }
 
+/**
+ * Saves raw BLS data for troubleshooting purposes
+ * @param blsData Array of raw CPI data points from BLS API
+ * @param seriesIds Array of series that were requested
+ */
+async function saveRawBlsData(
+  blsData: CpiDataPoint[],
+  seriesIds: { key: string; enumValue: CpiSeriesId }[],
+): Promise<string[]> {
+  // Group raw data by series ID for individual file storage
+  const dataBySeriesId = new Map<string, CpiDataPoint[]>();
+  for (const dataPoint of blsData) {
+    if (!dataBySeriesId.has(dataPoint.seriesId)) {
+      dataBySeriesId.set(dataPoint.seriesId, []);
+    }
+    dataBySeriesId.get(dataPoint.seriesId)!.push(dataPoint);
+  }
+
+  // Save raw data for each series
+  const rawKeys: string[] = [];
+  for (const series of seriesIds) {
+    const seriesData = dataBySeriesId.get(series.enumValue) || [];
+    const rawS3Key = `data/raw/us/${series.key}.json`;
+    rawKeys.push(rawS3Key);
+
+    const rawDataExport = {
+      lastUpdated: new Date().toISOString(),
+      source: `BLS Series ${series.enumValue}`,
+      seriesId: series.enumValue,
+      dataPoints: seriesData,
+      totalPoints: seriesData.length,
+    };
+
+    logger.info('Uploading raw CPI data to S3', {
+      bucket: WAGE_GROWTH_BUCKET,
+      key: rawS3Key,
+      dataPoints: seriesData.length,
+    });
+
+    await putS3Object({
+      Bucket: WAGE_GROWTH_BUCKET,
+      Key: rawS3Key,
+      Body: JSON.stringify(rawDataExport, null, 2), // Pretty-print for easier troubleshooting
+    });
+  }
+
+  return rawKeys;
+}
+
 export const lambdaHandler = async (event: CpiExportEvent, context: Context): Promise<CPILambdaResponse> => {
   try {
     const config = await getWageGrowthConfig();
@@ -135,6 +185,9 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
       blsApiKey,
       seriesIds.map((e) => e.enumValue),
     );
+
+    // First, save raw data for troubleshooting
+    const rawKeys = await saveRawBlsData(blsData, seriesIds);
 
     // Transform the data into simplified format
     const simplifiedData = transformMultiSeriesCpiData(
@@ -155,7 +208,7 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     const keys: string[] = [];
     for (const series of seriesIds) {
       const simplifiedSeriesData = simplifiedData.series[series.enumValue];
-      const s3Key = `data/${series.key}.json`;
+      const s3Key = `data/us/${series.key}.json`;
       keys.push(s3Key);
       logger.info('Uploading CPI data to S3', {
         bucket: WAGE_GROWTH_BUCKET,
@@ -173,6 +226,7 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
       message: `CPI Data for ${seriesIds.length} series downloaded and transformed successfully`,
       bucket: WAGE_GROWTH_BUCKET,
       keys,
+      rawKeys,
     };
   } catch (error) {
     logger.error('Error downloading CPI data', { error, event, context });
