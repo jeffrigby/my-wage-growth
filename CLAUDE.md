@@ -24,6 +24,7 @@ npm run test              # Compile + run all tests
 # Local Development
 npm run local-us-cpi-data        # Test US CPI Lambda function locally with SAM
 npm run local-canadian-cpi-data  # Test Canadian CPI Lambda function locally with SAM
+npm run local-uk-cpi-data        # Test UK CPI Lambda function locally with SAM
 
 # SAM Commands (run from backend/)
 sam build                 # Build the application
@@ -33,7 +34,7 @@ sam local invoke          # Test Lambda functions locally
 
 ## Architecture
 
-- **Backend**: AWS Lambda functions using SAM for fetching CPI data from multiple sources (US BLS, Statistics Canada)
+- **Backend**: AWS Lambda functions using SAM for fetching CPI data from multiple sources (US BLS, Statistics Canada, UK ONS)
 - **Frontend**: Planned React SPA to be hosted on S3/CloudFront
 - **Data Storage**: S3 with organized structure (`cpi/processed/` and `cpi/raw/`) for CPI data and static files
 - **Infrastructure**: CloudFormation via SAM template
@@ -53,11 +54,13 @@ sam local invoke          # Test Lambda functions locally
 backend/src/
 ├── handlers/          # Lambda function handlers
 │   ├── get-us-cpi-data.ts         # US BLS CPI data fetcher
-│   └── get-canadian-cpi-data.ts   # Canadian Stats Canada CPI data fetcher
+│   ├── get-canadian-cpi-data.ts   # Canadian Stats Canada CPI data fetcher
+│   └── get-uk-cpi-data.ts         # UK ONS CPI data fetcher
 ├── lib/              # Shared utilities
 │   ├── aws.*.ts      # AWS service integrations (S3, AppConfig)
 │   ├── bls-api.ts    # US Bureau of Labor Statistics API client
 │   ├── stats-canada-api.ts # Statistics Canada API client
+│   ├── uk-ons-api.ts # UK Office for National Statistics API client
 │   ├── cpi-shared.ts # Shared CPI processing utilities
 │   ├── logger.ts     # Structured logging
 │   └── utils.ts      # General utilities
@@ -75,6 +78,7 @@ backend/src/
 
 - **US CPI Lambda**: Operational for fetching 11 BLS CPI series with API key authentication
 - **Canadian CPI Lambda**: Operational for fetching 10 Statistics Canada CPI series (no auth required)
+- **UK CPI Lambda**: Operational for fetching UK ONS CPI series
 - **Shared utilities**: Refactored common functionality for easy international expansion
 - **S3 integration**: Organized structure with raw and processed data storage
 - **CloudFront distribution**: Configured with proper caching behaviors for `/cpi/*` paths
@@ -88,10 +92,12 @@ s3://bucket/
 ├── cpi/
 │   ├── processed/     # Frontend-ready data (via CloudFront)
 │   │   ├── us/        # US CPI data (CPI_U_ALL.json, CPI_U_FOOD.json, etc.)
-│   │   └── ca/        # Canadian CPI data (CPI_CA_ALL.json, CPI_CA_FOOD.json, etc.)
+│   │   ├── ca/        # Canadian CPI data (CPI_CA_ALL.json, CPI_CA_FOOD.json, etc.)
+│   │   └── uk/        # UK CPI data (CPI_UK_ALL.json, CPI_UK_FOOD.json, etc.)
 │   └── raw/          # Raw API responses for troubleshooting (internal only)
 │       ├── us/        # Raw BLS API responses
-│       └── ca/        # Raw Statistics Canada API responses
+│       ├── ca/        # Raw Statistics Canada API responses
+│       └── uk/        # Raw UK ONS API responses
 └── static/           # Frontend React app files (future)
 ```
 
@@ -105,7 +111,7 @@ s3://bucket/
 
 ## Adding New Countries
 
-To add UK, EU, or other countries:
+To add EU or other countries:
 
 1. **Create API client** (e.g., `uk-ons-api.ts`) following existing patterns
 2. **Create Lambda handler** using shared utilities from `cpi-shared.ts`:
@@ -123,7 +129,12 @@ To add UK, EU, or other countries:
 - Always present me a todo or implementation plan before proceeding. I would like to approve it first.
 - When working with CPI data, use the shared utilities in `cpi-shared.ts` for consistency
 - Maintain the established S3 key structure and data transformation patterns
+- **Before a major refactor, please ask if I would like to commit uncommited changes first**
 
 ## Quick CLI Tips
 
 - You can use `sam list stack-outputs --output json | jq -r '.[] | select(.OutputKey == "CloudFrontDistributionDomainName") | .OutputValue'` to get the cloudfront domain. Using this you can download or view the exported CPI data
+
+## Development Reminders
+
+- Always run `npm run lint` after changing code
