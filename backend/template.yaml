@@ -86,6 +86,37 @@ Resources:
           - "@aws-sdk/credential-provider-web-identity"
           - "@aws-sdk/token-providers"
 
+  GetUKCPIDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Get UK CPIH Data Lambda Function
+      Handler: get-uk-cpi-data.handler
+      Policies:
+        - VPCAccessPolicy: {}
+        - S3CrudPolicy:
+            BucketName: !Ref WageGrowthBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: esm
+        Minify: true
+        OutExtension:
+          - .js=.mjs
+        Target: "es2022"
+        Sourcemap: true
+        Banner:
+          - js=const require = (await import('node:module')).createRequire(import.meta.url);const __filename = (await import('node:url')).fileURLToPath(import.meta.url);const __dirname = (await import('node:path')).dirname(__filename);
+        EntryPoints:
+          - src/handlers/get-uk-cpi-data.ts
+        External:
+          - "@aws-sdk/client-sso"
+          - "@aws-sdk/client-sso-oidc"
+          - "@aws-sdk/credential-provider-ini"
+          - "@aws-sdk/credential-provider-process"
+          - "@aws-sdk/credential-provider-sso"
+          - "@aws-sdk/credential-provider-web-identity"
+          - "@aws-sdk/token-providers"
+
   # S3
   WageGrowthBucket:
     Type: AWS::S3::Bucket
@@ -270,6 +301,16 @@ Outputs:
     Value: !GetAtt GetCanadianCPIDataFunctionRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-GetCanadianCPIDataFunctionRoleArn
+  GetUKCPIDataFunction:
+    Description: GetUKCPIData Lambda Function ARN
+    Value: !GetAtt GetUKCPIDataFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetUKCPIDataFunctionArn
+  GetUKCPIDataFunctionRole:
+    Description: Implicit IAM Role created for GetUKCPIData function
+    Value: !GetAtt GetUKCPIDataFunctionRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-GetUKCPIDataFunctionRoleArn
   WageGrowthBucket:
     Description: S3 Bucket for storing CPI data and static frontend files
     Value: !Ref WageGrowthBucket

@@ -34,7 +34,8 @@
     "compile": "tsc",
     "test": "npm run compile && npm run unit",
     "local-us-cpi-data": "sam build && sam local invoke GetUSCPIDataFunction -e events/get-us-cpi-data-event.json -n config/sandbox.json | jq",
-    "local-canadian-cpi-data": "sam build && sam local invoke GetCanadianCPIDataFunction -e events/get-canadian-cpi-data-event.json -n config/sandbox.json | jq"
+    "local-canadian-cpi-data": "sam build && sam local invoke GetCanadianCPIDataFunction -e events/get-canadian-cpi-data-event.json -n config/sandbox.json | jq",
+    "local-uk-cpi-data": "sam build && sam local invoke GetUKCPIDataFunction -e events/get-uk-cpi-data-event.json -n config/sandbox.json | jq"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",

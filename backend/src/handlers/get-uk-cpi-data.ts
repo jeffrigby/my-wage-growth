@@ -5,7 +5,7 @@ import middy from '@middy/core';
 import { z } from 'zod';
 import { getLogger } from '@/lib/logger';
 import { getWageGrowthConfig } from '@/lib/aws.appconfig';
-import { fetchMultipleCpiData, CpiSeriesId } from '@/lib/bls-api';
+import { fetchAllCpiData, CpiSeriesIdUK } from '@/lib/uk-ons-api';
 import {
   CPILambdaResponse,
   SeriesMapping,
@@ -22,54 +22,45 @@ const WAGE_GROWTH_BUCKET = checkEnvVar('WAGE_GROWTH_BUCKET');
 const logger = getLogger();
 
 const cpiExportEventSchema = z.object({
-  startYear: z.number().min(1913).max(new Date().getFullYear()).optional().default(1913),
-  endYear: z.number().min(1913).max(new Date().getFullYear()).optional().default(new Date().getFullYear()),
   seriesIds: z
     .array(z.string())
     .min(1, 'At least one series ID is required')
     .max(50, 'Maximum 50 series IDs allowed')
     .optional()
-    .default(['CPI_U_ALL'])
-    .transform((keys): SeriesMapping<CpiSeriesId>[] => {
+    .default(['CPI_UK_ALL'])
+    .transform((keys): SeriesMapping<CpiSeriesIdUK>[] => {
       return keys.map((key) => {
         // Validate that the key exists in the enum
-        if (!(key in CpiSeriesId)) {
-          throw new Error(`Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`);
+        if (!(key in CpiSeriesIdUK)) {
+          throw new Error(`Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesIdUK).join(', ')}`);
         }
         // Return both the original key and the enum value
         return {
           key,
-          enumValue: CpiSeriesId[key as keyof typeof CpiSeriesId],
+          enumValue: CpiSeriesIdUK[key as keyof typeof CpiSeriesIdUK],
         };
       });
     }),
 });
 
 type CpiExportEvent = {
-  seriesIds: SeriesMapping<CpiSeriesId>[];
+  seriesIds: SeriesMapping<CpiSeriesIdUK>[];
 };
 
 export const lambdaHandler = async (event: CpiExportEvent, context: Context): Promise<CPILambdaResponse> => {
   try {
-    const config = await getWageGrowthConfig();
+    await getWageGrowthConfig(); // Ensure config is loaded
     const { seriesIds } = event;
-    const { blsApiKey } = config;
 
-    if (!blsApiKey) {
-      throw new Error('BLS API key is not set');
-    }
-
-    const blsData = await fetchMultipleCpiData(
-      blsApiKey,
-      seriesIds.map((e) => e.enumValue),
-    );
+    // Note: ONS API doesn't require authentication
+    const onsData = await fetchAllCpiData(seriesIds.map((e) => e.enumValue));
 
     // Validate raw data before processing
-    const rawValidation = validateCpiData(blsData, seriesIds);
+    const rawValidation = validateCpiData(onsData, seriesIds);
 
     // Log validation results
     if (rawValidation.warnings.length > 0) {
-      logger.warn('Data validation warnings for raw BLS data', {
+      logger.warn('Data validation warnings for raw ONS CPIH data', {
         warnings: rawValidation.warnings,
         seriesWithData: rawValidation.seriesWithData,
         totalRequested: seriesIds.length,
@@ -77,7 +68,7 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     }
 
     if (!rawValidation.isValid) {
-      logger.error('Critical data validation errors for raw BLS data', {
+      logger.error('Critical data validation errors for raw ONS CPIH data', {
         errors: rawValidation.errors,
         seriesWithoutData: rawValidation.seriesWithoutData,
       });
@@ -85,13 +76,13 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     }
 
     // Save raw data for troubleshooting
-    const rawKeys = await saveRawCpiData(blsData, seriesIds, 'us', 'BLS Series');
+    const rawKeys = await saveRawCpiData(onsData, seriesIds, 'uk', 'ONS CPIH Series');
 
     // Transform the data into simplified format
     const simplifiedData = transformMultiSeriesCpiData(
-      blsData,
+      onsData,
       seriesIds.map((e) => e.enumValue),
-      'BLS Series',
+      'ONS CPIH Series',
     );
 
     // Validate processed data before saving
@@ -99,7 +90,7 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
 
     // Log validation results for processed data
     if (processedValidation.warnings.length > 0) {
-      logger.warn('Data validation warnings for processed BLS data', {
+      logger.warn('Data validation warnings for processed ONS CPIH data', {
         warnings: processedValidation.warnings,
         seriesWithData: processedValidation.seriesWithData,
         totalRequested: seriesIds.length,
@@ -107,7 +98,7 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     }
 
     if (!processedValidation.isValid) {
-      logger.error('Critical data validation errors for processed BLS data', {
+      logger.error('Critical data validation errors for processed ONS CPIH data', {
         errors: processedValidation.errors,
         seriesWithoutData: processedValidation.seriesWithoutData,
       });
@@ -119,9 +110,9 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
       0,
     );
 
-    logger.info('BLS Data fetched and transformed', {
+    logger.info('ONS CPIH Data fetched and transformed', {
       requestedSeries: seriesIds.length,
-      originalDataPoints: blsData.length,
+      originalDataPoints: onsData.length,
       seriesProcessed: Object.keys(simplifiedData.series).length,
       totalMonthsAcrossAllSeries: totalMonths,
       validationResult: {
@@ -132,20 +123,20 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     });
 
     // Save processed data to S3
-    const keys = await saveProcessedCpiData(simplifiedData, seriesIds, 'us', 'BLS');
+    const keys = await saveProcessedCpiData(simplifiedData, seriesIds, 'uk', 'ONS CPIH');
 
     return {
       status: 'success',
-      message: `CPI Data for ${seriesIds.length} series downloaded and transformed successfully`,
+      message: `UK CPIH Data for ${seriesIds.length} series downloaded and transformed successfully`,
       bucket: WAGE_GROWTH_BUCKET,
       keys,
       rawKeys,
     };
   } catch (error) {
-    logger.error('Error downloading CPI data', { error, event, context });
+    logger.error('Error downloading UK CPIH data', { error, event, context });
     return {
       status: 'error',
-      message: 'Failed to download CPI data',
+      message: 'Failed to download UK CPIH data',
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   } finally {

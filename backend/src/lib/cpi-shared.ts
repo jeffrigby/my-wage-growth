@@ -37,9 +37,176 @@ export type CPILambdaResponse = {
   data?: MultiSeriesSimplifiedCpiData;
 };
 
-export interface SeriesMapping {
+export interface DataValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  totalDataPoints: number;
+  seriesWithData: number;
+  seriesWithoutData: string[];
+}
+
+export interface SeriesMapping<T = string> {
   key: string;
-  enumValue: string;
+  enumValue: T;
+}
+
+/**
+ * Validates CPI data before saving to S3
+ * @param cpiData - Array of CPI data points from external API
+ * @param seriesIds - Array of series mappings that were requested
+ * @param minDataPointsPerSeries - Minimum number of data points required per series (default: 12)
+ * @returns Validation result with errors and warnings
+ */
+export function validateCpiData<T>(
+  cpiData: CpiDataPoint[],
+  seriesIds: SeriesMapping<T>[],
+  minDataPointsPerSeries: number = 12,
+): DataValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const seriesWithoutData: string[] = [];
+  let seriesWithData = 0;
+
+  // Check if we have any data at all
+  if (cpiData.length === 0) {
+    errors.push('No CPI data returned from API');
+    return {
+      isValid: false,
+      errors,
+      warnings,
+      totalDataPoints: 0,
+      seriesWithData: 0,
+      seriesWithoutData: seriesIds.map((s) => String(s.enumValue)),
+    };
+  }
+
+  // Group data by series ID
+  const dataBySeriesId = new Map<string, CpiDataPoint[]>();
+  for (const dataPoint of cpiData) {
+    if (!dataBySeriesId.has(dataPoint.seriesId)) {
+      dataBySeriesId.set(dataPoint.seriesId, []);
+    }
+    dataBySeriesId.get(dataPoint.seriesId)!.push(dataPoint);
+  }
+
+  // Validate each requested series
+  for (const series of seriesIds) {
+    const seriesId = String(series.enumValue);
+    const seriesData = dataBySeriesId.get(seriesId) || [];
+
+    if (seriesData.length === 0) {
+      seriesWithoutData.push(seriesId);
+      warnings.push(`No data returned for series ${seriesId} (${series.key})`);
+    } else {
+      seriesWithData++;
+
+      if (seriesData.length < minDataPointsPerSeries) {
+        warnings.push(
+          `Series ${seriesId} (${series.key}) has only ${seriesData.length} data points, expected at least ${minDataPointsPerSeries}`,
+        );
+      }
+
+      // Check for recent data (within last 12 months)
+      const latestDate = Math.max(...seriesData.map((d) => d.date.getTime()));
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+
+      if (latestDate < twelveMonthsAgo.getTime()) {
+        warnings.push(
+          `Series ${seriesId} (${series.key}) appears to have stale data, latest date: ${new Date(latestDate).toISOString().slice(0, 7)}`,
+        );
+      }
+    }
+  }
+
+  // Critical validation: At least some series must have data
+  if (seriesWithData === 0) {
+    errors.push('No valid data found for any requested series');
+  }
+
+  // Warning if more than half the series are missing
+  if (seriesWithoutData.length > seriesIds.length / 2) {
+    warnings.push(`More than half of requested series (${seriesWithoutData.length}/${seriesIds.length}) have no data`);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    totalDataPoints: cpiData.length,
+    seriesWithData,
+    seriesWithoutData,
+  };
+}
+
+/**
+ * Validates processed CPI data before saving to S3
+ * @param simplifiedData - Transformed CPI data ready for frontend consumption
+ * @param seriesIds - Array of series mappings that were requested
+ * @param minMonthsPerSeries - Minimum number of months required per series (default: 12)
+ * @returns Validation result with errors and warnings
+ */
+export function validateProcessedCpiData<T>(
+  simplifiedData: MultiSeriesSimplifiedCpiData,
+  seriesIds: SeriesMapping<T>[],
+  minMonthsPerSeries: number = 12,
+): DataValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const seriesWithoutData: string[] = [];
+  let seriesWithData = 0;
+  let totalDataPoints = 0;
+
+  // Validate each requested series
+  for (const series of seriesIds) {
+    const seriesId = String(series.enumValue);
+    const seriesData = simplifiedData.series[seriesId];
+
+    if (!seriesData || Object.keys(seriesData.months).length === 0) {
+      seriesWithoutData.push(seriesId);
+      warnings.push(`No processed data available for series ${seriesId} (${series.key})`);
+    } else {
+      seriesWithData++;
+      const monthCount = Object.keys(seriesData.months).length;
+      totalDataPoints += monthCount;
+
+      if (monthCount < minMonthsPerSeries) {
+        warnings.push(
+          `Series ${seriesId} (${series.key}) has only ${monthCount} months of data, expected at least ${minMonthsPerSeries}`,
+        );
+      }
+
+      // Check for recent data in processed format (YYYY-MM)
+      const monthKeys = Object.keys(seriesData.months).sort();
+      const latestMonth = monthKeys[monthKeys.length - 1];
+      if (latestMonth) {
+        const latestDate = new Date(latestMonth + '-01');
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+        if (latestDate < threeMonthsAgo) {
+          warnings.push(
+            `Series ${seriesId} (${series.key}) appears to have stale processed data, latest month: ${latestMonth}`,
+          );
+        }
+      }
+    }
+  }
+
+  // Critical validation: At least some series must have processed data
+  if (seriesWithData === 0) {
+    errors.push('No valid processed data found for any requested series');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    totalDataPoints,
+    seriesWithData,
+    seriesWithoutData,
+  };
 }
 
 /**
@@ -117,9 +284,9 @@ export function transformMultiSeriesCpiData<T extends string>(
  * @param dataSourceName - Name of the data source (e.g., "BLS Series", "Statistics Canada Series")
  * @returns Array of S3 keys where raw data was stored
  */
-export async function saveRawCpiData(
+export async function saveRawCpiData<T>(
   rawData: CpiDataPoint[],
-  seriesIds: SeriesMapping[],
+  seriesIds: SeriesMapping<T>[],
   country: string,
   dataSourceName: string,
 ): Promise<string[]> {
@@ -135,14 +302,14 @@ export async function saveRawCpiData(
   // Save raw data for each series
   const rawKeys: string[] = [];
   for (const series of seriesIds) {
-    const seriesData = dataBySeriesId.get(series.enumValue) || [];
+    const seriesData = dataBySeriesId.get(String(series.enumValue)) || [];
     const rawS3Key = `cpi/raw/${country}/${series.key}.json`;
     rawKeys.push(rawS3Key);
 
     const rawDataExport = {
       lastUpdated: new Date().toISOString(),
-      source: `${dataSourceName} ${series.enumValue}`,
-      seriesId: series.enumValue,
+      source: `${dataSourceName} ${String(series.enumValue)}`,
+      seriesId: String(series.enumValue),
       dataPoints: seriesData,
       totalPoints: seriesData.length,
     };
@@ -171,16 +338,16 @@ export async function saveRawCpiData(
  * @param dataSourceName - Name of the data source for logging (e.g., "BLS", "Statistics Canada")
  * @returns Array of S3 keys where processed data was stored
  */
-export async function saveProcessedCpiData(
+export async function saveProcessedCpiData<T>(
   simplifiedData: MultiSeriesSimplifiedCpiData,
-  seriesIds: SeriesMapping[],
+  seriesIds: SeriesMapping<T>[],
   country: string,
   dataSourceName: string,
 ): Promise<string[]> {
   const keys: string[] = [];
 
   for (const series of seriesIds) {
-    const simplifiedSeriesData = simplifiedData.series[series.enumValue];
+    const simplifiedSeriesData = simplifiedData.series[String(series.enumValue)];
     const s3Key = `cpi/processed/${country}/${series.key}.json`;
     keys.push(s3Key);
 

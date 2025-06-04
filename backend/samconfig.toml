@@ -3,7 +3,7 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "wage-growth-backend"
+stack_name = "wage-growth-backend-sandbox"
 
 [default.build.parameters]
 cached = true

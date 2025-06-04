@@ -12,6 +12,8 @@ import {
   transformMultiSeriesCpiData,
   saveRawCpiData,
   saveProcessedCpiData,
+  validateCpiData,
+  validateProcessedCpiData,
 } from '@/lib/cpi-shared';
 import { checkEnvVar } from '@/lib/utils';
 
@@ -26,7 +28,7 @@ const cpiExportEventSchema = z.object({
     .max(50, 'Maximum 50 series IDs allowed')
     .optional()
     .default(['CPI_CA_ALL'])
-    .transform((keys): SeriesMapping[] => {
+    .transform((keys): SeriesMapping<CpiSeriesIdCanada>[] => {
       return keys.map((key) => {
         // Validate that the key exists in the enum
         if (!(key in CpiSeriesIdCanada)) {
@@ -42,7 +44,7 @@ const cpiExportEventSchema = z.object({
 });
 
 type CpiExportEvent = {
-  seriesIds: SeriesMapping[];
+  seriesIds: SeriesMapping<CpiSeriesIdCanada>[];
 };
 
 export const lambdaHandler = async (event: CpiExportEvent, context: Context): Promise<CPILambdaResponse> => {
@@ -51,7 +53,27 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
     const { seriesIds } = event;
 
     // Note: Statistics Canada API doesn't require authentication
-    const statsCanData = await fetchAllCpiData(seriesIds.map((e) => e.enumValue) as CpiSeriesIdCanada[]);
+    const statsCanData = await fetchAllCpiData(seriesIds.map((e) => e.enumValue));
+
+    // Validate raw data before processing
+    const rawValidation = validateCpiData(statsCanData, seriesIds);
+
+    // Log validation results
+    if (rawValidation.warnings.length > 0) {
+      logger.warn('Data validation warnings for raw Statistics Canada data', {
+        warnings: rawValidation.warnings,
+        seriesWithData: rawValidation.seriesWithData,
+        totalRequested: seriesIds.length,
+      });
+    }
+
+    if (!rawValidation.isValid) {
+      logger.error('Critical data validation errors for raw Statistics Canada data', {
+        errors: rawValidation.errors,
+        seriesWithoutData: rawValidation.seriesWithoutData,
+      });
+      throw new Error(`Data validation failed: ${rawValidation.errors.join(', ')}`);
+    }
 
     // Save raw data for troubleshooting
     const rawKeys = await saveRawCpiData(statsCanData, seriesIds, 'ca', 'Statistics Canada Series');
@@ -63,6 +85,26 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
       'Statistics Canada Series',
     );
 
+    // Validate processed data before saving
+    const processedValidation = validateProcessedCpiData(simplifiedData, seriesIds);
+
+    // Log validation results for processed data
+    if (processedValidation.warnings.length > 0) {
+      logger.warn('Data validation warnings for processed Statistics Canada data', {
+        warnings: processedValidation.warnings,
+        seriesWithData: processedValidation.seriesWithData,
+        totalRequested: seriesIds.length,
+      });
+    }
+
+    if (!processedValidation.isValid) {
+      logger.error('Critical data validation errors for processed Statistics Canada data', {
+        errors: processedValidation.errors,
+        seriesWithoutData: processedValidation.seriesWithoutData,
+      });
+      throw new Error(`Processed data validation failed: ${processedValidation.errors.join(', ')}`);
+    }
+
     const totalMonths = Object.values(simplifiedData.series).reduce(
       (total, series) => total + Object.keys(series.months).length,
       0,
@@ -73,6 +115,11 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
       originalDataPoints: statsCanData.length,
       seriesProcessed: Object.keys(simplifiedData.series).length,
       totalMonthsAcrossAllSeries: totalMonths,
+      validationResult: {
+        seriesWithData: processedValidation.seriesWithData,
+        totalDataPoints: processedValidation.totalDataPoints,
+        warningCount: processedValidation.warnings.length,
+      },
     });
 
     // Save processed data to S3
