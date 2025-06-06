@@ -130,6 +130,7 @@ To add EU or other countries:
 - When working with CPI data, use the shared utilities in `cpi-shared.ts` for consistency
 - Maintain the established S3 key structure and data transformation patterns
 - **Before a major refactor, please ask if I would like to commit uncommited changes first**
+- Keep @frontend/IMPLEMENTATION_PLAN.md updated as you make progress
 
 ## Quick CLI Tips
 
