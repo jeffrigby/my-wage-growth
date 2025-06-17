@@ -6,6 +6,7 @@ import { updateWageEntry } from '../../store/slices/wageEntriesSlice';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { DATE_FORMATS, VALIDATION } from '../../constants';
 import type { WageEntry, EntryMode } from '../../types';
+import { formatPercentage, getPercentageColorClass } from '../../utils/inflationCalculator';
 
 interface EditableTableRowProps {
   entry: WageEntry;
@@ -13,6 +14,10 @@ interface EditableTableRowProps {
   entryMode: EntryMode;
   onDelete: () => void;
   formatCurrency: (amount: number) => string;
+  todaysValue: number | null;
+  nominalChange: number | null;
+  realChange: number | null;
+  cpiDataLoaded: boolean;
 }
 
 export const EditableTableRow: React.FC<EditableTableRowProps> = ({
@@ -20,7 +25,11 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   index,
   entryMode,
   onDelete,
-  formatCurrency
+  formatCurrency,
+  todaysValue,
+  nominalChange,
+  realChange,
+  cpiDataLoaded
 }) => {
   const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState(false);
@@ -161,6 +170,9 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
           )}
         </td>
+        <td className="py-3 px-4" colSpan={2}>
+          {/* Skip today's value and % change columns when editing */}
+        </td>
         <td className="py-3 px-4">
           <input
             type="text"
@@ -208,6 +220,29 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         <span className="font-mono font-medium text-primary">
           {formatCurrency(entry.amount)}
         </span>
+      </td>
+      <td className="py-3 px-4 text-right">
+        {cpiDataLoaded ? (
+          <span className="font-mono font-medium text-accent" title="Adjusted for inflation to latest available data">
+            {todaysValue ? formatCurrency(todaysValue) : '—'}
+          </span>
+        ) : (
+          <span className="text-muted">Loading...</span>
+        )}
+      </td>
+      <td className="py-3 px-4 text-right">
+        {index > 0 && cpiDataLoaded ? (
+          <div className="text-sm">
+            <div className={`font-medium ${getPercentageColorClass(nominalChange)}`} title="Nominal wage change">
+              {formatPercentage(nominalChange)}
+            </div>
+            <div className={`text-xs ${getPercentageColorClass(realChange)}`} title="Real wage change (inflation-adjusted)">
+              real: {formatPercentage(realChange)}
+            </div>
+          </div>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
       </td>
       <td className="py-3 px-4">
         <span className="text-secondary">

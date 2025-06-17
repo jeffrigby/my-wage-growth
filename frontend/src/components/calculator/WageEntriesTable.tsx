@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { deleteWageEntry, loadSampleData } from '../../store/slices/wageEntriesSlice';
+import { fetchCPIData, selectCPIDataByCountry } from '../../store/slices/cpiSlice';
 import { ANIMATION_VARIANTS, COUNTRIES, SAMPLE_DATA, DATE_FORMATS } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
+import { adjustToLatestCPI, calculatePercentageChange } from '../../utils/inflationCalculator';
 
 export const WageEntriesTable: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -13,7 +15,15 @@ export const WageEntriesTable: React.FC = () => {
   const country = useAppSelector(state => state.wageEntries.country);
   const currency = useAppSelector(state => state.wageEntries.currency);
   const entryMode = useAppSelector(state => state.wageEntries.entryMode);
+  const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
   const countryInfo = COUNTRIES[country];
+  
+  // Fetch CPI data if not already loaded
+  useEffect(() => {
+    if (!cpiData && entries.length > 0) {
+      dispatch(fetchCPIData({ country }));
+    }
+  }, [country, cpiData, entries.length, dispatch]);
 
   const handleAddEntry = () => {
     dispatch(openWageEntryModal());
@@ -79,6 +89,12 @@ export const WageEntriesTable: React.FC = () => {
                 <th className="text-right py-3 px-4 font-medium text-muted text-sm">
                   Amount
                 </th>
+                <th className="text-right py-3 px-4 font-medium text-muted text-sm">
+                  Today's {currency === 'USD' ? 'Dollars' : currency === 'GBP' ? 'Pounds' : 'CAD'}
+                </th>
+                <th className="text-right py-3 px-4 font-medium text-muted text-sm">
+                  % Change
+                </th>
                 <th className="text-left py-3 px-4 font-medium text-muted text-sm">
                   Label
                 </th>
@@ -89,16 +105,36 @@ export const WageEntriesTable: React.FC = () => {
             </thead>
             <tbody>
               <AnimatePresence mode="popLayout">
-                {entries.map((entry, index) => (
-                  <EditableTableRow
-                    key={entry.id}
-                    entry={entry}
-                    index={index}
-                    entryMode={entryMode}
-                    onDelete={() => handleDeleteEntry(entry.id)}
-                    formatCurrency={formatCurrency}
-                  />
-                ))}
+                {entries.map((entry, index) => {
+                  // Calculate today's value and percentage changes
+                  const todaysValue = cpiData ? adjustToLatestCPI(entry.amount, new Date(entry.date), cpiData) : null;
+                  const previousEntry = index > 0 ? entries[index - 1] : null;
+                  const previousTodaysValue = previousEntry && cpiData 
+                    ? adjustToLatestCPI(previousEntry.amount, new Date(previousEntry.date), cpiData) 
+                    : null;
+                  
+                  const nominalChange = previousEntry 
+                    ? calculatePercentageChange(entry.amount, previousEntry.amount) 
+                    : null;
+                  const realChange = todaysValue && previousTodaysValue 
+                    ? calculatePercentageChange(todaysValue, previousTodaysValue) 
+                    : null;
+                  
+                  return (
+                    <EditableTableRow
+                      key={entry.id}
+                      entry={entry}
+                      index={index}
+                      entryMode={entryMode}
+                      onDelete={() => handleDeleteEntry(entry.id)}
+                      formatCurrency={formatCurrency}
+                      todaysValue={todaysValue}
+                      nominalChange={nominalChange}
+                      realChange={realChange}
+                      cpiDataLoaded={!!cpiData}
+                    />
+                  );
+                })}
               </AnimatePresence>
             </tbody>
           </table>

@@ -135,8 +135,13 @@ App
    - ✅ Modern theme toggle with Font Awesome icons
    - ✅ Basic routing structure with React Router v7
 
-### Phase 2: Data Layer (Days 3-4)
-1. **Modern Redux Setup (following RTK v2.8 patterns)**
+### Phase 2: Data Layer (Days 3-4) ✅ COMPLETED
+1. **Modern Redux Setup (following RTK v2.8 patterns)** ✅
+   - ✅ Redux store configured with typed hooks
+   - ✅ CPI data slice with async thunks
+   - ✅ Wage entries slice with full CRUD operations
+   - ✅ UI slice for theme and modal management
+   - ✅ LocalStorage persistence with listener middleware
    ```typescript
    // store/index.ts
    import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
@@ -205,10 +210,12 @@ App
    export const useAppSelector = useSelector.withTypes<RootState>();
    ```
 
-2. **CPI Data Service with RTK Query**
-   ```typescript
-   // services/cpiApi.ts
-   import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+2. **CPI Data Service** ✅
+   - ✅ Async thunks for fetching CPI data
+   - ✅ Support for multiple countries (US, CA, UK)
+   - ✅ CPI filename mapping for US inconsistency
+   - ✅ Error handling and loading states
+   - ✅ Date range calculation from CPI data
    
    export const cpiApi = createApi({
      reducerPath: 'cpiApi',
@@ -226,7 +233,7 @@ App
    export const { useGetCPIDataQuery } = cpiApi;
    ```
 
-### Phase 3: Entry Components (Days 5-6)
+### Phase 3: Entry Components (Days 5-6) ⚪ IN PROGRESS
 1. **Country & Currency Selection**
    - Dropdown with flag icons (Font Awesome)
    - Update Redux state on change
@@ -239,11 +246,14 @@ App
    - Pre-tax information tooltip
    - Validation against available CPI dates
 
-3. **Entries Management**
-   - Sortable table/list view
-   - Inline editing
-   - Delete with confirmation
-   - Minimum 2 entries validation
+3. **Entries Management** ⚪ IN PROGRESS
+   - ✅ Sortable table/list view
+   - ✅ Inline editing
+   - ✅ Delete with confirmation
+   - ✅ Minimum 2 entries validation
+   - ✅ Today's value column (inflation-adjusted)
+   - ✅ Percentage change columns (nominal & real)
+   - ⚪ Mobile responsive design for new columns
 
 ### Phase 4: Calculations & Visualization (Days 7-8)
 1. **Calculation Engine**

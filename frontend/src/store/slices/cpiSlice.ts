@@ -178,6 +178,19 @@ export const selectCPIDateRangeByCountry = (state: { cpiData: CPIDataState }, co
   return state.cpiData.dateRanges[countryKey];
 };
 
+export const selectLatestCPIDate = (state: { cpiData: CPIDataState }, country: Country) => {
+  const cpiData = selectCPIDataByCountry(state, country);
+  if (!cpiData) return null;
+  
+  const months = Object.keys(cpiData.months).sort();
+  return months.length > 0 ? months[months.length - 1] : null;
+};
+
+export const selectCPIValue = (state: { cpiData: CPIDataState }, country: Country, monthKey: string) => {
+  const cpiData = selectCPIDataByCountry(state, country);
+  return cpiData?.months[monthKey] || null;
+};
+
 export const selectCPILoading = (state: { cpiData: CPIDataState }) => state.cpiData.loading;
 export const selectCPIError = (state: { cpiData: CPIDataState }) => state.cpiData.error;
 export const selectLastFetch = (state: { cpiData: CPIDataState }) => state.cpiData.lastFetch;
