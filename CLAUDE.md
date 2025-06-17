@@ -131,6 +131,7 @@ To add EU or other countries:
 - Maintain the established S3 key structure and data transformation patterns
 - **Before a major refactor, please ask if I would like to commit uncommited changes first**
 - Keep @frontend/IMPLEMENTATION_PLAN.md updated as you make progress
+- Check official docs with websearch to ensure you're following modern best practices
 
 ## Quick CLI Tips
 
@@ -139,3 +140,7 @@ To add EU or other countries:
 ## Development Reminders
 
 - Always run `npm run lint` after changing code
+
+## Maintenance Advice
+
+- Before installing packages make sure they are currently maintained.

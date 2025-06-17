@@ -120,43 +120,80 @@ App
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Days 1-2)
-1. **Project Setup**
-   - Install additional dependencies:
-     ```bash
-     npm install @fortawesome/fontawesome-free recharts date-fns pako redux-persist framer-motion
-     npm install -D @types/pako
-     ```
-   - Configure Tailwind v4.1 with dark mode
-   - Set up Redux Toolkit with persistence
-   - Create TypeScript interfaces
-   - Implement theme provider with system detection
+### Phase 1: Foundation (Days 1-2) ✅ COMPLETED
+1. **Project Setup** ✅
+   - ✅ Installed dependencies (removed redux-persist, using modern RTK persistence)
+   - ✅ Configured Tailwind v4.1 with dark mode and custom design system
+   - ✅ Set up Redux Toolkit with createListenerMiddleware for persistence
+   - ✅ Created comprehensive TypeScript interfaces and constants
+   - ✅ Implemented theme provider with system detection
 
-2. **Core Layout**
-   - Header with navigation
-   - Footer with data attribution
-   - Responsive container components
-   - Theme toggle with Font Awesome icons
+2. **Core Layout** ✅
+   - ✅ Header with navigation and theme toggle
+   - ✅ Footer with data attribution and CPI source info
+   - ✅ Responsive container components with glass-morphism design
+   - ✅ Modern theme toggle with Font Awesome icons
+   - ✅ Basic routing structure with React Router v7
 
 ### Phase 2: Data Layer (Days 3-4)
 1. **Modern Redux Setup (following RTK v2.8 patterns)**
    ```typescript
    // store/index.ts
-   import { configureStore } from '@reduxjs/toolkit';
-   import { persistStore, persistReducer } from 'redux-persist';
-   import storage from 'redux-persist/lib/storage';
+   import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
+   import { useDispatch, useSelector } from 'react-redux';
+   import { cpiSlice } from './slices/cpiSlice';
+   import { wageEntriesSlice } from './slices/wageEntriesSlice';
+   import { uiSlice } from './slices/uiSlice';
    
-   const persistConfig = {
-     key: 'wage-growth',
-     storage,
-     whitelist: ['wageEntries', 'ui']
+   // Load initial state from localStorage
+   const loadState = () => {
+     try {
+       const serializedState = localStorage.getItem('wage-growth-state');
+       return serializedState ? JSON.parse(serializedState) : undefined;
+     } catch (err) {
+       console.warn('Failed to load state from localStorage:', err);
+       return undefined;
+     }
    };
+   
+   // Save state to localStorage
+   const saveState = (state: RootState) => {
+     try {
+       const stateToSave = {
+         wageEntries: state.wageEntries,
+         ui: { theme: state.ui.theme } // Only persist theme, not temporary UI state
+       };
+       localStorage.setItem('wage-growth-state', JSON.stringify(stateToSave));
+     } catch (err) {
+       console.warn('Failed to save state to localStorage:', err);
+     }
+   };
+   
+   // Create listener middleware for localStorage persistence
+   const listenerMiddleware = createListenerMiddleware();
    
    export const store = configureStore({
      reducer: {
        cpiData: cpiSlice.reducer,
-       wageEntries: persistReducer(persistConfig, wageEntriesSlice.reducer),
+       wageEntries: wageEntriesSlice.reducer,
        ui: uiSlice.reducer
+     },
+     preloadedState: loadState(),
+     middleware: (getDefaultMiddleware) =>
+       getDefaultMiddleware().prepend(listenerMiddleware.middleware)
+   });
+   
+   // Set up persistence listener
+   listenerMiddleware.startListening({
+     predicate: (action, currentState, previousState) => {
+       // Only save when wageEntries or theme changes
+       return (
+         currentState.wageEntries !== previousState?.wageEntries ||
+         currentState.ui.theme !== previousState?.ui.theme
+       );
+     },
+     effect: (action, listenerApi) => {
+       saveState(listenerApi.getState() as RootState);
      }
    });
    
