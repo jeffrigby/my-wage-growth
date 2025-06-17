@@ -14,7 +14,10 @@ const initialState: WageEntriesState = {
   entries: [],
   country: 'US',
   currency: 'USD',
-  entryMode: 'annual'
+  entryMode: 'annual',
+  tableSettings: {
+    cpiCalculationType: 'annual-average'
+  }
 };
 
 const wageEntriesSlice = createSlice({
@@ -93,11 +96,14 @@ const wageEntriesSlice = createSlice({
     },
     
     loadSampleData: (state, action: PayloadAction<SampleEntry[]>) => {
+      // Sample data is designed for annual entries, so ensure we're in annual mode
+      state.entryMode = 'annual';
+      
       state.entries = action.payload.map(entry => ({
         id: uuidv4(),
         date: entry.date.toISOString(),
         amount: entry.amount,
-        entryType: state.entryMode === 'annual' ? 'annual-simple' : 'point-in-time',
+        entryType: 'annual-simple',
         label: entry.label,
         createdAt: new Date().toISOString()
       }));
@@ -143,6 +149,14 @@ const wageEntriesSlice = createSlice({
       
       state.entries = [...state.entries, ...validEntries];
       state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    },
+    
+    // Table settings
+    updateTableSettings: (state, action: PayloadAction<Partial<WageEntriesState['tableSettings']>>) => {
+      state.tableSettings = {
+        ...state.tableSettings,
+        ...action.payload
+      };
     }
   }
 });
@@ -157,7 +171,8 @@ export const {
   clearAllEntries,
   duplicateEntry,
   updateAllEntryTypes,
-  importEntries
+  importEntries,
+  updateTableSettings
 } = wageEntriesSlice.actions;
 
 // Selectors

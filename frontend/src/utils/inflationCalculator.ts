@@ -1,12 +1,39 @@
-import type { CPIData } from '../types';
+import type { CPIData, TableSettings } from '../types';
+
+/**
+ * Calculate the annual average CPI for a given year
+ */
+export const getAnnualAverageCPI = (year: number, cpiData: CPIData): number | null => {
+  const yearMonths = [];
+  
+  // Collect all available months for the given year
+  for (let month = 1; month <= 12; month++) {
+    const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
+    if (cpiData.months[monthKey]) {
+      yearMonths.push(cpiData.months[monthKey]);
+    }
+  }
+  
+  // Need at least one month to calculate
+  if (yearMonths.length === 0) return null;
+  
+  // Calculate average
+  const sum = yearMonths.reduce((acc, val) => acc + val, 0);
+  return sum / yearMonths.length;
+};
 
 /**
  * Get CPI value for a specific date
- * For annual entries, uses the CPI value for January of that year
+ * For annual entries, uses either annual average or December CPI based on settings
  * For paycheck entries, uses the exact month or interpolates if needed
  * For future dates, uses the latest available CPI data
  */
-export const getCPIForDate = (date: Date, cpiData: CPIData): number | null => {
+export const getCPIForDate = (
+  date: Date, 
+  cpiData: CPIData,
+  isAnnualEntry: boolean = false,
+  calculationType: TableSettings['cpiCalculationType'] = 'annual-average'
+): number | null => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1; // JavaScript months are 0-based
   const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
@@ -16,7 +43,32 @@ export const getCPIForDate = (date: Date, cpiData: CPIData): number | null => {
   if (availableMonths.length === 0) return null;
   
   const latestMonth = availableMonths[availableMonths.length - 1];
+  const latestYear = parseInt(latestMonth.split('-')[0]);
   
+  // Handle annual entries with calculation type
+  if (isAnnualEntry) {
+    // For future years, use the latest available data
+    if (year > latestYear) {
+      return cpiData.months[latestMonth];
+    }
+    
+    if (calculationType === 'annual-average') {
+      return getAnnualAverageCPI(year, cpiData);
+    } else {
+      // December calculation
+      const decemberKey = `${year}-12`;
+      if (cpiData.months[decemberKey]) {
+        return cpiData.months[decemberKey];
+      }
+      // Fall back to latest month of that year if December not available
+      const yearMonths = availableMonths.filter(m => m.startsWith(`${year}-`));
+      if (yearMonths.length > 0) {
+        return cpiData.months[yearMonths[yearMonths.length - 1]];
+      }
+    }
+  }
+  
+  // For non-annual entries, continue with existing logic
   // If the requested date is in the future, use the latest available CPI
   if (monthKey > latestMonth) {
     return cpiData.months[latestMonth];
@@ -91,10 +143,12 @@ export const adjustForInflation = (
   amount: number,
   fromDate: Date,
   toDate: Date,
-  cpiData: CPIData
+  cpiData: CPIData,
+  isAnnualEntry: boolean = false,
+  calculationType: TableSettings['cpiCalculationType'] = 'annual-average'
 ): number | null => {
-  const fromCPI = getCPIForDate(fromDate, cpiData);
-  const toCPI = getCPIForDate(toDate, cpiData);
+  const fromCPI = getCPIForDate(fromDate, cpiData, isAnnualEntry, calculationType);
+  const toCPI = getCPIForDate(toDate, cpiData, false, calculationType); // toDate is never annual
   
   if (!fromCPI || !toCPI || fromCPI === 0) {
     return null;
@@ -109,12 +163,14 @@ export const adjustForInflation = (
 export const adjustToLatestCPI = (
   amount: number,
   fromDate: Date,
-  cpiData: CPIData
+  cpiData: CPIData,
+  isAnnualEntry: boolean = false,
+  calculationType: TableSettings['cpiCalculationType'] = 'annual-average'
 ): number | null => {
   const latest = getLatestCPI(cpiData);
   if (!latest) return null;
   
-  const fromCPI = getCPIForDate(fromDate, cpiData);
+  const fromCPI = getCPIForDate(fromDate, cpiData, isAnnualEntry, calculationType);
   if (!fromCPI || fromCPI === 0) return null;
   
   return amount * (latest.value / fromCPI);

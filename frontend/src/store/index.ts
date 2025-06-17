@@ -13,7 +13,12 @@ const loadState = () => {
     
     const parsedState = JSON.parse(serializedState);
     
-    // No need to convert dates - we're keeping them as strings for Redux serialization
+    // Migration: Add tableSettings if missing from old localStorage data
+    if (parsedState.wageEntries && !parsedState.wageEntries.tableSettings) {
+      parsedState.wageEntries.tableSettings = {
+        cpiCalculationType: 'annual-average'
+      };
+    }
     
     return parsedState;
   } catch (err) {

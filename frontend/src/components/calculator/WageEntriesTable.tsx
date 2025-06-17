@@ -9,6 +9,7 @@ import { fetchCPIData, selectCPIDataByCountry } from '../../store/slices/cpiSlic
 import { ANIMATION_VARIANTS, COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { TableSettings } from './TableSettings';
 import { adjustToLatestCPI, calculatePercentageChange } from '../../utils/inflationCalculator';
 
 export const WageEntriesTable: React.FC = () => {
@@ -17,9 +18,11 @@ export const WageEntriesTable: React.FC = () => {
   const country = useAppSelector(state => state.wageEntries.country);
   const currency = useAppSelector(state => state.wageEntries.currency);
   const entryMode = useAppSelector(state => state.wageEntries.entryMode);
+  const calculationType = useAppSelector(state => state.wageEntries.tableSettings.cpiCalculationType);
   const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
   const countryInfo = COUNTRIES[country];
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // Fetch CPI data if not already loaded
   useEffect(() => {
@@ -71,24 +74,38 @@ export const WageEntriesTable: React.FC = () => {
     <div className="glass-card p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold flex items-center space-x-2">
-          <i className="fas fa-table text-primary"></i>
-          <span>Wage Entries</span>
-          <span className="text-sm font-normal text-muted">
-            ({entries.length} {entries.length === 1 ? 'entry' : 'entries'})
-          </span>
-        </h2>
+        <div>
+          <h2 className="text-2xl font-semibold flex items-center space-x-2">
+            <i className="fas fa-table text-primary"></i>
+            <span>Wage Entries</span>
+            <span className="text-sm font-normal text-muted">
+              ({entries.length} {entries.length === 1 ? 'entry' : 'entries'})
+            </span>
+          </h2>
+        </div>
         
         <div className="flex items-center space-x-3">
           {entries.length > 0 && (
-            <button 
-              onClick={() => setShowClearConfirm(true)}
-              className="btn-ghost px-3 py-2 rounded-lg flex items-center space-x-2 text-sm"
-              title="Clear all entries"
-            >
-              <i className="fas fa-trash-alt"></i>
-              <span className="hidden sm:inline">Clear All</span>
-            </button>
+            <>
+              {entryMode === 'annual' && (
+                <button 
+                  onClick={() => setShowSettings(true)}
+                  className="btn-ghost px-3 py-2 rounded-lg flex items-center space-x-2 text-sm"
+                  title="Table settings"
+                >
+                  <i className="fas fa-cog"></i>
+                  <span className="hidden sm:inline">Settings</span>
+                </button>
+              )}
+              <button 
+                onClick={() => setShowClearConfirm(true)}
+                className="btn-ghost px-3 py-2 rounded-lg flex items-center space-x-2 text-sm"
+                title="Clear all entries"
+              >
+                <i className="fas fa-trash-alt"></i>
+                <span className="hidden sm:inline">Clear All</span>
+              </button>
+            </>
           )}
           <button 
             onClick={handleAddEntry}
@@ -129,11 +146,17 @@ export const WageEntriesTable: React.FC = () => {
             <tbody>
               <AnimatePresence mode="popLayout">
                 {entries.map((entry, index) => {
+                  // Determine if this is an annual entry
+                  const isAnnualEntry = entry.entryType.includes('annual');
+                  
                   // Calculate today's value and percentage changes
-                  const todaysValue = cpiData ? adjustToLatestCPI(entry.amount, new Date(entry.date), cpiData) : null;
+                  const todaysValue = cpiData 
+                    ? adjustToLatestCPI(entry.amount, new Date(entry.date), cpiData, isAnnualEntry, calculationType) 
+                    : null;
                   const previousEntry = index > 0 ? entries[index - 1] : null;
+                  const previousIsAnnual = previousEntry?.entryType.includes('annual') || false;
                   const previousTodaysValue = previousEntry && cpiData 
-                    ? adjustToLatestCPI(previousEntry.amount, new Date(previousEntry.date), cpiData) 
+                    ? adjustToLatestCPI(previousEntry.amount, new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType) 
                     : null;
                   
                   const nominalChange = previousEntry 
@@ -212,13 +235,22 @@ export const WageEntriesTable: React.FC = () => {
         </div>
       )}
 
-      {/* Currency info */}
-      <div className="mt-6 pt-4 border-t border-border">
+      {/* Currency and CPI info */}
+      <div className="mt-6 pt-4 border-t border-border space-y-1">
         <p className="text-xs text-muted">
           <i className="fas fa-info-circle mr-1"></i>
           All amounts are in {countryInfo.currency} ({countryInfo.currencySymbol}). 
           Data source: {countryInfo.cpiSource}
         </p>
+        {entries.length > 0 && (
+          <p className="text-xs text-muted">
+            <i className="fas fa-calculator mr-1"></i>
+            {entryMode === 'annual' 
+              ? `Using ${calculationType === 'annual-average' ? 'annual average' : 'December'} CPI values for inflation calculations`
+              : 'Using exact monthly CPI values for inflation calculations'
+            }
+          </p>
+        )}
       </div>
       
       {/* Clear All Confirmation Dialog */}
@@ -230,6 +262,12 @@ export const WageEntriesTable: React.FC = () => {
         message="Are you sure you want to delete all wage entries? This action cannot be undone."
         confirmText="Clear All"
         cancelText="Cancel"
+      />
+      
+      {/* Table Settings Modal */}
+      <TableSettings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </div>
   );

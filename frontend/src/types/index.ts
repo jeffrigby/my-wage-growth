@@ -45,12 +45,18 @@ export interface WageEntry {
   createdAt: string; // ISO date string for Redux serialization
 }
 
+// Table settings
+export interface TableSettings {
+  cpiCalculationType: 'annual-average' | 'december';
+}
+
 // Wage entries state
 export interface WageEntriesState {
   entries: WageEntry[];
   country: Country;
   currency: Currency;
   entryMode: EntryMode;
+  tableSettings: TableSettings;
 }
 
 // UI state

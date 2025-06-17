@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIMATION_VARIANTS } from '../../constants';
 import type { ModalProps } from '../../types';
@@ -35,13 +36,13 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen]);
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -51,21 +52,22 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[10000] overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
-              className={`glass-card w-full max-w-lg max-h-[90vh] overflow-hidden ${className}`}
-              initial={ANIMATION_VARIANTS.SCALE_IN.initial}
-              animate={ANIMATION_VARIANTS.SCALE_IN.animate}
-              exit={ANIMATION_VARIANTS.SCALE_IN.exit}
-              onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={title ? 'modal-title' : undefined}
-            >
+            <div className="flex min-h-full items-center justify-center p-4">
+              <motion.div
+                className={`glass-card w-full max-w-lg ${className}`}
+                initial={ANIMATION_VARIANTS.SCALE_IN.initial}
+                animate={ANIMATION_VARIANTS.SCALE_IN.animate}
+                exit={ANIMATION_VARIANTS.SCALE_IN.exit}
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={title ? 'modal-title' : undefined}
+              >
               {/* Header */}
               {title && (
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -82,14 +84,22 @@ export const Modal: React.FC<ModalProps> = ({
                 </div>
               )}
 
-              {/* Body */}
-              <div className="overflow-y-auto max-h-[calc(90vh-8rem)]">
-                {children}
-              </div>
-            </motion.div>
+                {/* Body */}
+                <div className="overflow-y-auto">
+                  {children}
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
   );
+
+  // Use portal to render at document body level
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  
+  return modalContent;
 };
