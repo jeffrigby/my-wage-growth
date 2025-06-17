@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
-import { deleteWageEntry, loadSampleData } from '../../store/slices/wageEntriesSlice';
+import { deleteWageEntry, loadSampleData, clearAllEntries } from '../../store/slices/wageEntriesSlice';
 import { fetchCPIData, selectCPIDataByCountry } from '../../store/slices/cpiSlice';
-import { ANIMATION_VARIANTS, COUNTRIES, SAMPLE_DATA, DATE_FORMATS } from '../../constants';
+import { ANIMATION_VARIANTS, COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { adjustToLatestCPI, calculatePercentageChange } from '../../utils/inflationCalculator';
 
 export const WageEntriesTable: React.FC = () => {
@@ -17,6 +19,7 @@ export const WageEntriesTable: React.FC = () => {
   const entryMode = useAppSelector(state => state.wageEntries.entryMode);
   const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
   const countryInfo = COUNTRIES[country];
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   
   // Fetch CPI data if not already loaded
   useEffect(() => {
@@ -32,6 +35,7 @@ export const WageEntriesTable: React.FC = () => {
   const handleLoadSampleData = () => {
     const sampleData = [...SAMPLE_DATA[country]]; // Create mutable copy
     dispatch(loadSampleData(sampleData));
+    toast.success(SUCCESS_MESSAGES.SAMPLE_DATA_LOADED);
   };
 
   const handleDeleteEntry = (id: string) => {
@@ -44,7 +48,14 @@ export const WageEntriesTable: React.FC = () => {
     
     if (confirmed) {
       dispatch(deleteWageEntry(id));
+      toast.success(SUCCESS_MESSAGES.ENTRY_DELETED);
     }
+  };
+  
+  const handleClearAll = () => {
+    dispatch(clearAllEntries());
+    setShowClearConfirm(false);
+    toast.success(SUCCESS_MESSAGES.ALL_ENTRIES_CLEARED);
   };
 
   const formatCurrency = (amount: number) => {
@@ -68,13 +79,25 @@ export const WageEntriesTable: React.FC = () => {
           </span>
         </h2>
         
-        <button 
-          onClick={handleAddEntry}
-          className="btn-primary px-4 py-2 rounded-lg flex items-center space-x-2"
-        >
-          <i className="fas fa-plus"></i>
-          <span>Add Entry</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          {entries.length > 0 && (
+            <button 
+              onClick={() => setShowClearConfirm(true)}
+              className="btn-ghost px-3 py-2 rounded-lg flex items-center space-x-2 text-sm"
+              title="Clear all entries"
+            >
+              <i className="fas fa-trash-alt"></i>
+              <span className="hidden sm:inline">Clear All</span>
+            </button>
+          )}
+          <button 
+            onClick={handleAddEntry}
+            className="btn-primary px-4 py-2 rounded-lg flex items-center space-x-2"
+          >
+            <i className="fas fa-plus"></i>
+            <span>Add Entry</span>
+          </button>
+        </div>
       </div>
 
       {/* Table or Empty State */}
@@ -83,22 +106,22 @@ export const WageEntriesTable: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-medium text-muted text-sm">
+                <th className="text-left py-3 px-2 sm:px-4 font-medium text-muted text-sm">
                   Date
                 </th>
-                <th className="text-right py-3 px-4 font-medium text-muted text-sm">
-                  Amount
-                </th>
-                <th className="text-right py-3 px-4 font-medium text-muted text-sm">
-                  Today's {currency === 'USD' ? 'Dollars' : currency === 'GBP' ? 'Pounds' : 'CAD'}
-                </th>
-                <th className="text-right py-3 px-4 font-medium text-muted text-sm">
-                  % Change
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-muted text-sm">
+                <th className="text-left py-3 px-2 sm:px-4 font-medium text-muted text-sm">
                   Label
                 </th>
-                <th className="text-center py-3 px-4 font-medium text-muted text-sm">
+                <th className="text-right py-3 px-2 sm:px-4 font-medium text-muted text-sm">
+                  Amount
+                </th>
+                <th className="text-right py-3 px-2 sm:px-4 font-medium text-muted text-sm hidden sm:table-cell">
+                  Today's {currency === 'USD' ? 'Dollars' : currency === 'GBP' ? 'Pounds' : 'CAD'}
+                </th>
+                <th className="text-right py-3 px-2 sm:px-4 font-medium text-muted text-sm">
+                  % Change
+                </th>
+                <th className="text-center py-3 px-2 sm:px-4 font-medium text-muted text-sm">
                   Actions
                 </th>
               </tr>
@@ -197,6 +220,17 @@ export const WageEntriesTable: React.FC = () => {
           Data source: {countryInfo.cpiSource}
         </p>
       </div>
+      
+      {/* Clear All Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showClearConfirm}
+        onConfirm={handleClearAll}
+        onCancel={() => setShowClearConfirm(false)}
+        title="Clear All Entries"
+        message="Are you sure you want to delete all wage entries? This action cannot be undone."
+        confirmText="Clear All"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

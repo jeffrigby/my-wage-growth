@@ -138,7 +138,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   if (isEditing) {
     return (
       <tr className="border-b border-border">
-        <td className="py-3 px-4">
+        <td className="py-3 px-2 sm:px-4">
           <input
             ref={dateInputRef}
             type={entryMode === 'annual' ? 'number' : 'date'}
@@ -154,26 +154,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             <p className="text-xs text-red-500 mt-1">{errors.date}</p>
           )}
         </td>
-        <td className="py-3 px-4">
-          <input
-            type="number"
-            value={editedAmount}
-            onChange={(e) => setEditedAmount(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={`w-full px-2 py-1 rounded border text-right ${
-              errors.amount ? 'border-red-500' : 'border-border'
-            } bg-background text-primary`}
-            placeholder="0"
-            step="1000"
-          />
-          {errors.amount && (
-            <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
-          )}
-        </td>
-        <td className="py-3 px-4" colSpan={2}>
-          {/* Skip today's value and % change columns when editing */}
-        </td>
-        <td className="py-3 px-4">
+        <td className="py-3 px-2 sm:px-4">
           <input
             type="text"
             value={editedLabel}
@@ -183,7 +164,29 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             placeholder="Optional label"
           />
         </td>
-        <td className="py-3 px-4">
+        <td className="py-3 px-2 sm:px-4">
+          <input
+            type="number"
+            value={editedAmount}
+            onChange={(e) => setEditedAmount(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className={`w-full px-2 py-1 rounded border text-right ${
+              errors.amount ? 'border-red-500' : 'border-border'
+            } bg-background text-primary`}
+            placeholder="0"
+            step="0.01"
+          />
+          {errors.amount && (
+            <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
+          )}
+        </td>
+        <td className="py-3 px-2 sm:px-4 hidden sm:table-cell">
+          {/* Skip today's value column when editing */}
+        </td>
+        <td className="py-3 px-2 sm:px-4">
+          {/* Skip % change column when editing */}
+        </td>
+        <td className="py-3 px-2 sm:px-4">
           <div className="flex items-center justify-center space-x-2">
             <button
               onClick={handleSave}
@@ -213,24 +216,29 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
     >
-      <td className="py-3 px-4">
+      <td className="py-3 px-2 sm:px-4">
         <span className="font-medium">{displayDate}</span>
       </td>
-      <td className="py-3 px-4 text-right">
-        <span className="font-mono font-medium text-primary">
+      <td className="py-3 px-2 sm:px-4">
+        <span className="text-secondary">
+          {entry.label || <span className="text-muted italic">—</span>}
+        </span>
+      </td>
+      <td className="py-3 px-2 sm:px-4 text-right">
+        <span className="font-mono font-medium">
           {formatCurrency(entry.amount)}
         </span>
       </td>
-      <td className="py-3 px-4 text-right">
+      <td className="py-3 px-2 sm:px-4 text-right hidden sm:table-cell">
         {cpiDataLoaded ? (
-          <span className="font-mono font-medium text-accent" title="Adjusted for inflation to latest available data">
+          <span className="font-mono text-accent" title="Adjusted for inflation to latest available data">
             {todaysValue ? formatCurrency(todaysValue) : '—'}
           </span>
         ) : (
-          <span className="text-muted">Loading...</span>
+          <span className="text-muted text-sm">...</span>
         )}
       </td>
-      <td className="py-3 px-4 text-right">
+      <td className="py-3 px-2 sm:px-4 text-right">
         {index > 0 && cpiDataLoaded ? (
           <div className="text-sm">
             <div className={`font-medium ${getPercentageColorClass(nominalChange)}`} title="Nominal wage change">
@@ -244,12 +252,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           <span className="text-muted">—</span>
         )}
       </td>
-      <td className="py-3 px-4">
-        <span className="text-secondary">
-          {entry.label || <span className="text-muted italic">No label</span>}
-        </span>
-      </td>
-      <td className="py-3 px-4">
+      <td className="py-3 px-2 sm:px-4">
         <div className="flex items-center justify-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={handleEditInModal}

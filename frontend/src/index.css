@@ -171,6 +171,20 @@ body {
   box-shadow: 0 0 10px rgba(0, 255, 133, 0.2);
 }
 
+.btn-danger {
+  background: #ef4444;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
 /* Neon effects */
 .neon-glow {
   box-shadow: 0 0 20px currentColor;

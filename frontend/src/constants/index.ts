@@ -196,6 +196,7 @@ export const SUCCESS_MESSAGES = {
   ENTRY_ADDED: 'Wage entry added successfully.',
   ENTRY_UPDATED: 'Wage entry updated successfully.',
   ENTRY_DELETED: 'Wage entry deleted successfully.',
+  ALL_ENTRIES_CLEARED: 'All wage entries have been cleared.',
   DATA_SHARED: 'Share link copied to clipboard.',
   SAMPLE_DATA_LOADED: 'Sample data loaded. You can now see how the calculator works!',
   THEME_CHANGED: 'Theme updated successfully.'

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { addWageEntry, updateWageEntry, setEntryMode } from '../../store/slices/wageEntriesSlice';
 import { closeWageEntryModal } from '../../store/slices/uiSlice';
 import { selectCPIDateRangeByCountry } from '../../store/slices/cpiSlice';
 import { Modal } from '../ui/Modal';
-import { COUNTRIES, ENTRY_MODE_OPTIONS, VALIDATION, ERROR_MESSAGES, DATE_FORMATS } from '../../constants';
+import { COUNTRIES, ENTRY_MODE_OPTIONS, VALIDATION, ERROR_MESSAGES, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
 import type { EntryMode } from '../../types';
 
 export const WageEntryModal: React.FC = () => {
@@ -20,6 +21,10 @@ export const WageEntryModal: React.FC = () => {
   
   const countryInfo = COUNTRIES[country];
   const editingEntry = editingId ? entries.find(e => e.id === editingId) : null;
+  
+  // Check if entry mode is locked due to existing entries
+  const hasExistingEntries = entries.length > 0;
+  const entryModeLocked = hasExistingEntries && !editingEntry;
   
   // Form state
   const [entryMode, setLocalEntryMode] = useState<EntryMode>(globalEntryMode);
@@ -67,25 +72,25 @@ export const WageEntryModal: React.FC = () => {
         ? parseInt(date) 
         : new Date(date).getFullYear();
         
-      // Check against CPI data availability
+      // Check against CPI data availability - only check minimum
       if (dateRange) {
         if (year < dateRange.minYear) {
           newErrors.date = `CPI data only available from ${dateRange.minYear}`;
-        } else if (year > dateRange.maxYear) {
-          newErrors.date = `CPI data only available through ${dateRange.maxYear}`;
         }
       } else {
         // Fallback to hardcoded validation if CPI data not loaded
-        if (isNaN(year) || year < VALIDATION.MIN_YEAR || year > VALIDATION.MAX_YEAR) {
-          newErrors.date = `Year must be between ${VALIDATION.MIN_YEAR} and ${VALIDATION.MAX_YEAR}`;
+        if (isNaN(year) || year < VALIDATION.MIN_YEAR) {
+          newErrors.date = `Year must be ${VALIDATION.MIN_YEAR} or later`;
         }
       }
       
-      // For paycheck mode, validate specific month availability
+      // For paycheck mode, validate minimum date
       if (entryMode === 'paycheck' && dateRange && !newErrors.date) {
         const dateStr = format(new Date(date), 'yyyy-MM');
-        if (dateStr < dateRange.minDate || dateStr > dateRange.maxDate) {
-          newErrors.date = `CPI data available from ${format(new Date(dateRange.minDate + '-01'), 'MMM yyyy')} to ${format(new Date(dateRange.maxDate + '-01'), 'MMM yyyy')}`;
+        if (dateStr < dateRange.minDate) {
+          const [year, month] = dateRange.minDate.split('-');
+          const minDateFormatted = format(new Date(parseInt(year), parseInt(month) - 1), 'MMM yyyy');
+          newErrors.date = `CPI data available from ${minDateFormatted}`;
         }
       }
     }
@@ -133,8 +138,10 @@ export const WageEntryModal: React.FC = () => {
         id: editingEntry.id,
         updates: entryData
       }));
+      toast.success(SUCCESS_MESSAGES.ENTRY_UPDATED);
     } else {
       dispatch(addWageEntry(entryData));
+      toast.success(SUCCESS_MESSAGES.ENTRY_ADDED);
     }
     
     handleClose();
@@ -156,17 +163,30 @@ export const WageEntryModal: React.FC = () => {
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Entry Mode Selector */}
         <div className="space-y-3">
-          <label className="text-sm font-medium text-secondary">Entry Type</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-secondary">Entry Type</label>
+            {entryModeLocked && (
+              <span className="text-xs text-muted flex items-center">
+                <i className="fas fa-lock mr-1"></i>
+                Locked to match existing entries
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {ENTRY_MODE_OPTIONS.map(option => (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => handleEntryModeChange(option.value as EntryMode)}
+                onClick={() => !entryModeLocked && handleEntryModeChange(option.value as EntryMode)}
+                disabled={entryModeLocked}
                 className={`p-3 rounded-lg border-2 transition-all ${
+                  entryModeLocked ? 'opacity-60 cursor-not-allowed' : ''
+                } ${
                   entryMode === option.value
                     ? 'border-primary bg-surface-elevated ring-2 ring-primary ring-offset-2 ring-offset-background'
-                    : 'border-border hover:border-primary/50 hover:bg-surface-hover bg-surface'
+                    : entryModeLocked 
+                      ? 'border-border bg-surface'
+                      : 'border-border hover:border-primary/50 hover:bg-surface-hover bg-surface'
                 }`}
               >
                 <i className={`fas ${option.icon} text-lg mb-1 ${
@@ -181,6 +201,18 @@ export const WageEntryModal: React.FC = () => {
               </button>
             ))}
           </div>
+          {entryModeLocked && (
+            <div className="mt-2 p-3 bg-accent/10 border border-accent/20 rounded-lg">
+              <p className="text-xs text-accent flex items-start">
+                <i className="fas fa-info-circle mr-1 mt-0.5"></i>
+                <span>
+                  Entry type is set to <strong>{entryMode === 'annual' ? 'Annual' : 'Paycheck'}</strong> mode
+                  to maintain consistency with your existing data. To switch modes, 
+                  clear all entries first using the "Clear All" button in the wage entries table.
+                </span>
+              </p>
+            </div>
+          )}
         </div>
         
         {/* Date Input */}
@@ -201,18 +233,40 @@ export const WageEntryModal: React.FC = () => {
               ? (dateRange?.minYear || VALIDATION.MIN_YEAR)
               : dateRange ? `${dateRange.minDate}-01` : undefined
             }
-            max={entryMode === 'annual' 
-              ? (dateRange?.maxYear || VALIDATION.MAX_YEAR)
-              : dateRange ? `${dateRange.maxDate}-01` : undefined
-            }
           />
           {errors.date && (
             <p className="text-sm text-red-500">{errors.date}</p>
           )}
           {dateRange && !errors.date && (
-            <p className="text-xs text-muted">
-              CPI data available: {dateRange.minYear} - {dateRange.maxYear}
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs text-muted">
+                Latest CPI data: {(() => {
+                  const [year, month] = dateRange.maxDate.split('-');
+                  return format(new Date(parseInt(year), parseInt(month) - 1), 'MMMM yyyy');
+                })()}
+              </p>
+              {date && (
+                (() => {
+                  const selectedYear = entryMode === 'annual' 
+                    ? parseInt(date) 
+                    : new Date(date).getFullYear();
+                  const selectedMonth = entryMode === 'paycheck' 
+                    ? format(new Date(date), 'yyyy-MM')
+                    : null;
+                  
+                  if (selectedYear > dateRange.maxYear || 
+                      (selectedMonth && selectedMonth > dateRange.maxDate)) {
+                    return (
+                      <p className="text-xs text-accent flex items-center">
+                        <i className="fas fa-info-circle mr-1"></i>
+                        Future date entered - will use latest available CPI data
+                      </p>
+                    );
+                  }
+                  return null;
+                })()
+              )}
+            </div>
           )}
         </div>
         
@@ -234,7 +288,7 @@ export const WageEntryModal: React.FC = () => {
                 errors.amount ? 'border-red-500' : 'border-border'
               } bg-background focus:outline-none focus:ring-2 focus:ring-primary`}
               placeholder="0"
-              step="1000"
+              step="0.01"
               min="0.01"
               max={VALIDATION.MAX_WAGE_AMOUNT}
             />

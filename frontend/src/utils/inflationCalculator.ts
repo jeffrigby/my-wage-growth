@@ -4,11 +4,23 @@ import type { CPIData } from '../types';
  * Get CPI value for a specific date
  * For annual entries, uses the CPI value for January of that year
  * For paycheck entries, uses the exact month or interpolates if needed
+ * For future dates, uses the latest available CPI data
  */
 export const getCPIForDate = (date: Date, cpiData: CPIData): number | null => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1; // JavaScript months are 0-based
   const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
+  
+  // Get all available months sorted
+  const availableMonths = Object.keys(cpiData.months).sort();
+  if (availableMonths.length === 0) return null;
+  
+  const latestMonth = availableMonths[availableMonths.length - 1];
+  
+  // If the requested date is in the future, use the latest available CPI
+  if (monthKey > latestMonth) {
+    return cpiData.months[latestMonth];
+  }
   
   // Check if we have exact month data
   if (cpiData.months[monthKey]) {
@@ -16,8 +28,6 @@ export const getCPIForDate = (date: Date, cpiData: CPIData): number | null => {
   }
   
   // If no exact match, try to find the closest available month
-  const availableMonths = Object.keys(cpiData.months).sort();
-  
   // Find the closest month before and after the target date
   let prevMonth: string | null = null;
   let nextMonth: string | null = null;

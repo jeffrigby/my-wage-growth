@@ -160,4 +160,16 @@ export const {
   importEntries
 } = wageEntriesSlice.actions;
 
+// Selectors
+export const selectIsEntryModeLocked = (state: { wageEntries: WageEntriesState }) => {
+  return state.wageEntries.entries.length > 0;
+};
+
+export const selectLockedEntryMode = (state: { wageEntries: WageEntriesState }) => {
+  if (state.wageEntries.entries.length === 0) return null;
+  // Determine mode from first entry
+  const firstEntry = state.wageEntries.entries[0];
+  return firstEntry.entryType.includes('annual') ? 'annual' : 'paycheck';
+};
+
 export { wageEntriesSlice };
