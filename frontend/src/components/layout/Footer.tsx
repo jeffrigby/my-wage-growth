@@ -4,7 +4,7 @@ import { useAppSelector } from '../../store';
 import { COUNTRIES, ANIMATION_VARIANTS } from '../../constants';
 
 export const Footer: React.FC = () => {
-  const lastFetch = useAppSelector(state => state.cpi.lastFetch);
+  const lastFetch = useAppSelector(state => state.cpiData.lastFetch);
   const currentCountry = useAppSelector(state => state.wageEntries.country);
   
   const countryMetadata = COUNTRIES[currentCountry];

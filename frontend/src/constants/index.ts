@@ -127,6 +127,14 @@ export const API_CONFIG = {
   RETRY_DELAY: 1000        // 1 second
 } as const;
 
+// CPI filename mapping for each country
+// US uses CPI_U_ALL instead of CPI_US_ALL
+export const CPI_SERIES_MAPPING: Record<string, string> = {
+  US: 'CPI_U_ALL',
+  CA: 'CPI_CA_ALL', 
+  UK: 'CPI_UK_ALL'
+} as const;
+
 // Animation variants for Framer Motion
 export const ANIMATION_VARIANTS = {
   FADE_IN: {

@@ -38,7 +38,7 @@ export const WageEntryModal: React.FC = () => {
         const dateFormat = editingEntry.entryType.includes('annual') 
           ? 'yyyy' 
           : DATE_FORMATS.ISO;
-        setDate(format(editingEntry.date, dateFormat));
+        setDate(format(new Date(editingEntry.date), dateFormat));
         setAmount(editingEntry.amount.toString());
         setLabel(editingEntry.label || '');
       } else {

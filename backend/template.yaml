@@ -5,6 +5,15 @@ Description: >
 
   SAM Template for wage-growth-backend
 
+Parameters:
+  AllowedOrigins:
+    Type: String
+    Default: "*"
+    Description: >
+      Comma-separated list of allowed origins for CORS (e.g., "https://example.com,https://www.example.com").
+      Use "*" to allow all origins (not recommended for production).
+      For local development, you might use "http://localhost:5173,http://localhost:3000"
+
 Globals:
   Function:
     Timeout: 60
@@ -123,6 +132,19 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins: !Split
+              - ','
+              - !Ref AllowedOrigins
+            ExposedHeaders:
+              - ETag
+            MaxAge: 3600
       LifecycleConfiguration:
         Rules:
           - Id: FrontendFiles
@@ -166,6 +188,50 @@ Resources:
                 AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
 
   # CloudFront
+  CloudFrontResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub ${AWS::StackName}-CORS-Security-Policy
+        Comment: Combined CORS and security headers policy with configurable origins
+        CorsConfig:
+          AccessControlAllowCredentials: false
+          AccessControlAllowHeaders:
+            Items:
+              - '*'
+          AccessControlAllowMethods:
+            Items:
+              - GET
+              - HEAD
+              - OPTIONS
+          AccessControlAllowOrigins:
+            Items: !Split
+              - ','
+              - !Ref AllowedOrigins
+          AccessControlExposeHeaders:
+            Items:
+              - '*'
+          AccessControlMaxAgeSec: 3600
+          OriginOverride: true
+        SecurityHeadersConfig:
+          # Using AWS recommended security header values
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000  # 1 year (AWS recommended)
+            IncludeSubdomains: true
+            Override: true
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: SAMEORIGIN  # Changed from DENY to match AWS managed policy
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin  # AWS recommended policy
+            Override: true
+          XSSProtection:
+            ModeBlock: true
+            Protection: true
+            Override: true
+
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -204,7 +270,7 @@ Resources:
           Compress: true
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
           OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
-          ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+          ResponseHeadersPolicyId: !Ref CloudFrontResponseHeadersPolicy
         CacheBehaviors:
           - PathPattern: "/static/*"
             TargetOriginId: S3Origin
@@ -219,7 +285,7 @@ Resources:
             Compress: true
             CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
             OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
-            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+            ResponseHeadersPolicyId: !Ref CloudFrontResponseHeadersPolicy
           - PathPattern: "/cpi/*"
             TargetOriginId: S3Origin
             ViewerProtocolPolicy: redirect-to-https
@@ -230,10 +296,11 @@ Resources:
             CachedMethods:
               - GET
               - HEAD
+              - OPTIONS
             Compress: true
-            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # Managed-CachingDisabled (for frequently updated data)
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
             OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
-            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+            ResponseHeadersPolicyId: !Ref CloudFrontResponseHeadersPolicy
         CustomErrorResponses:
           - ErrorCode: 404
             ResponseCode: 200
@@ -371,3 +438,6 @@ Outputs:
     Value: !Ref CloudFrontOriginAccessControl
     Export:
       Name: !Sub ${AWS::StackName}-CloudFrontOriginAccessControlId
+  ConfiguredAllowedOrigins:
+    Description: Configured allowed origins for CORS
+    Value: !Ref AllowedOrigins

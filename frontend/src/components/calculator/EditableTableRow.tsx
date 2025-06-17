@@ -35,7 +35,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   useEffect(() => {
     if (isEditing) {
       const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
-      setEditedDate(format(entry.date, dateFormat));
+      setEditedDate(format(new Date(entry.date), dateFormat));
       setEditedAmount(entry.amount.toString());
       setEditedLabel(entry.label || '');
       setErrors({});
@@ -123,8 +123,8 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   };
 
   const displayDate = entryMode === 'annual' 
-    ? format(entry.date, DATE_FORMATS.DISPLAY_YEAR_ONLY)
-    : format(entry.date, DATE_FORMATS.DISPLAY);
+    ? format(new Date(entry.date), DATE_FORMATS.DISPLAY_YEAR_ONLY)
+    : format(new Date(entry.date), DATE_FORMATS.DISPLAY);
 
   if (isEditing) {
     return (

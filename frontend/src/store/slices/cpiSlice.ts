@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { CPIDataState, CPIData, Country, CPIDateRange } from '../../types';
-import { API_CONFIG } from '../../constants';
+import { API_CONFIG, CPI_SERIES_MAPPING } from '../../constants';
 
 const initialState: CPIDataState = {
   us: null,
@@ -30,16 +30,18 @@ const calculateDateRange = (cpiData: CPIData): CPIDateRange => {
   };
 };
 
-// Async thunk for fetching CPI data
+// Async thunk for fetching CPI data with optional series support
 export const fetchCPIData = createAsyncThunk(
   'cpi/fetchCPIData',
-  async (country: Country, { rejectWithValue }) => {
+  async ({ country, series }: { country: Country; series?: string }, { rejectWithValue }) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
       
       const countryCode = country.toLowerCase();
-      const url = `${API_CONFIG.CPI_BASE_URL}/${countryCode}/CPI_${country}_ALL.json`;
+      // Default to country-specific CPI series if no series specified
+      const seriesName = series || CPI_SERIES_MAPPING[country];
+      const url = `${API_CONFIG.CPI_BASE_URL}/${countryCode}/${seriesName}.json`;
       
       const response = await fetch(url, {
         signal: controller.signal,
@@ -62,7 +64,7 @@ export const fetchCPIData = createAsyncThunk(
         throw new Error('Invalid CPI data format');
       }
       
-      return { country, data };
+      return { country, data, series: seriesName };
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -80,7 +82,7 @@ export const fetchAllCPIData = createAsyncThunk(
   'cpi/fetchAllCPIData',
   async (_, { dispatch }) => {
     const countries: Country[] = ['US', 'CA', 'UK'];
-    const promises = countries.map(country => dispatch(fetchCPIData(country)));
+    const promises = countries.map(country => dispatch(fetchCPIData({ country })));
     await Promise.allSettled(promises);
   }
 );
@@ -166,18 +168,18 @@ export const {
 } = cpiSlice.actions;
 
 // Selectors
-export const selectCPIDataByCountry = (state: { cpi: CPIDataState }, country: Country) => {
+export const selectCPIDataByCountry = (state: { cpiData: CPIDataState }, country: Country) => {
   const countryKey = country.toLowerCase() as 'us' | 'ca' | 'uk';
-  return state.cpi[countryKey];
+  return state.cpiData[countryKey];
 };
 
-export const selectCPIDateRangeByCountry = (state: { cpi: CPIDataState }, country: Country) => {
+export const selectCPIDateRangeByCountry = (state: { cpiData: CPIDataState }, country: Country) => {
   const countryKey = country.toLowerCase() as 'us' | 'ca' | 'uk';
-  return state.cpi.dateRanges[countryKey];
+  return state.cpiData.dateRanges[countryKey];
 };
 
-export const selectCPILoading = (state: { cpi: CPIDataState }) => state.cpi.loading;
-export const selectCPIError = (state: { cpi: CPIDataState }) => state.cpi.error;
-export const selectLastFetch = (state: { cpi: CPIDataState }) => state.cpi.lastFetch;
+export const selectCPILoading = (state: { cpiData: CPIDataState }) => state.cpiData.loading;
+export const selectCPIError = (state: { cpiData: CPIDataState }) => state.cpiData.error;
+export const selectLastFetch = (state: { cpiData: CPIDataState }) => state.cpiData.lastFetch;
 
 export { cpiSlice };

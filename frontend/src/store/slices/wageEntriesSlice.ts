@@ -6,7 +6,8 @@ import type {
   AddWageEntryPayload, 
   UpdateWageEntryPayload,
   SetCountryPayload,
-  EntryMode 
+  EntryMode,
+  SampleEntry
 } from '../../types';
 
 const initialState: WageEntriesState = {
@@ -33,16 +34,16 @@ const wageEntriesSlice = createSlice({
       
       const newEntry: WageEntry = {
         id: uuidv4(),
-        date,
+        date: date.toISOString(),
         amount,
         entryType,
         label,
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
       };
       
       state.entries.push(newEntry);
       // Sort entries by date
-      state.entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+      state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     },
     
     updateWageEntry: (state, action: PayloadAction<UpdateWageEntryPayload>) => {
@@ -50,13 +51,19 @@ const wageEntriesSlice = createSlice({
       const entryIndex = state.entries.findIndex(entry => entry.id === id);
       
       if (entryIndex !== -1) {
+        // Convert date to ISO string if provided
+        const processedUpdates: Partial<WageEntry> = {
+          ...updates,
+          date: updates.date ? updates.date.toISOString() : undefined
+        };
+        
         state.entries[entryIndex] = {
           ...state.entries[entryIndex],
-          ...updates
+          ...processedUpdates
         };
         // Re-sort after update if date changed
         if (updates.date) {
-          state.entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+          state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         }
       }
     },
@@ -85,13 +92,16 @@ const wageEntriesSlice = createSlice({
       });
     },
     
-    loadSampleData: (state, action: PayloadAction<WageEntry[]>) => {
+    loadSampleData: (state, action: PayloadAction<SampleEntry[]>) => {
       state.entries = action.payload.map(entry => ({
-        ...entry,
         id: uuidv4(),
-        createdAt: new Date()
+        date: entry.date.toISOString(),
+        amount: entry.amount,
+        entryType: state.entryMode === 'annual' ? 'annual-simple' : 'point-in-time',
+        label: entry.label,
+        createdAt: new Date().toISOString()
       }));
-      state.entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+      state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     },
     
     clearAllEntries: (state) => {
@@ -105,10 +115,10 @@ const wageEntriesSlice = createSlice({
           ...entryToDuplicate,
           id: uuidv4(),
           label: entryToDuplicate.label ? `${entryToDuplicate.label} (Copy)` : undefined,
-          createdAt: new Date()
+          createdAt: new Date().toISOString()
         };
         state.entries.push(duplicatedEntry);
-        state.entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+        state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       }
     },
     
@@ -128,11 +138,11 @@ const wageEntriesSlice = createSlice({
       
       validEntries.forEach(entry => {
         entry.id = uuidv4();
-        entry.createdAt = new Date();
+        entry.createdAt = new Date().toISOString();
       });
       
       state.entries = [...state.entries, ...validEntries];
-      state.entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+      state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     }
   }
 });

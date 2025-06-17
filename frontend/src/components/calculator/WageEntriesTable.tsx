@@ -20,7 +20,7 @@ export const WageEntriesTable: React.FC = () => {
   };
 
   const handleLoadSampleData = () => {
-    const sampleData = SAMPLE_DATA[country];
+    const sampleData = [...SAMPLE_DATA[country]]; // Create mutable copy
     dispatch(loadSampleData(sampleData));
   };
 
@@ -29,7 +29,7 @@ export const WageEntriesTable: React.FC = () => {
     if (!entry) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete the entry from ${format(entry.date, DATE_FORMATS.DISPLAY)}?`
+      `Are you sure you want to delete the entry from ${format(new Date(entry.date), DATE_FORMATS.DISPLAY)}?`
     );
     
     if (confirmed) {

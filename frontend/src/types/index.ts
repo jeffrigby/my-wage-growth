@@ -35,14 +35,14 @@ export interface CPIDataState {
   lastFetch: string | null;
 }
 
-// Individual wage entry
+// Individual wage entry (stored in Redux with serializable dates)
 export interface WageEntry {
   id: string;
-  date: Date;
+  date: string; // ISO date string for Redux serialization
   amount: number;
   entryType: 'point-in-time' | 'annual-simple' | 'annual-averaged';
   label?: string;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 // Wage entries state
@@ -156,7 +156,12 @@ export interface AddWageEntryPayload {
 
 export interface UpdateWageEntryPayload {
   id: string;
-  updates: Partial<Omit<WageEntry, 'id' | 'createdAt'>>;
+  updates: {
+    date?: Date; // Accept Date object, will be converted to string in reducer
+    amount?: number;
+    entryType?: WageEntry['entryType'];
+    label?: string;
+  };
 }
 
 export interface SetCountryPayload {

@@ -13,14 +13,7 @@ const loadState = () => {
     
     const parsedState = JSON.parse(serializedState);
     
-    // Convert date strings back to Date objects for wage entries
-    if (parsedState.wageEntries?.entries) {
-      parsedState.wageEntries.entries = parsedState.wageEntries.entries.map((entry: { date: string; createdAt: string }) => ({
-        ...entry,
-        date: new Date(entry.date),
-        createdAt: new Date(entry.createdAt)
-      }));
-    }
+    // No need to convert dates - we're keeping them as strings for Redux serialization
     
     return parsedState;
   } catch (err) {
@@ -32,7 +25,7 @@ const loadState = () => {
 // Configure the store
 export const store = configureStore({
   reducer: {
-    cpi: cpiSlice.reducer,
+    cpiData: cpiSlice.reducer,
     wageEntries: wageEntriesSlice.reducer,
     ui: uiSlice.reducer
   },
