@@ -3,12 +3,15 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { CountryDropdown } from '../ui/CountryDropdown';
-import { useAppSelector } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../store';
+import { setShowIntro } from '../../store/slices/uiSlice';
 import { ANIMATION_VARIANTS } from '../../constants';
 
 export const Header: React.FC = () => {
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const hasEntries = useAppSelector(state => state.wageEntries.entries.length > 0);
+  const showIntro = useAppSelector(state => state.ui.showIntro);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -77,6 +80,19 @@ export const Header: React.FC = () => {
           {/* Country selector, theme toggle and mobile menu */}
           <div className="flex items-center space-x-2">
             <CountryDropdown />
+            
+            {/* Show intro button - only on home page when intro is hidden */}
+            {location.pathname === '/' && !showIntro && (
+              <button
+                onClick={() => dispatch(setShowIntro(true))}
+                className="p-2 rounded-lg hover:bg-surface-hover transition-colors text-secondary hover:text-primary"
+                aria-label="Show introduction"
+                title="Show introduction"
+              >
+                <i className="fas fa-question-circle"></i>
+              </button>
+            )}
+            
             <ThemeToggle />
             
             {/* Mobile menu button */}
