@@ -1,182 +1,229 @@
-# wage-growth-backend
+# Real Wage Growth Calculator - Backend
 
-Congratulations, you have just created a Serverless "Hello World" application using the AWS Serverless Application Model (AWS SAM) for the `nodejs22.x` runtime, and options to bootstrap it with [**Powertools for AWS Lambda (TypeScript)**](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/) (Lambda Powertools) utilities for Logging, Tracing and Metrics.
+This is the serverless backend for the Real Wage Growth Calculator application, built with AWS SAM (Serverless Application Model). It fetches and processes Consumer Price Index (CPI) data from multiple national statistics agencies.
 
-Powertools for AWS Lambda (TypeScript) is a developer toolkit to implement Serverless best practices and increase developer velocity.
+## Overview
 
-## Powertools for AWS Lambda (TypeScript) features
+The backend provides Lambda functions to fetch CPI data from:
+- 🇺🇸 US Bureau of Labor Statistics (BLS)
+- 🇨🇦 Statistics Canada
+- 🇬🇧 UK Office for National Statistics (ONS)
 
-Powertools for AWS Lambda (TypeScript) provides three core utilities:
+Data is stored in S3 and served through CloudFront for the frontend application.
 
-* **[Tracer](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/tracer/)** - Utilities to trace Lambda function handlers, and both synchronous and asynchronous functions
-* **[Logger](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/logger/)** - Structured logging made easier, and a middleware to enrich log items with key details of the Lambda context
-* **[Metrics](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/metrics/)** - Custom Metrics created asynchronously via CloudWatch Embedded Metric Format (EMF)
+## Architecture
 
-Find the complete project's [documentation here](https://awslabs.github.io/aws-lambda-powertools-typescript).
+### Lambda Functions
 
-### Installing Powertools for AWS Lambda (TypeScript)
+1. **GetUSCPIDataFunction** - Fetches US CPI data from BLS API
+   - Retrieves 11 different CPI series (ALL, FOOD, HOUSING, etc.)
+   - Requires API key authentication
+   - Handles rate limiting and retries
 
-You have 2 ways of consuming those utilities:
+2. **GetCanadianCPIDataFunction** - Fetches Canadian CPI data
+   - Retrieves 10 series from Statistics Canada Web Data Service
+   - No authentication required
+   - Processes CSV data
 
-* NPM modules
-* Lambda Layer
+3. **GetUKCPIDataFunction** - Fetches UK CPI data from ONS
+   - Retrieves 12 CPIH series
+   - Processes Excel files with streaming
+   - Handles complex data transformations
 
-#### Lambda layers
+### Infrastructure Components
 
-The Powertools for AWS Lambda (TypeScript) utilities is packaged as a single [AWS Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-concepts.html#gettingstarted-concepts-layer)
+- **S3 Bucket** (`WageGrowthBucket`)
+  - Versioning enabled
+  - Lifecycle policies for cost optimization
+  - Organized structure for raw and processed data
+- **CloudFront Distribution**
+  - Caches and serves CPI data
+  - CORS configuration
+  - Custom response headers
+- **AppConfig** - Centralized configuration management
+- **Application Insights** - Monitoring and observability
 
-👉 [Installation guide for the **Powertools for AWS Lambda (TypeScript)** layer](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/#lambda-layer)
+### Data Structure
 
-#### NPM modules
-
-The Powertools for AWS Lambda (TypeScript) utilities follow a modular approach, similar to the official [AWS SDK v3 for JavaScript](https://github.com/aws/aws-sdk-js-v3).  
-
-Each TypeScript utility is installed as standalone NPM package.
-
-Install all three core utilities at once with this single command:
-
-```shell
-npm install @aws-lambda-powertools/logger @aws-lambda-powertools/tracer @aws-lambda-powertools/metrics
+```
+s3://bucket/
+├── cpi/
+│   ├── processed/     # Frontend-ready JSON data
+│   │   ├── us/        # CPI_U_ALL.json, CPI_U_FOOD.json, etc.
+│   │   ├── ca/        # CPI_CA_ALL.json, CPI_CA_FOOD.json, etc.
+│   │   └── uk/        # CPI_UK_ALL.json, CPI_UK_FOOD.json, etc.
+│   └── raw/          # Raw API responses for debugging
+│       ├── us/
+│       ├── ca/
+│       └── uk/
+└── static/           # Frontend files (future)
 ```
 
-Or refer to the installation guide of each utility:
+## Prerequisites
 
-👉 [Installation guide for the **Tracer** utility](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/tracer#getting-started)
+- AWS CLI configured with appropriate credentials
+- AWS SAM CLI installed
+- Node.js 20.x runtime
+- npm or yarn
 
-👉 [Installation guide for the **Logger** utility](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/logger#getting-started)
-
-👉 [Installation guide for the **Metrics** utility](https://awslabs.github.io/aws-lambda-powertools-typescript/latest/core/metrics#getting-started)
-
-### Powertools for AWS Lambda (TypeScript) Examples
-
-* [CDK](https://github.com/awslabs/aws-lambda-powertools-typescript/tree/main/examples/cdk)
-* [SAM](https://github.com/awslabs/aws-lambda-powertools-typescript/tree/main/examples/sam)
-
-## Working with this project
-
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
-
-* hello-world - Code for the application's Lambda function written in TypeScript.
-* events - Invocation events that you can use to invoke the function.
-* hello-world/tests - Unit tests for the application code.
-* template.yaml - A template that defines the application's AWS resources.
-
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
-
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
-
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
-
-### Deploy the sample application
-
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
-
-To use the SAM CLI, you need the following tools.
-
-* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Node.js - [Install Node.js 22](https://nodejs.org/en/), including the NPM package management tool.
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
-
-To build and deploy your application for the first time, run the following in your shell:
+## Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Build the application
 sam build
+```
+
+## Local Development
+
+Test Lambda functions locally:
+
+```bash
+# Test US CPI function
+npm run local-us-cpi-data
+
+# Test Canadian CPI function  
+npm run local-canadian-cpi-data
+
+# Test UK CPI function
+npm run local-uk-cpi-data
+```
+
+## Testing
+
+We use Vitest for testing with comprehensive coverage:
+
+```bash
+# Run unit tests
+npm run unit
+
+# Run tests in watch mode
+npm run unit:watch
+
+# Run tests with UI
+npm run unit:ui
+
+# Generate coverage report
+npm run coverage
+
+# Lint and compile check
+npm run lint
+npm run compile
+```
+
+## Deployment
+
+```bash
+# Validate SAM template
+sam validate --lint
+
+# Deploy with guided prompts
 sam deploy --guided
+
+# Deploy with specific parameters
+sam deploy \
+  --stack-name wage-growth-backend-prod \
+  --parameter-overrides AllowedOrigins="https://yourdomain.com,https://www.yourdomain.com"
 ```
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+### Deployment Parameters
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+- `AllowedOrigins` - CORS allowed origins (default: "*")
+  - Use comma-separated list for production
+  - Example: "https://app.example.com,https://example.com"
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+## Environment Variables
 
-### Use the SAM CLI to build and test locally
+Lambda functions use these environment variables:
 
-Build your application with the `sam build` command.
+- `WAGE_GROWTH_BUCKET` - S3 bucket name
+- `APPCONFIG_APP_ID` - AppConfig application ID
+- `APPCONFIG_ENV_ID` - AppConfig environment ID  
+- `APPCONFIG_PROFILE_ID` - AppConfig profile ID
+- `POWERTOOLS_SERVICE_NAME` - Service name for logging
+- `POWERTOOLS_METRICS_NAMESPACE` - CloudWatch metrics namespace
+- `LOG_LEVEL` - Logging level (default: INFO)
 
-```bash
-wage-growth-backend$ sam build
+## Development Scripts
+
+```json
+{
+  "test": "npm run compile && npm run unit",
+  "compile": "tsc",
+  "unit": "vitest run",
+  "unit:watch": "vitest",
+  "unit:ui": "vitest --ui",
+  "coverage": "vitest run --coverage",
+  "lint": "prettier --write . && eslint . --ext .ts --fix",
+  "lint:sam": "sam validate --lint",
+  "local-us-cpi-data": "sam local invoke GetUSCPIDataFunction",
+  "local-canadian-cpi-data": "sam local invoke GetCanadianCPIDataFunction",
+  "local-uk-cpi-data": "sam local invoke GetUKCPIDataFunction"
+}
 ```
 
-The SAM CLI installs dependencies defined in `hello-world/package.json`, compiles TypeScript with esbuild, creates a deployment package, and saves it in the `.aws-sam/build` folder.
+## Key Dependencies
 
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
+- **AWS Lambda Powertools** - Structured logging, tracing, metrics
+- **AWS SDK v3** - S3, AppConfig clients
+- **Middy** - Lambda middleware
+- **Zod** - Runtime validation
+- **csv-parse** - CSV processing
+- **p-limit/p-retry** - Rate limiting and retries
+- **unzipper** - Compressed data handling
 
-Run functions locally and invoke them with the `sam local invoke` command.
+## API Integrations
 
-```bash
-wage-growth-backend$ sam local invoke HelloWorldFunction --event events/event.json
-```
+### US Bureau of Labor Statistics
+- Rate limited: 500 requests/day
+- Requires API key
+- Series IDs configured in AppConfig
 
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
+### Statistics Canada
+- No authentication required
+- CSV format responses
+- Web Data Service API
 
-```bash
-wage-growth-backend$ sam local start-api
-wage-growth-backend$ curl http://localhost:3000/
-```
+### UK Office for National Statistics
+- Excel file downloads
+- Complex data transformation
+- Monthly and annual data
 
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
+## Shared Utilities
 
-```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-```
+The `cpi-shared.ts` module provides common functionality:
+- Data transformation functions
+- S3 storage helpers
+- Validation utilities
+- Common interfaces
 
-### Add a resource to your application
+## Monitoring
 
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
+- AWS X-Ray tracing enabled
+- CloudWatch Logs with structured logging
+- Application Insights integration
+- Custom CloudWatch metrics
 
-### Fetch, tail, and filter Lambda function logs
+## CORS Configuration
 
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
+CORS is configured at multiple levels:
+1. S3 bucket CORS rules
+2. CloudFront response headers
+3. Lambda function responses
 
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
+Configure allowed origins via the `AllowedOrigins` parameter during deployment.
 
-```bash
-wage-growth-backend$ sam logs -n HelloWorldFunction --stack-name wage-growth-backend --tail
-```
+## Additional Documentation
 
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
+- [Testing Guide](./TESTING.md)
+- [Canadian CPI Implementation](./docs/canadian-cpi-implementation-plan.md)
+- [Canadian CPI POC Results](./docs/canadian-cpi-poc-results.md)
 
-### Unit tests
+## License
 
-Tests are defined in the `test` folder in this project.
-
-```bash
-wage-growth-backend$ cd hello-world
-hello-world$ npm install
-hello-world$ npm run test
-```
-
-### Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-sam delete --stack-name wage-growth-backend
-```
-
-## Resources
-
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+This project is licensed under the MIT License.

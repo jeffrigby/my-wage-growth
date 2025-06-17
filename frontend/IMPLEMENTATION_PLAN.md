@@ -15,13 +15,14 @@ A responsive web application that helps users visualize their wage growth compar
 - **Framework**: React 19 with TypeScript
 - **Bundler**: Vite 6.3
 - **Routing**: React Router v7
-- **State Management**: Redux Toolkit v2.8 with redux-persist
+- **State Management**: Redux Toolkit v2.8 with listener middleware
 - **Styling**: Tailwind CSS v4.1 with dark mode support
-- **Icons**: Font Awesome (to be installed)
-- **Charts**: Recharts (to be installed)
-- **Date handling**: date-fns (to be installed)
-- **Compression**: pako (to be installed, for URL sharing)
-- **Animations**: Framer Motion (to be installed, for smooth transitions)
+- **Icons**: Font Awesome ✅
+- **Charts**: Recharts ✅
+- **Date handling**: date-fns ✅
+- **Compression**: pako ✅ (for URL sharing)
+- **Animations**: Framer Motion ✅
+- **Notifications**: react-hot-toast ✅
 
 ## Core Features
 1. Multi-country support (US, UK, Canada) with currency selection
@@ -233,43 +234,39 @@ App
    export const { useGetCPIDataQuery } = cpiApi;
    ```
 
-### Phase 3: Entry Components (Days 5-6) ⚪ IN PROGRESS
-1. **Country & Currency Selection**
-   - Dropdown with flag icons (Font Awesome)
-   - Update Redux state on change
-   - Clear entries when country changes
+### Phase 3: Entry Components (Days 5-6) ✅ COMPLETED
+1. **Country & Currency Selection** ✅
+   - ✅ Dropdown with flag icons (Font Awesome)
+   - ✅ Update Redux state on change
+   - ✅ Clear entries when country changes with confirmation
 
-2. **Wage Entry Form**
-   - Mode selector (annual vs paycheck)
-   - Conditional date picker
-   - Currency-formatted input
-   - Pre-tax information tooltip
-   - Validation against available CPI dates
+2. **Wage Entry Form** ✅
+   - ✅ Mode selector (annual vs paycheck) with locking after first entry
+   - ✅ Conditional date picker
+   - ✅ Currency-formatted input with proper validation
+   - ✅ Pre-tax information tooltip with expandable help
+   - ✅ Validation against available CPI dates
+   - ✅ Support for future dates with informative messaging
 
-3. **Entries Management** ⚪ IN PROGRESS
+3. **Entries Management** ✅
    - ✅ Sortable table/list view
-   - ✅ Inline editing
+   - ✅ Inline editing with validation
    - ✅ Delete with confirmation
    - ✅ Minimum 2 entries validation
    - ✅ Today's value column (inflation-adjusted)
    - ✅ Percentage change columns (nominal & real)
-   - ⚪ Mobile responsive design for new columns
+   - ✅ Clear all button with confirmation dialog
+   - ✅ Toast notifications for all actions
+   - ✅ Entry mode locking to prevent data inconsistency
+   - ⚪ Mobile responsive design improvements needed
 
-### Phase 4: Calculations & Visualization (Days 7-8)
-1. **Calculation Engine**
-   ```typescript
-   // utils/inflationCalculator.ts
-   export const adjustForInflation = (
-     amount: number,
-     fromDate: Date,
-     toDate: Date,
-     cpiData: CPIData
-   ): number => {
-     const fromCPI = getCPIForDate(fromDate, cpiData);
-     const toCPI = getCPIForDate(toDate, cpiData);
-     return amount * (toCPI / fromCPI);
-   };
-   ```
+### Phase 4: Calculations & Visualization (Days 7-8) ⚪ PARTIALLY COMPLETE
+1. **Calculation Engine** ✅
+   - ✅ Implemented in `utils/inflationCalculator.ts`
+   - ✅ `getCPIForDate()` with interpolation and future date handling
+   - ✅ `adjustToLatestCPI()` for current dollar calculations
+   - ✅ `calculatePercentageChange()` for growth tracking
+   - ✅ Formatting utilities with color coding
 
 2. **Chart Component**
    - Line chart with nominal vs real wages
@@ -284,17 +281,17 @@ App
    - Cumulative inflation impact
    - Win/loss record
 
-### Phase 5: Sharing & Polish (Days 9-10)
-1. **URL Sharing**
+### Phase 5: Sharing & Polish (Days 9-10) ⚪ PARTIALLY COMPLETE
+1. **URL Sharing** ⏳ Not Started
    - Compress entries with pako
    - Base64 encode for URL
    - Generate shareable link
    - Handle shared route decoding
 
-2. **Sample Data**
-   - Realistic wage progression
-   - Clear indicator when loaded
-   - Easy clear/reset button
+2. **Sample Data** ✅
+   - ✅ Realistic wage progression for each country
+   - ✅ Toast notification when loaded
+   - ✅ Clear all button with confirmation
 
 3. **Educational Content**
    - About page with inflation explanation
