@@ -178,6 +178,11 @@ export const WageEntriesTable: React.FC = () => {
                       nominalChange={nominalChange}
                       realChange={realChange}
                       cpiDataLoaded={!!cpiData}
+                      previousEntry={previousEntry}
+                      cpiData={cpiData}
+                      calculationType={calculationType}
+                      currency={currency}
+                      country={country}
                     />
                   );
                 })}

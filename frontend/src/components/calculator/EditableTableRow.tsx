@@ -5,8 +5,9 @@ import { useAppDispatch } from '../../store';
 import { updateWageEntry } from '../../store/slices/wageEntriesSlice';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { DATE_FORMATS, VALIDATION } from '../../constants';
-import type { WageEntry, EntryMode } from '../../types';
+import type { WageEntry, EntryMode, CPIData, TableSettings } from '../../types';
 import { formatPercentage, getPercentageColorClass } from '../../utils/inflationCalculator';
+import { CalculationDetails } from './CalculationDetails';
 
 interface EditableTableRowProps {
   entry: WageEntry;
@@ -18,6 +19,11 @@ interface EditableTableRowProps {
   nominalChange: number | null;
   realChange: number | null;
   cpiDataLoaded: boolean;
+  previousEntry?: WageEntry;
+  cpiData: CPIData | null;
+  calculationType: TableSettings['cpiCalculationType'];
+  currency: string;
+  country: string;
 }
 
 export const EditableTableRow: React.FC<EditableTableRowProps> = ({
@@ -29,10 +35,16 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   todaysValue,
   nominalChange,
   realChange,
-  cpiDataLoaded
+  cpiDataLoaded,
+  previousEntry,
+  cpiData,
+  calculationType,
+  currency,
+  country
 }) => {
   const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState(false);
+  const [showCalculations, setShowCalculations] = useState(false);
   const [editedDate, setEditedDate] = useState('');
   const [editedAmount, setEditedAmount] = useState('');
   const [editedLabel, setEditedLabel] = useState('');
@@ -209,13 +221,14 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   }
 
   return (
-    <motion.tr
-      className="border-b border-border hover:bg-surface-hover transition-colors group"
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-    >
+    <>
+      <motion.tr
+        className="border-b border-border hover:bg-surface-hover transition-colors group"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+      >
       <td className="py-3 px-2 sm:px-4">
         <span className="font-medium">{displayDate}</span>
       </td>
@@ -255,6 +268,15 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
       <td className="py-3 px-2 sm:px-4">
         <div className="flex items-center justify-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
+            onClick={() => setShowCalculations(true)}
+            className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-primary transition-colors"
+            aria-label="Show calculations"
+            title="Show calculation details"
+            disabled={!cpiDataLoaded}
+          >
+            <i className="fas fa-calculator"></i>
+          </button>
+          <button
             onClick={handleEditInModal}
             className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-primary transition-colors"
             aria-label="Edit entry"
@@ -279,6 +301,19 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           </button>
         </div>
       </td>
-    </motion.tr>
+      </motion.tr>
+      
+      {/* Calculation Details Modal */}
+      <CalculationDetails
+        isOpen={showCalculations}
+        onClose={() => setShowCalculations(false)}
+        entry={entry}
+        previousEntry={previousEntry}
+        cpiData={cpiData}
+        calculationType={calculationType}
+        currency={currency}
+        country={country}
+      />
+    </>
   );
 };
