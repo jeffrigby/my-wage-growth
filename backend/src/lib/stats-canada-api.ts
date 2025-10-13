@@ -122,8 +122,8 @@ export async function fetchCubeMetadata(config: StatsCanConfig = {}): Promise<Cu
     },
     {
       retries: retryAttempts,
-      onFailedAttempt: (error) => {
-        console.warn(`Attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
+      onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
+        console.warn(`Attempt ${attemptNumber} failed. ${retriesLeft} retries left.`);
       },
     },
   );
@@ -154,8 +154,8 @@ export async function getFullTableDownloadUrl(config: StatsCanConfig = {}): Prom
     },
     {
       retries: retryAttempts,
-      onFailedAttempt: (error) => {
-        console.warn(`Attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
+      onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
+        console.warn(`Attempt ${attemptNumber} failed. ${retriesLeft} retries left.`);
       },
     },
   );

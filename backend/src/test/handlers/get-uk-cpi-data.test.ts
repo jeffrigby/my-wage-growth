@@ -1,354 +1,312 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { lambdaHandler } from '@/handlers/get-uk-cpi-data';
-import { CpiSeriesIdUK } from '@/lib/uk-ons-api';
-import { Context } from 'aws-lambda';
-import { mockClient } from 'aws-sdk-client-mock';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { AppConfigDataClient, GetConfigurationCommand } from '@aws-sdk/client-appconfigdata';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+import {
+  createMockLambdaContext,
+  createMockFetchResponse,
+} from '../lib/test-helpers';
 
-// Mock the S3 and AppConfig clients
-const s3Mock = mockClient(S3Client);
-const appConfigMock = mockClient(AppConfigDataClient);
+// Mock Lambda Powertools and AWS services
+const mockGetAppConfig = vi.fn();
+const mockPutS3Object = vi.fn();
 
-// Mock fetch globally
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
-
-// Mock environment variables
-vi.mock('@/lib/utils', () => ({
-  checkEnvVar: vi.fn((name: string) => {
-    const envVars: Record<string, string> = {
-      WAGE_GROWTH_BUCKET: 'test-bucket',
-      APPCONFIG_APP_ID: 'test-app',
-      APPCONFIG_ENV_ID: 'test-env',
-      APPCONFIG_PROFILE_ID: 'test-profile',
-    };
-    return envVars[name] || 'test-value';
-  }),
+vi.mock('@aws-lambda-powertools/parameters/appconfig', () => ({
+  getAppConfig: mockGetAppConfig,
 }));
 
-describe('UK CPI Lambda Handler', () => {
-  const mockContext: Context = {
-    callbackWaitsForEmptyEventLoop: false,
-    functionName: 'test-function',
-    functionVersion: '1',
-    invokedFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:test-function',
-    memoryLimitInMB: '128',
-    awsRequestId: 'test-request-id',
-    logGroupName: '/aws/lambda/test-function',
-    logStreamName: 'test-stream',
-    getRemainingTimeInMillis: () => 30000,
-    done: vi.fn(),
-    fail: vi.fn(),
-    succeed: vi.fn(),
-  };
+vi.mock('@/lib/aws.s3', () => ({
+  putS3Object: mockPutS3Object,
+}));
+
+// Helper to create mock CSV data
+function createMockCsvData(data: Array<{ value: string; time: string; series: string; label: string }>): string {
+  const header = 'v4_0,mmm-yy,Time,uk-only,Geography,cpih1dim1aggid,Aggregate';
+  const rows = data.map(
+    (d) => `${d.value},${d.time},${d.time},K02000001,United Kingdom,${d.series},${d.label}`,
+  );
+  return [header, ...rows].join('\n');
+}
+
+describe('get-uk-cpi-data handler - unit tests', () => {
+  let handler: (event: unknown, context: unknown) => Promise<{ status: string; [key: string]: unknown }>;
+  let fetchSpy: ReturnType<typeof vi.spyOn>;
+  const mockContext = createMockLambdaContext();
+
+  beforeAll(async () => {
+    // Set up fetch spy
+    fetchSpy = vi.spyOn(global, 'fetch') as ReturnType<typeof vi.spyOn>;
+
+    // Import handler after mocks are set up
+    const handlerModule = await import('@/handlers/get-uk-cpi-data');
+    handler = handlerModule.handler;
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    s3Mock.reset();
-    appConfigMock.reset();
 
-    // Mock AppConfig response
-    appConfigMock.on(GetConfigurationCommand).resolves({
-      Content: new TextEncoder().encode(JSON.stringify({})),
-      ContentType: 'application/json',
-      ConfigurationVersion: '1',
-    });
+    // Default successful mocks
+    mockGetAppConfig.mockResolvedValue({});
+    mockPutS3Object.mockResolvedValue({});
 
-    // Mock S3 uploads
-    s3Mock.on(PutObjectCommand).resolves({});
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should successfully fetch and process UK CPI data', async () => {
-    const mockApiResponse = {
-      observations: [
-        {
-          dimensions: {
-            time: {
-              id: 'Jan-2024',
-              label: 'Jan 2024',
-              option: {
-                id: 'Jan-2024',
-                label: 'Jan 2024',
-              },
-            },
-            geography: {
-              id: 'uk-only',
-              label: 'United Kingdom',
-              option: {
-                id: 'K02000001',
-                label: 'United Kingdom',
-              },
-            },
-            aggregate: {
-              id: 'cpih1dim1aggid',
-              label: 'CPIH Aggregate',
-              option: {
-                id: 'CP00',
-                label: 'Overall Index',
-              },
+    // Mock fetch to handle UK ONS API's two-step process
+    fetchSpy.mockImplementation((url: string) => {
+      // First call: Get dataset info
+      if (url.includes('/datasets/cpih01') && !url.includes('download.ons.gov.uk')) {
+        return createMockFetchResponse({
+          links: {
+            latest_version: {
+              id: '18',
             },
           },
-          observation: '105.7',
-        },
-        {
-          dimensions: {
-            time: {
-              id: 'Jan-2024',
-              label: 'Jan 2024',
-              option: {
-                id: 'Jan-2024',
-                label: 'Jan 2024',
-              },
-            },
-            geography: {
-              id: 'uk-only',
-              label: 'United Kingdom',
-              option: {
-                id: 'K02000001',
-                label: 'United Kingdom',
-              },
-            },
-            aggregate: {
-              id: 'cpih1dim1aggid',
-              label: 'CPIH Aggregate',
-              option: {
-                id: 'CP01',
-                label: '01 Food and non-alcoholic beverages',
-              },
-            },
-          },
-          observation: '120.5',
-        },
-      ],
-      limit: 10000,
-      offset: 0,
-      total_count: 2,
-    };
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockApiResponse,
+        });
+      }
+      // Second call: Get CSV data
+      if (url.includes('download.ons.gov.uk')) {
+        // Return empty CSV with headers
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          text: async () => 'v4_0,mmm-yy,Time,uk-only,Geography,cpih1dim1aggid,Aggregate\n',
+        } as Response);
+      }
+      return createMockFetchResponse({});
     });
-
-    const event = {
-      seriesIds: [
-        {
-          key: 'CPI_UK_ALL',
-          enumValue: CpiSeriesIdUK.CPI_UK_ALL,
-        },
-        {
-          key: 'CPI_UK_FOOD',
-          enumValue: CpiSeriesIdUK.CPI_UK_FOOD,
-        },
-      ],
-    };
-
-    const result = await lambdaHandler(event, mockContext);
-
-    expect(result.status).toBe('success');
-    expect(result.message).toContain('UK CPIH Data for 2 series downloaded and transformed successfully');
-    expect(result.bucket).toBe('test-bucket');
-    expect(result.keys).toHaveLength(2);
-    expect(result.rawKeys).toHaveLength(2);
-
-    // Verify S3 uploads were called
-    expect(s3Mock.calls()).toHaveLength(4); // 2 raw + 2 processed uploads
-
-    // Verify API call was made to ONS
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions/latest/observations',
-      ),
-    );
   });
 
-  it('should handle API errors gracefully', async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
+  describe('successful execution', () => {
+    it('should successfully fetch and process UK CPI data', async () => {
+      const mockCsvData = createMockCsvData([
+        { value: '105.7', time: 'Jan-24', series: 'CP00', label: 'Overall Index' },
+        { value: '120.5', time: 'Jan-24', series: 'CP01', label: '01 Food' },
+        { value: '106.2', time: 'Feb-24', series: 'CP00', label: 'Overall Index' },
+        { value: '121.0', time: 'Feb-24', series: 'CP01', label: '01 Food' },
+      ]);
+
+      fetchSpy.mockImplementation((url: string) => {
+        if (url.includes('/datasets/cpih01') && !url.includes('download.ons.gov.uk')) {
+          return createMockFetchResponse({
+            links: {
+              latest_version: {
+                id: '18',
+              },
+            },
+          });
+        }
+        if (url.includes('download.ons.gov.uk')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            text: async () => mockCsvData,
+          } as Response);
+        }
+        return createMockFetchResponse({});
+      });
+
+      const event = { seriesIds: ['CPI_UK_ALL', 'CPI_UK_FOOD'] };
+      const result = await handler(event, mockContext);
+
+      expect(result).toMatchObject({
+        status: 'success',
+        message: expect.stringContaining('2 series'),
+        bucket: 'test-bucket',
+      });
+
+      expect(result.keys).toHaveLength(2);
+      expect(result.rawKeys).toHaveLength(2);
+
+      // Verify S3 uploads were called (2 raw + 2 processed)
+      expect(mockPutS3Object).toHaveBeenCalledTimes(4);
     });
 
-    const event = {
-      seriesIds: [
-        {
-          key: 'CPI_UK_ALL',
-          enumValue: CpiSeriesIdUK.CPI_UK_ALL,
-        },
-      ],
-    };
+    it('should handle default series when none specified', async () => {
+      const mockCsvData = createMockCsvData([
+        { value: '105.7', time: 'Jan-24', series: 'CP00', label: 'Overall Index' },
+      ]);
 
-    const result = await lambdaHandler(event, mockContext);
+      fetchSpy.mockImplementation((url: string) => {
+        if (url.includes('/datasets/cpih01') && !url.includes('download.ons.gov.uk')) {
+          return createMockFetchResponse({
+            links: {
+              latest_version: {
+                id: '18',
+              },
+            },
+          });
+        }
+        if (url.includes('download.ons.gov.uk')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            text: async () => mockCsvData,
+          } as Response);
+        }
+        return createMockFetchResponse({});
+      });
 
-    expect(result.status).toBe('error');
-    expect(result.message).toBe('Failed to download UK CPIH data');
-    expect(result.error).toContain('HTTP 500');
+      const result = await handler({}, mockContext);
+
+      expect(result.status).toBe('success');
+      expect(result.message).toContain('1 series');
+    });
+
+    it('should upload data to correct S3 paths', async () => {
+      const mockCsvData = createMockCsvData([
+        { value: '105.7', time: 'Jan-24', series: 'CP00', label: 'Overall Index' },
+      ]);
+
+      fetchSpy.mockImplementation((url: string) => {
+        if (url.includes('/datasets/cpih01') && !url.includes('download.ons.gov.uk')) {
+          return createMockFetchResponse({
+            links: {
+              latest_version: {
+                id: '18',
+              },
+            },
+          });
+        }
+        if (url.includes('download.ons.gov.uk')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            text: async () => mockCsvData,
+          } as Response);
+        }
+        return createMockFetchResponse({});
+      });
+
+      const event = { seriesIds: ['CPI_UK_ALL'] };
+      const result = await handler(event, mockContext);
+
+      expect(result.status).toBe('success');
+
+      // Check S3 upload calls for correct paths
+      const s3Calls = mockPutS3Object.mock.calls;
+      expect(s3Calls).toHaveLength(2); // 1 raw + 1 processed
+
+      // Check raw data path
+      const rawCall = s3Calls.find((call) => call[0].Key?.includes('cpi/raw/uk/'));
+      expect(rawCall).toBeTruthy();
+      expect(rawCall?.[0].Key).toBe('cpi/raw/uk/CPI_UK_ALL.json');
+
+      // Check processed data path
+      const processedCall = s3Calls.find((call) => call[0].Key?.includes('cpi/processed/uk/'));
+      expect(processedCall).toBeTruthy();
+      expect(processedCall?.[0].Key).toBe('cpi/processed/uk/CPI_UK_ALL.json');
+    });
+
+    it('should handle empty observations gracefully', async () => {
+      // Empty CSV should trigger validation error (no data returned)
+      const result = await handler({ seriesIds: ['CPI_UK_ALL'] }, mockContext);
+
+      // Validation now treats no data as an error condition
+      expect(result.status).toBe('error');
+      expect(result.message).toBe('Failed to download UK CPIH data');
+      expect(result.error).toContain('No CPI data returned');
+    });
   });
 
-  it('should handle default series when none specified', async () => {
-    const mockApiResponse = {
-      observations: [
-        {
-          dimensions: {
-            time: {
-              id: 'Jan-2024',
-              label: 'Jan 2024',
-              option: {
-                id: 'Jan-2024',
-                label: 'Jan 2024',
-              },
+  describe('error handling', () => {
+    it('should handle API errors gracefully', async () => {
+      fetchSpy.mockImplementation((url: string) => {
+        if (url.includes('/datasets/cpih01')) {
+          return createMockFetchResponse(
+            {
+              message: 'Internal Server Error',
             },
-            geography: {
-              id: 'uk-only',
-              label: 'United Kingdom',
-              option: {
-                id: 'K02000001',
-                label: 'United Kingdom',
-              },
-            },
-            aggregate: {
-              id: 'cpih1dim1aggid',
-              label: 'CPIH Aggregate',
-              option: {
-                id: 'CP00',
-                label: 'Overall Index',
-              },
-            },
-          },
-          observation: '105.7',
-        },
-      ],
-      limit: 10000,
-      offset: 0,
-      total_count: 1,
-    };
+            false,
+            500,
+          );
+        }
+        return createMockFetchResponse({});
+      });
 
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockApiResponse,
+      const event = { seriesIds: ['CPI_UK_ALL'] };
+      const result = await handler(event, mockContext);
+
+      expect(result.status).toBe('error');
+      expect(result.message).toBe('Failed to download UK CPIH data');
+      expect(result.error).toContain('500');
+    }, 10000);
+
+    it('should handle network errors', async () => {
+      fetchSpy.mockRejectedValue(new Error('Network error'));
+
+      const event = { seriesIds: ['CPI_UK_ALL'] };
+      const result = await handler(event, mockContext);
+
+      expect(result).toMatchObject({
+        status: 'error',
+        message: 'Failed to download UK CPIH data',
+        error: expect.stringContaining('Network error'),
+      });
+    }, 10000);
+
+    it('should handle S3 upload errors', async () => {
+      const mockCsvData = createMockCsvData([
+        { value: '105.7', time: 'Jan-24', series: 'CP00', label: 'Overall Index' },
+      ]);
+
+      fetchSpy.mockImplementation((url: string) => {
+        if (url.includes('/datasets/cpih01') && !url.includes('download.ons.gov.uk')) {
+          return createMockFetchResponse({
+            links: {
+              latest_version: {
+                id: '18',
+              },
+            },
+          });
+        }
+        if (url.includes('download.ons.gov.uk')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            text: async () => mockCsvData,
+          } as Response);
+        }
+        return createMockFetchResponse({});
+      });
+
+      mockPutS3Object.mockRejectedValue(new Error('S3 Access Denied'));
+
+      const event = { seriesIds: ['CPI_UK_ALL'] };
+      const result = await handler(event, mockContext);
+
+      expect(result).toMatchObject({
+        status: 'error',
+        message: 'Failed to download UK CPIH data',
+        error: 'S3 Access Denied',
+      });
     });
 
-    // Test with empty event (should use default)
-    const event = {
-      seriesIds: [
-        {
-          key: 'CPI_UK_ALL',
-          enumValue: CpiSeriesIdUK.CPI_UK_ALL,
-        },
-      ],
-    };
+    it('should handle AppConfig errors', async () => {
+      mockGetAppConfig.mockRejectedValue(new Error('Configuration not found'));
 
-    const result = await lambdaHandler(event, mockContext);
+      const event = { seriesIds: ['CPI_UK_ALL'] };
+      const result = await handler(event, mockContext);
 
-    expect(result.status).toBe('success');
-    expect(result.message).toContain('1 series');
+      expect(result).toMatchObject({
+        status: 'error',
+        message: 'Failed to download UK CPIH data',
+        error: 'Configuration not found',
+      });
+    });
   });
 
-  it('should validate series IDs correctly', async () => {
-    // This test would be handled by the Zod schema validation
-    // which transforms the input and validates the enum keys
-    const mockApiResponse = {
-      observations: [],
-      limit: 10000,
-      offset: 0,
-      total_count: 0,
-    };
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockApiResponse,
+  describe('input validation', () => {
+    it('should reject invalid series IDs', async () => {
+      const event = { seriesIds: ['INVALID_SERIES_ID'] };
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
-    const event = {
-      seriesIds: [
-        {
-          key: 'CPI_UK_ALL',
-          enumValue: CpiSeriesIdUK.CPI_UK_ALL,
-        },
-      ],
-    };
-
-    const result = await lambdaHandler(event, mockContext);
-
-    expect(result.status).toBe('success');
-    // Should handle empty data gracefully
-    expect(result.keys).toHaveLength(1);
-    expect(result.rawKeys).toHaveLength(1);
-  });
-
-  it('should upload data to correct S3 paths', async () => {
-    const mockApiResponse = {
-      observations: [
-        {
-          dimensions: {
-            time: {
-              id: 'Jan-2024',
-              label: 'Jan 2024',
-              option: {
-                id: 'Jan-2024',
-                label: 'Jan 2024',
-              },
-            },
-            geography: {
-              id: 'uk-only',
-              label: 'United Kingdom',
-              option: {
-                id: 'K02000001',
-                label: 'United Kingdom',
-              },
-            },
-            aggregate: {
-              id: 'cpih1dim1aggid',
-              label: 'CPIH Aggregate',
-              option: {
-                id: 'CP00',
-                label: 'Overall Index',
-              },
-            },
-          },
-          observation: '105.7',
-        },
-      ],
-      limit: 10000,
-      offset: 0,
-      total_count: 1,
-    };
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockApiResponse,
+    it('should reject too many series IDs', async () => {
+      const event = { seriesIds: Array(51).fill('CPI_UK_ALL') };
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
-    const event = {
-      seriesIds: [
-        {
-          key: 'CPI_UK_ALL',
-          enumValue: CpiSeriesIdUK.CPI_UK_ALL,
-        },
-      ],
-    };
-
-    const result = await lambdaHandler(event, mockContext);
-
-    expect(result.status).toBe('success');
-
-    // Check S3 upload calls for correct paths
-    const s3Calls = s3Mock.calls();
-    expect(s3Calls).toHaveLength(2); // 1 raw + 1 processed
-
-    // Check raw data path
-    const rawCall = s3Calls.find((call) => call.args[0].input.Key?.includes('cpi/raw/uk/'));
-    expect(rawCall).toBeTruthy();
-    expect(rawCall?.args[0].input.Key).toBe('cpi/raw/uk/CPI_UK_ALL.json');
-
-    // Check processed data path
-    const processedCall = s3Calls.find((call) => call.args[0].input.Key?.includes('cpi/processed/uk/'));
-    expect(processedCall).toBeTruthy();
-    expect(processedCall?.args[0].input.Key).toBe('cpi/processed/uk/CPI_UK_ALL.json');
+    it('should reject empty series IDs array', async () => {
+      const event = { seriesIds: [] };
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
+    });
   });
 });

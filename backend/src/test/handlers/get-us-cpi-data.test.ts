@@ -67,12 +67,12 @@ describe('get-us-cpi-data handler - unit tests', () => {
         status: 'success',
         message: expect.stringContaining('1 series'),
         bucket: 'test-bucket',
-        keys: ['data/us/CPI_U_ALL.json'],
+        keys: ['cpi/processed/us/CPI_U_ALL.json'],
       });
 
       expect(mockPutS3Object).toHaveBeenCalledWith({
         Bucket: 'test-bucket',
-        Key: 'data/us/CPI_U_ALL.json',
+        Key: 'cpi/processed/us/CPI_U_ALL.json',
         Body: expect.stringContaining('2023-01'),
       });
     });
@@ -100,13 +100,24 @@ describe('get-us-cpi-data handler - unit tests', () => {
         status: 'success',
         message: expect.stringContaining('2 series'),
         bucket: 'test-bucket',
-        keys: ['data/us/CPI_U_ALL.json', 'data/us/CPI_U_FOOD.json'],
+        keys: ['cpi/processed/us/CPI_U_ALL.json', 'cpi/processed/us/CPI_U_FOOD.json'],
       });
 
       expect(mockPutS3Object).toHaveBeenCalledTimes(4); // 2 raw + 2 processed
     });
 
     it('should handle custom year ranges', async () => {
+      fetchSpy.mockImplementation(() =>
+        createMockFetchResponse(
+          createMultiSeriesMockBlsResponse([
+            {
+              seriesId: 'CUUR0000SA0',
+              dataPoints: [{ year: '2023', period: 'M01', periodName: 'January', value: '307.026' }],
+            },
+          ]),
+        ),
+      );
+
       const event = {
         startYear: 2020,
         endYear: 2023,
@@ -127,12 +138,11 @@ describe('get-us-cpi-data handler - unit tests', () => {
       );
 
       const result = await handler({ seriesIds: ['CPI_U_ALL'] }, mockContext);
-      expect(result.status).toBe('success');
 
-      // Find the processed data call (not the raw data call)
-      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
-      expect(processedCall).toBeDefined();
-      expect(processedCall![0].Body).toContain('"months":{}');
+      // Validation now treats empty data as an error condition
+      expect(result.status).toBe('error');
+      expect(result.message).toBe('Failed to download CPI data');
+      expect(result.error).toContain('No CPI data returned');
     });
   });
 
@@ -217,17 +227,20 @@ describe('get-us-cpi-data handler - unit tests', () => {
   describe('input validation', () => {
     it('should reject invalid series IDs', async () => {
       const event = { seriesIds: ['INVALID_SERIES_ID'] };
-      await expect(handler(event, mockContext)).rejects.toThrow('Invalid series ID');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject too many series IDs', async () => {
       const event = { seriesIds: Array(51).fill('CPI_U_ALL') };
-      await expect(handler(event, mockContext)).rejects.toThrow('Maximum 50 series IDs allowed');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject empty series IDs array', async () => {
       const event = { seriesIds: [] };
-      await expect(handler(event, mockContext)).rejects.toThrow('At least one series ID is required');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject invalid start year', async () => {
@@ -270,14 +283,14 @@ describe('get-us-cpi-data handler - unit tests', () => {
 
       const s3Calls = mockPutS3Object.mock.calls;
 
-      const cpiAllCall = s3Calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      const cpiAllCall = s3Calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(cpiAllCall).toBeDefined();
       const cpiAllData = JSON.parse(cpiAllCall![0].Body as string);
       expect(Object.keys(cpiAllData.months)).toHaveLength(2);
       expect(cpiAllData.months['2023-01']).toBe(307.026);
       expect(cpiAllData.months['2023-02']).toBe(308.026);
 
-      const cpiFoodCall = s3Calls.find((call) => call[0].Key === 'data/us/CPI_U_FOOD.json');
+      const cpiFoodCall = s3Calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_FOOD.json');
       expect(cpiFoodCall).toBeDefined();
       const cpiFoodData = JSON.parse(cpiFoodCall![0].Body as string);
       expect(Object.keys(cpiFoodData.months)).toHaveLength(1);
@@ -311,7 +324,7 @@ describe('get-us-cpi-data handler - unit tests', () => {
       expect(result.status).toBe('success');
 
       // Find the processed data call (not the raw data call)
-      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(uploadedData.months['2023-01']).toBe(307.026);
@@ -342,7 +355,7 @@ describe('get-us-cpi-data handler - unit tests', () => {
       expect(result.status).toBe('success');
 
       // Find the processed data call (not the raw data call)
-      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'data/us/CPI_U_ALL.json');
+      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(Object.keys(uploadedData.months)).toHaveLength(100);
@@ -399,6 +412,17 @@ describe('get-us-cpi-data handler - unit tests', () => {
 
   describe('middleware integration', () => {
     it('should successfully process requests through middleware', async () => {
+      fetchSpy.mockImplementation(() =>
+        createMockFetchResponse(
+          createMultiSeriesMockBlsResponse([
+            {
+              seriesId: 'CUUR0000SA0',
+              dataPoints: [{ year: '2023', period: 'M01', periodName: 'January', value: '307.026' }],
+            },
+          ]),
+        ),
+      );
+
       const result = await handler({ seriesIds: ['CPI_U_ALL'] }, mockContext);
       expect(result.status).toBe('success');
     });

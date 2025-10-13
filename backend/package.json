@@ -18,16 +18,18 @@
     "@aws-sdk/lib-storage": "^3.817.0",
     "@aws-sdk/s3-request-presigner": "^3.817.0",
     "@middy/core": "^6.3.0",
-    "csv-parse": "^5.6.0",
-    "p-limit": "^6.2.0",
-    "p-retry": "^6.2.1",
+    "csv-parse": "^6.1.0",
+    "p-limit": "^7.1.1",
+    "p-retry": "^7.1.0",
     "unzipper": "^0.12.3",
-    "zod": "^3.25.32"
+    "zod": "^4.1.12"
   },
   "scripts": {
     "unit": "vitest run",
     "unit:watch": "vitest",
     "unit:ui": "vitest --ui",
+    "integration": "echo 'No real integration tests yet - use SAM local invoke for testing'",
+    "test:all": "vitest run",
     "coverage": "vitest run --coverage",
     "lint": "prettier --write 'src/**/*.{js,ts}' && eslint --fix 'src/**/*.{js,ts}'",
     "lint:sam": "sam validate --lint",
@@ -39,7 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
-    "@eslint/json": "^0.12.0",
+    "@eslint/json": "^0.13.2",
     "@types/aws-lambda": "^8.10.109",
     "@types/node": "^22.15.23",
     "@types/unzipper": "^0.10.11",

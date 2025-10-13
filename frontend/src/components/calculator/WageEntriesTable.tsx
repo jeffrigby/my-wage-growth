@@ -153,7 +153,7 @@ export const WageEntriesTable: React.FC = () => {
                   const todaysValue = cpiData 
                     ? adjustToLatestCPI(entry.amount, new Date(entry.date), cpiData, isAnnualEntry, calculationType) 
                     : null;
-                  const previousEntry = index > 0 ? entries[index - 1] : null;
+                  const previousEntry = index > 0 ? entries[index - 1] : undefined;
                   const previousIsAnnual = previousEntry?.entryType.includes('annual') || false;
                   const previousTodaysValue = previousEntry && cpiData 
                     ? adjustToLatestCPI(previousEntry.amount, new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType) 

@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { cpiSlice } from './slices/cpiSlice';
 import { wageEntriesSlice } from './slices/wageEntriesSlice';
@@ -27,13 +27,16 @@ const loadState = () => {
   }
 };
 
+// Create root reducer
+const rootReducer = combineReducers({
+  cpiData: cpiSlice.reducer,
+  wageEntries: wageEntriesSlice.reducer,
+  ui: uiSlice.reducer
+});
+
 // Configure the store
 export const store = configureStore({
-  reducer: {
-    cpiData: cpiSlice.reducer,
-    wageEntries: wageEntriesSlice.reducer,
-    ui: uiSlice.reducer
-  },
+  reducer: rootReducer,
   preloadedState: loadState(),
   devTools: import.meta.env.DEV
 });

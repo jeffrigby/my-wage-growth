@@ -8,7 +8,7 @@ vi.mock('@aws-lambda-powertools/parameters/appconfig', () => ({
   getAppConfig: vi.fn(),
 }));
 
-describe('get-us-cpi-data integration tests', () => {
+describe('get-us-cpi-data handler tests', () => {
   const s3Mock = mockClient(S3Client);
   let handler: (event: unknown, context: unknown) => Promise<{ status: string; [key: string]: unknown }>;
   let mockGetAppConfig: ReturnType<typeof vi.fn>;
@@ -85,7 +85,7 @@ describe('get-us-cpi-data integration tests', () => {
         status: 'success',
         message: expect.stringContaining('1 series'),
         bucket: 'test-bucket',
-        keys: ['data/us/CPI_U_ALL.json'],
+        keys: ['cpi/processed/us/CPI_U_ALL.json'],
       });
 
       expect(s3Mock.commandCalls(PutObjectCommand)).toHaveLength(2); // 1 raw + 1 processed
@@ -93,14 +93,14 @@ describe('get-us-cpi-data integration tests', () => {
       // Check processed data file
       const processedCall = s3Mock
         .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'data/us/CPI_U_ALL.json');
+        .find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       expect(processedCall!.args[0].input.Body).toContain('2023-01');
 
       // Check raw data file
       const rawCall = s3Mock
         .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'data/raw/us/CPI_U_ALL.json');
+        .find((call) => call.args[0].input.Key === 'cpi/raw/us/CPI_U_ALL.json');
       expect(rawCall).toBeDefined();
     });
 
@@ -152,7 +152,7 @@ describe('get-us-cpi-data integration tests', () => {
         status: 'success',
         message: expect.stringContaining('2 series'),
         bucket: 'test-bucket',
-        keys: ['data/us/CPI_U_ALL.json', 'data/us/CPI_U_FOOD.json'],
+        keys: ['cpi/processed/us/CPI_U_ALL.json', 'cpi/processed/us/CPI_U_FOOD.json'],
       });
 
       expect(s3Mock.commandCalls(PutObjectCommand)).toHaveLength(4); // 2 raw + 2 processed
@@ -197,7 +197,7 @@ describe('get-us-cpi-data integration tests', () => {
       // Find the processed data file (not the raw data file)
       const processedCall = s3Mock
         .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'data/us/CPI_U_ALL.json');
+        .find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       expect(processedCall!.args[0].input.Body).toContain('"months":{}');
     });
@@ -398,14 +398,14 @@ describe('get-us-cpi-data integration tests', () => {
 
       const s3Calls = s3Mock.commandCalls(PutObjectCommand);
 
-      const cpiAllCall = s3Calls.find((call) => call.args[0].input.Key === 'data/us/CPI_U_ALL.json');
+      const cpiAllCall = s3Calls.find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(cpiAllCall).toBeDefined();
       const cpiAllData = JSON.parse(cpiAllCall!.args[0].input.Body as string);
       expect(Object.keys(cpiAllData.months)).toHaveLength(2);
       expect(cpiAllData.months['2023-01']).toBe(307.026);
       expect(cpiAllData.months['2023-02']).toBe(308.026);
 
-      const cpiFoodCall = s3Calls.find((call) => call.args[0].input.Key === 'data/us/CPI_U_FOOD.json');
+      const cpiFoodCall = s3Calls.find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_FOOD.json');
       expect(cpiFoodCall).toBeDefined();
       const cpiFoodData = JSON.parse(cpiFoodCall!.args[0].input.Body as string);
       expect(Object.keys(cpiFoodData.months)).toHaveLength(1);
@@ -445,7 +445,7 @@ describe('get-us-cpi-data integration tests', () => {
       // Find the processed data file (not the raw data file)
       const processedCall = s3Mock
         .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'data/us/CPI_U_ALL.json');
+        .find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall!.args[0].input.Body as string);
       expect(uploadedData.months['2023-01']).toBe(307.026);
@@ -508,7 +508,7 @@ describe('get-us-cpi-data integration tests', () => {
       // Find the processed data file (not the raw data file)
       const processedCall = s3Mock
         .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'data/us/CPI_U_ALL.json');
+        .find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall!.args[0].input.Body as string);
       expect(Object.keys(uploadedData.months)).toHaveLength(100);

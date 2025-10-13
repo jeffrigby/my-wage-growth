@@ -30,13 +30,21 @@ const cpiExportEventSchema = z.object({
     .max(50, 'Maximum 50 series IDs allowed')
     .optional()
     .default(['CPI_U_ALL'])
+    .refine(
+      (keys) => {
+        // Validate that all keys exist in the enum
+        return keys.every((key) => key in CpiSeriesId);
+      },
+      (keys) => {
+        const invalidKey = keys.find((key) => !(key in CpiSeriesId));
+        return {
+          message: `Invalid series ID: ${invalidKey}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`,
+        };
+      },
+    )
     .transform((keys): SeriesMapping<CpiSeriesId>[] => {
       return keys.map((key) => {
-        // Validate that the key exists in the enum
-        if (!(key in CpiSeriesId)) {
-          throw new Error(`Invalid series ID: ${key}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`);
-        }
-        // Return both the original key and the enum value
+        // Keys are already validated by refine, safe to transform
         return {
           key,
           enumValue: CpiSeriesId[key as keyof typeof CpiSeriesId],
