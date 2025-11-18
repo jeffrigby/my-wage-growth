@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
-import {
-  createMockLambdaContext,
-  createMockFetchResponse,
-} from '../lib/test-helpers';
+import { createMockLambdaContext, createMockFetchResponse } from '../lib/test-helpers';
 
 // Mock Lambda Powertools and AWS services
 const mockGetAppConfig = vi.fn();
@@ -19,9 +16,7 @@ vi.mock('@/lib/aws.s3', () => ({
 // Helper to create mock CSV data
 function createMockCsvData(data: Array<{ value: string; time: string; series: string; label: string }>): string {
   const header = 'v4_0,mmm-yy,Time,uk-only,Geography,cpih1dim1aggid,Aggregate';
-  const rows = data.map(
-    (d) => `${d.value},${d.time},${d.time},K02000001,United Kingdom,${d.series},${d.label}`,
-  );
+  const rows = data.map((d) => `${d.value},${d.time},${d.time},K02000001,United Kingdom,${d.series},${d.label}`);
   return [header, ...rows].join('\n');
 }
 

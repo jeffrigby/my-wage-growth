@@ -40,7 +40,6 @@
     "local-uk-cpi-data": "sam build && sam local invoke GetUKCPIDataFunction -e events/get-uk-cpi-data-event.json -n config/sandbox.json | jq"
   },
   "devDependencies": {
-    "@eslint/js": "^9.27.0",
     "@eslint/json": "^0.13.2",
     "@types/aws-lambda": "^8.10.109",
     "@types/node": "^22.15.23",
@@ -51,14 +50,7 @@
     "@vitest/ui": "^3.1.4",
     "aws-sdk-client-mock": "^4.1.0",
     "esbuild": "^0.25.5",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.0",
-    "globals": "^16.2.0",
-    "prettier": "^3.5.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0",
     "vitest": "^3.1.4"
   }
 }

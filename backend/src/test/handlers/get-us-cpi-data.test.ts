@@ -324,7 +324,9 @@ describe('get-us-cpi-data handler - unit tests', () => {
       expect(result.status).toBe('success');
 
       // Find the processed data call (not the raw data call)
-      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json');
+      const processedCall = mockPutS3Object.mock.calls.find(
+        (call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json',
+      );
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(uploadedData.months['2023-01']).toBe(307.026);
@@ -355,7 +357,9 @@ describe('get-us-cpi-data handler - unit tests', () => {
       expect(result.status).toBe('success');
 
       // Find the processed data call (not the raw data call)
-      const processedCall = mockPutS3Object.mock.calls.find((call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json');
+      const processedCall = mockPutS3Object.mock.calls.find(
+        (call) => call[0].Key === 'cpi/processed/us/CPI_U_ALL.json',
+      );
       expect(processedCall).toBeDefined();
       const uploadedData = JSON.parse(processedCall![0].Body as string);
       expect(Object.keys(uploadedData.months)).toHaveLength(100);

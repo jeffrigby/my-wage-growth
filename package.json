@@ -1,0 +1,55 @@
+{
+  "name": "my-wage-growth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real Wage Growth Calculator - A monorepo with AWS SAM backend and React frontend",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w frontend",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "compile": "npm run compile --workspaces --if-present",
+    "unit": "npm run unit -w backend",
+    "unit:watch": "npm run unit:watch -w backend",
+    "coverage": "npm run coverage -w backend",
+    "backend:test": "npm run test -w backend",
+    "backend:lint": "npm run lint -w backend",
+    "backend:compile": "npm run compile -w backend",
+    "frontend:dev": "npm run dev -w frontend",
+    "frontend:build": "npm run build -w frontend",
+    "frontend:lint": "npm run lint -w frontend",
+    "frontend:preview": "npm run preview -w frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/my-wage-growth.git"
+  },
+  "keywords": [
+    "wage-growth",
+    "inflation",
+    "cpi",
+    "calculator",
+    "aws-sam",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}

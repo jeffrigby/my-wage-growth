@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
-import {
-  createMockLambdaContext,
-  createMockFetchResponse,
-} from '../lib/test-helpers';
+import { createMockLambdaContext, createMockFetchResponse } from '../lib/test-helpers';
 
 // Mock Lambda Powertools and AWS services
 const mockGetAppConfig = vi.fn();

@@ -134,7 +134,6 @@ NaN,Jan-24,Jan-24,K02000001,United Kingdom,CP00,Overall Index
     });
   });
 
-
   describe('CpiSeriesIdUK enum', () => {
     it('should have all expected UK CPI series identifiers', () => {
       expect(CpiSeriesIdUK.CPI_UK_ALL).toBe('CP00');

@@ -6,23 +6,71 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Real Wage Growth Calculator application that helps users understand how their earnings growth compares to inflation over time. The architecture uses AWS serverless services with a SAM-based backend and a React frontend.
 
+## Monorepo Structure
+
+This project uses **npm workspaces** to manage the monorepo:
+
+- **Root**: Contains workspace configuration and shared dependencies
+- **backend/**: AWS SAM backend application (my-wage-growth-backend)
+- **frontend/**: React frontend application (my-wage-growth-fe)
+
+### Workspace Benefits
+- Single `npm install` at root installs all dependencies
+- Shared dependencies hoisted to root (reduces duplication)
+- Consistent dependency versions across packages
+- Simplified dependency management
+
+### Workspace Commands
+
+Run commands from the **root directory** using the `-w` flag:
+
+```bash
+# Installation (from root)
+npm install                    # Install all workspace dependencies
+
+# Run commands in specific workspaces
+npm run dev -w frontend        # Start frontend dev server
+npm run unit -w backend        # Run backend unit tests
+npm run lint -w backend        # Lint backend code
+npm run build -w frontend      # Build frontend
+
+# Run commands across all workspaces
+npm run lint                   # Lint all workspaces
+npm run test                   # Test all workspaces
+npm run build                  # Build all workspaces
+
+# Convenience scripts (from root)
+npm run dev                    # Alias for frontend dev server
+npm run unit                   # Alias for backend unit tests
+npm run backend:test           # Run backend tests
+npm run frontend:build         # Build frontend
+```
+
+You can also run workspace commands from within their directories:
+```bash
+cd backend && npm run unit     # Same as: npm run unit -w backend
+cd frontend && npm run dev     # Same as: npm run dev -w frontend
+```
+
 ## Development Commands
+
+**Note**: Commands below can be run from within each workspace directory (cd backend/ or cd frontend/) or from the root using `-w workspace-name`. See "Workspace Commands" section above.
 
 ### Backend Development
 ```bash
-# Testing
+# Testing (from backend/ or root with -w backend)
 npm run unit              # Run unit tests once
-npm run unit:watch        # Run tests in watch mode  
+npm run unit:watch        # Run tests in watch mode
 npm run unit:ui           # Run tests with UI interface
 npm run coverage          # Generate coverage report
 
-# Code Quality
+# Code Quality (from backend/ or root with -w backend)
 npm run lint              # Format and lint code
 npm run compile           # TypeScript compilation check
 npm run test              # Compile + run all tests
 npm run lint:sam          # Validate SAM template
 
-# Local Development
+# Local Development (from backend/ or root with -w backend)
 npm run local-us-cpi-data        # Test US CPI Lambda function locally with SAM
 npm run local-canadian-cpi-data  # Test Canadian CPI Lambda function locally with SAM
 npm run local-uk-cpi-data        # Test UK CPI Lambda function locally with SAM
@@ -36,7 +84,7 @@ sam local invoke          # Test Lambda functions locally
 
 ### Frontend Development
 ```bash
-# Development
+# Development (from frontend/ or root with -w frontend)
 npm run dev               # Start Vite dev server (port 5173)
 npm run build             # Type-check and build for production
 npm run preview           # Preview production build
@@ -157,6 +205,13 @@ frontend/src/
 
 ## Recent Updates
 
+### Infrastructure
+1. **npm Workspaces**: Converted monorepo to use npm workspaces
+   - Single root `package.json` with workspace configuration
+   - Shared dependencies hoisted to root `node_modules`
+   - Single `package-lock.json` at root for consistent versioning
+   - Convenience scripts for cross-workspace commands
+
 ### Backend
 1. **CORS Configuration**: Added `AllowedOrigins` parameter for production deployments
 2. **S3 CORS Rules**: Configured bucket CORS for frontend access
@@ -198,6 +253,8 @@ s3://bucket/
 ## Development Guidelines
 
 ### General
+- **Workspace setup**: Run `npm install` from root to install all dependencies
+- **Running commands**: Use `-w workspace-name` from root or cd into workspace directory
 - Always run linting after modifying code: `npm run lint`
 - Use conventional commit messages
 - Test locally before deploying
