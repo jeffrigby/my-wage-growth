@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
-import { createMockLambdaContext, createMockFetchResponse } from '../lib/test-helpers';
+import { createMockLambdaContext } from '../lib/test-helpers';
+import type { CpiDataPoint } from '@/lib/cpi-shared';
 
 // Mock Lambda Powertools and AWS services
 const mockGetAppConfig = vi.fn();
 const mockPutS3Object = vi.fn();
+const mockFetchAllCpiData = vi.fn();
 
 vi.mock('@aws-lambda-powertools/parameters/appconfig', () => ({
   getAppConfig: mockGetAppConfig,
@@ -13,15 +15,47 @@ vi.mock('@/lib/aws.s3', () => ({
   putS3Object: mockPutS3Object,
 }));
 
+// Mock the stats-canada-api module to avoid complex ZIP/CSV operations
+vi.mock('@/lib/stats-canada-api', () => ({
+  fetchAllCpiData: mockFetchAllCpiData,
+  CpiSeriesIdCanada: {
+    CPI_CA_ALL: 'v41690973',
+    CPI_CA_FOOD: 'v41690974',
+    CPI_CA_SHELTER: 'v41691050',
+    CPI_CA_HOUSEHOLD: 'v41691067',
+    CPI_CA_CLOTHING: 'v41691108',
+    CPI_CA_TRANSPORTATION: 'v41691128',
+    CPI_CA_HEALTH: 'v41691153',
+    CPI_CA_RECREATION: 'v41691170',
+    CPI_CA_ALCOHOL_TOBACCO: 'v41691206',
+    CPI_CA_CORE: 'v41691233',
+  },
+}));
+
+/**
+ * Helper to generate mock CPI data points that pass validation
+ */
+function generateMockCpiData(seriesId: string, months: number = 12): CpiDataPoint[] {
+  return Array.from({ length: months }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    return {
+      seriesId,
+      year: date.getFullYear(),
+      period: `M${String(date.getMonth() + 1).padStart(2, '0')}`,
+      periodName: date.toLocaleString('default', { month: 'long' }),
+      value: 160 + Math.random() * 10,
+      date,
+      footnotes: [],
+    };
+  });
+}
+
 describe('get-canadian-cpi-data handler - unit tests', () => {
   let handler: (event: unknown, context: unknown) => Promise<{ status: string; [key: string]: unknown }>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
   const mockContext = createMockLambdaContext();
 
   beforeAll(async () => {
-    // Set up fetch spy
-    fetchSpy = vi.spyOn(global, 'fetch') as ReturnType<typeof vi.spyOn>;
-
     // Import handler after mocks are set up
     const handlerModule = await import('@/handlers/get-canadian-cpi-data');
     handler = handlerModule.handler;
@@ -33,32 +67,13 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
     // Default successful mocks
     mockGetAppConfig.mockResolvedValue({});
     mockPutS3Object.mockResolvedValue({});
-    fetchSpy.mockImplementation(() =>
-      createMockFetchResponse({
-        object: [],
-      }),
-    );
+    // Default: return valid data for CPI_CA_ALL
+    mockFetchAllCpiData.mockResolvedValue(generateMockCpiData('v41690973'));
   });
 
   describe('successful execution', () => {
     it('should process single series with default parameters', async () => {
-      const mockStatsCanResponse = {
-        object: [
-          {
-            refPer: '2024-01',
-            vectorId: 'v41690973',
-            value: '163.4',
-          },
-          {
-            refPer: '2024-02',
-            vectorId: 'v41690973',
-            value: '164.1',
-          },
-        ],
-      };
-
-      fetchSpy.mockImplementation(() => createMockFetchResponse(mockStatsCanResponse));
-
+      // Default mock is already set in beforeEach
       const result = await handler({}, mockContext);
 
       expect(result).toMatchObject({
@@ -75,22 +90,12 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
     });
 
     it('should process multiple series successfully', async () => {
-      const mockStatsCanResponse = {
-        object: [
-          {
-            refPer: '2024-01',
-            vectorId: 'v41690973',
-            value: '163.4',
-          },
-          {
-            refPer: '2024-01',
-            vectorId: 'v41690974',
-            value: '194.5',
-          },
-        ],
-      };
-
-      fetchSpy.mockImplementation(() => createMockFetchResponse(mockStatsCanResponse));
+      // Mock data for two series
+      const mockData = [
+        ...generateMockCpiData('v41690973'), // CPI_CA_ALL
+        ...generateMockCpiData('v41690974'), // CPI_CA_FOOD
+      ];
+      mockFetchAllCpiData.mockResolvedValue(mockData);
 
       const event = { seriesIds: ['CPI_CA_ALL', 'CPI_CA_FOOD'] };
       const result = await handler(event, mockContext);
@@ -108,33 +113,18 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
       expect(mockPutS3Object).toHaveBeenCalledTimes(4);
     });
 
-    it('should handle empty data gracefully', async () => {
-      const mockStatsCanResponse = {
-        object: [],
-      };
-
-      fetchSpy.mockImplementation(() => createMockFetchResponse(mockStatsCanResponse));
+    it('should handle empty data as validation error', async () => {
+      mockFetchAllCpiData.mockResolvedValue([]);
 
       const result = await handler({ seriesIds: ['CPI_CA_ALL'] }, mockContext);
 
-      expect(result.status).toBe('success');
-      expect(result.keys).toHaveLength(1);
-      expect(result.rawKeys).toHaveLength(1);
+      // Empty data now fails validation (critical error: no data returned)
+      expect(result.status).toBe('error');
+      expect(result.error).toContain('No CPI data returned from API');
     });
 
     it('should upload data to correct S3 paths', async () => {
-      const mockStatsCanResponse = {
-        object: [
-          {
-            refPer: '2024-01',
-            vectorId: 'v41690973',
-            value: '163.4',
-          },
-        ],
-      };
-
-      fetchSpy.mockImplementation(() => createMockFetchResponse(mockStatsCanResponse));
-
+      // Default mock is already set in beforeEach
       const event = { seriesIds: ['CPI_CA_ALL'] };
       const result = await handler(event, mockContext);
 
@@ -158,15 +148,7 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
 
   describe('error handling', () => {
     it('should handle API errors gracefully', async () => {
-      fetchSpy.mockImplementation(() =>
-        createMockFetchResponse(
-          {
-            message: 'Internal Server Error',
-          },
-          false,
-          500,
-        ),
-      );
+      mockFetchAllCpiData.mockRejectedValue(new Error('HTTP 500: Internal Server Error'));
 
       const event = { seriesIds: ['CPI_CA_ALL'] };
       const result = await handler(event, mockContext);
@@ -177,7 +159,7 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
     });
 
     it('should handle network errors', async () => {
-      fetchSpy.mockRejectedValue(new Error('Network error'));
+      mockFetchAllCpiData.mockRejectedValue(new Error('Network error'));
 
       const event = { seriesIds: ['CPI_CA_ALL'] };
       const result = await handler(event, mockContext);
@@ -187,20 +169,10 @@ describe('get-canadian-cpi-data handler - unit tests', () => {
         message: 'Failed to download Canadian CPI data',
         error: expect.stringContaining('Network error'),
       });
-    }, 10000);
+    });
 
     it('should handle S3 upload errors', async () => {
-      const mockStatsCanResponse = {
-        object: [
-          {
-            refPer: '2024-01',
-            vectorId: 'v41690973',
-            value: '163.4',
-          },
-        ],
-      };
-
-      fetchSpy.mockImplementation(() => createMockFetchResponse(mockStatsCanResponse));
+      // Default mock provides valid data, but S3 upload fails
       mockPutS3Object.mockRejectedValue(new Error('S3 Access Denied'));
 
       const event = { seriesIds: ['CPI_CA_ALL'] };

@@ -172,7 +172,7 @@ async function fetchDataChunk(
     },
     {
       retries: config.retryAttempts,
-      onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
+      onFailedAttempt: ({ attemptNumber, retriesLeft }) => {
         console.warn(`Attempt ${attemptNumber} failed. ${retriesLeft} retries left.`);
       },
     },

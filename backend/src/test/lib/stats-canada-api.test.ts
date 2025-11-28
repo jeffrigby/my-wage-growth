@@ -1,12 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  fetchAllCpiData,
-  fetchRecentCpiData,
-  CpiSeriesIdCanada,
-  getFullTableDownloadUrl,
-} from '@/lib/stats-canada-api';
-import * as fs from 'node:fs/promises';
-import { Readable } from 'node:stream';
+import { fetchRecentCpiData, CpiSeriesIdCanada, getFullTableDownloadUrl } from '@/lib/stats-canada-api';
 
 // Mock fetch globally
 const mockFetch = vi.fn();

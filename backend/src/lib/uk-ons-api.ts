@@ -166,7 +166,7 @@ async function fetchCsvData(config: Required<OnsConfig>): Promise<CpiDataPoint[]
     },
     {
       retries: config.retryAttempts,
-      onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
+      onFailedAttempt: ({ attemptNumber, retriesLeft }) => {
         console.warn(`Attempt ${attemptNumber} failed. ${retriesLeft} retries left.`);
       },
     },

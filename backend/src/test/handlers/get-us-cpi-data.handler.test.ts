@@ -159,10 +159,23 @@ describe('get-us-cpi-data handler tests', () => {
     });
 
     it('should handle custom year ranges', async () => {
+      // Generate recent data points to pass validation
+      const recentData = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        return {
+          year: String(date.getFullYear()),
+          period: `M${String(date.getMonth() + 1).padStart(2, '0')}`,
+          periodName: date.toLocaleString('default', { month: 'long' }),
+          value: String(300 + i),
+          footnotes: [],
+        };
+      });
+
       fetchSpy.mockImplementation(() =>
         createMockFetchResponse({
           status: 'REQUEST_SUCCEEDED',
-          Results: { series: [{ seriesID: 'CUUR0000SA0', data: [] }] },
+          Results: { series: [{ seriesID: 'CUUR0000SA0', data: recentData }] },
         }),
       );
 
@@ -192,14 +205,9 @@ describe('get-us-cpi-data handler tests', () => {
       const event = { seriesIds: ['CPI_U_ALL'] };
       const result = await handler(event, mockContext);
 
-      expect(result.status).toBe('success');
-
-      // Find the processed data file (not the raw data file)
-      const processedCall = s3Mock
-        .commandCalls(PutObjectCommand)
-        .find((call) => call.args[0].input.Key === 'cpi/processed/us/CPI_U_ALL.json');
-      expect(processedCall).toBeDefined();
-      expect(processedCall!.args[0].input.Body).toContain('"months":{}');
+      // Empty data now fails validation (critical error: no data returned)
+      expect(result.status).toBe('error');
+      expect(result.error).toContain('No CPI data returned from API');
     });
   });
 
@@ -303,7 +311,8 @@ describe('get-us-cpi-data handler tests', () => {
         seriesIds: ['INVALID_SERIES_ID'],
       };
 
-      await expect(handler(event, mockContext)).rejects.toThrow('Invalid series ID');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject too many series IDs', async () => {
@@ -312,7 +321,8 @@ describe('get-us-cpi-data handler tests', () => {
         seriesIds: tooManySeriesIds,
       };
 
-      await expect(handler(event, mockContext)).rejects.toThrow('Maximum 50 series IDs allowed');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject empty series IDs array', async () => {
@@ -320,7 +330,8 @@ describe('get-us-cpi-data handler tests', () => {
         seriesIds: [],
       };
 
-      await expect(handler(event, mockContext)).rejects.toThrow('At least one series ID is required');
+      // Parser middleware returns generic "Failed to parse schema" for Zod validation errors
+      await expect(handler(event, mockContext)).rejects.toThrow('Failed to parse schema');
     });
 
     it('should reject invalid start year', async () => {
@@ -454,10 +465,23 @@ describe('get-us-cpi-data handler tests', () => {
 
   describe('middleware integration', () => {
     it('should log event details through middleware', async () => {
+      // Generate recent data points to pass validation
+      const recentData = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        return {
+          year: String(date.getFullYear()),
+          period: `M${String(date.getMonth() + 1).padStart(2, '0')}`,
+          periodName: date.toLocaleString('default', { month: 'long' }),
+          value: String(300 + i),
+          footnotes: [],
+        };
+      });
+
       fetchSpy.mockImplementation(() =>
         createMockFetchResponse({
           status: 'REQUEST_SUCCEEDED',
-          Results: { series: [{ seriesID: 'CUUR0000SA0', data: [] }] },
+          Results: { series: [{ seriesID: 'CUUR0000SA0', data: recentData }] },
         }),
       );
 
