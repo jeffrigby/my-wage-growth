@@ -40,6 +40,12 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref WageGrowthBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - appconfig:StartConfigurationSession
+                - appconfig:GetLatestConfiguration
+              Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -73,6 +79,12 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref WageGrowthBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - appconfig:StartConfigurationSession
+                - appconfig:GetLatestConfiguration
+              Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -104,6 +116,12 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref WageGrowthBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - appconfig:StartConfigurationSession
+                - appconfig:GetLatestConfiguration
+              Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
