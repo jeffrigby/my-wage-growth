@@ -214,9 +214,33 @@ export const WageEntryModal: React.FC = () => {
           {errors.amount && (
             <p className="text-xs text-[var(--error)]">{errors.amount}</p>
           )}
-          <p className="text-xs text-[var(--text-muted)]">
-            Use pre-tax {entryMode === 'annual' ? 'salary' : 'amount'}
-          </p>
+          <div className="text-xs text-[var(--text-muted)]">
+            <p>
+              {entryMode === 'annual' ? (
+                <>
+                  Enter your total pre-tax annual earnings including base salary, bonuses, and other compensation.{' '}
+                  {country === 'US' && 'Find this on your W-2 (Box 3 or 5) or year-end pay stub.'}
+                  {country === 'CA' && 'Find this on your T4 slip (Box 14) or year-end pay stub.'}
+                  {country === 'UK' && 'Find this on your P60 or year-end payslip.'}
+                </>
+              ) : (
+                <>
+                  Enter your gross (pre-tax) paycheck amount before any deductions.{' '}
+                  {country === 'US' && 'Check the "Gross Pay" line on your pay stub, not the "Net Pay" you receive.'}
+                  {country === 'CA' && 'Check the "Gross Earnings" on your pay stub, before CPP/EI deductions.'}
+                  {country === 'UK' && 'Check "Gross Pay" on your payslip, before PAYE and NI deductions.'}
+                </>
+              )}{' '}
+              <a
+                href="/help/pre-tax"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--primary)] hover:underline"
+              >
+                Learn more
+              </a>
+            </p>
+          </div>
         </div>
 
         {/* Label */}

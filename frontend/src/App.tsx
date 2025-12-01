@@ -8,6 +8,7 @@ import { MainLayout } from './components/layout/MainLayout';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { SharedResultsPage } from './pages/SharedResultsPage';
+import { PreTaxHelpPage } from './pages/PreTaxHelpPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/shared/:encodedData" element={<SharedResultsPage />} />
+                <Route path="/help/pre-tax" element={<PreTaxHelpPage />} />
               </Routes>
             </MainLayout>
           </Router>
