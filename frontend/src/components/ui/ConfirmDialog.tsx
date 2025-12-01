@@ -28,16 +28,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onCancel}
           />
-          
-          {/* Dialog */}
+
           <motion.div
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
@@ -45,34 +43,29 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="glass-card p-6 max-w-md w-full shadow-xl"
-              initial={{ scale: 0.95, y: 20 }}
+              className="card-elevated p-6 max-w-sm w-full"
+              initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
+              exit={{ scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-primary flex items-center space-x-2">
-                  <i className="fas fa-exclamation-triangle text-yellow-500"></i>
-                  <span>{title}</span>
-                </h3>
-              </div>
-              
-              <p className="text-secondary mb-6">
+              <h3
+                className="text-lg font-medium mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                {title}
+              </h3>
+
+              <p className="text-[var(--text-secondary)] text-sm mb-6">
                 {message}
               </p>
-              
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={onCancel}
-                  className="btn-secondary px-4 py-2 rounded-lg"
-                >
+
+              <div className="flex justify-end gap-3">
+                <button onClick={onCancel} className="btn-secondary">
                   {cancelText}
                 </button>
-                <button
-                  onClick={onConfirm}
-                  className={`${confirmButtonClass} px-4 py-2 rounded-lg`}
-                >
+                <button onClick={onConfirm} className={confirmButtonClass}>
                   {confirmText}
                 </button>
               </div>

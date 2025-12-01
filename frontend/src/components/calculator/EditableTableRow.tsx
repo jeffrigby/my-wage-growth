@@ -49,10 +49,9 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   const [editedAmount, setEditedAmount] = useState('');
   const [editedLabel, setEditedLabel] = useState('');
   const [errors, setErrors] = useState<{ date?: string; amount?: string }>({});
-  
+
   const dateInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize edit values when entering edit mode
   useEffect(() => {
     if (isEditing) {
       const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
@@ -60,8 +59,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
       setEditedAmount(entry.amount.toString());
       setEditedLabel(entry.label || '');
       setErrors({});
-      
-      // Focus on first input
+
       setTimeout(() => dateInputRef.current?.focus(), 100);
     }
   }, [isEditing, entry, entryMode]);
@@ -81,47 +79,44 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
 
   const validateInputs = (): boolean => {
     const newErrors: { date?: string; amount?: string } = {};
-    
-    // Validate date
+
     try {
       const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
       const parsedDate = parse(editedDate, dateFormat, new Date());
-      
+
       if (isNaN(parsedDate.getTime())) {
-        newErrors.date = 'Invalid date';
+        newErrors.date = 'Invalid';
       } else {
         const year = parsedDate.getFullYear();
         if (year < VALIDATION.MIN_YEAR || year > VALIDATION.MAX_YEAR) {
-          newErrors.date = `Year must be between ${VALIDATION.MIN_YEAR} and ${VALIDATION.MAX_YEAR}`;
+          newErrors.date = `${VALIDATION.MIN_YEAR}-${VALIDATION.MAX_YEAR}`;
         }
       }
     } catch {
-      newErrors.date = 'Invalid date format';
+      newErrors.date = 'Invalid';
     }
-    
-    // Validate amount
+
     const amount = parseFloat(editedAmount);
     if (isNaN(amount) || amount <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = 'Invalid';
     } else if (amount > VALIDATION.MAX_WAGE_AMOUNT) {
-      newErrors.amount = `Amount too high`;
+      newErrors.amount = 'Too high';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSave = () => {
     if (!validateInputs()) return;
-    
+
     const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
     const parsedDate = parse(editedDate, dateFormat, new Date());
-    
-    // If annual mode, set to January 1st of that year
+
     if (entryMode === 'annual') {
       parsedDate.setMonth(0, 1);
     }
-    
+
     dispatch(updateWageEntry({
       id: entry.id,
       updates: {
@@ -130,7 +125,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         label: editedLabel.trim() || undefined
       }
     }));
-    
+
     setIsEditing(false);
   };
 
@@ -143,76 +138,66 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
     }
   };
 
-  const displayDate = entryMode === 'annual' 
+  const displayDate = entryMode === 'annual'
     ? format(new Date(entry.date), DATE_FORMATS.DISPLAY_YEAR_ONLY)
     : format(new Date(entry.date), DATE_FORMATS.DISPLAY);
 
   if (isEditing) {
     return (
-      <tr className="border-b border-border">
-        <td className="py-3 px-2 sm:px-4">
+      <tr>
+        <td className="pl-6">
           <input
             ref={dateInputRef}
             type={entryMode === 'annual' ? 'number' : 'date'}
             value={editedDate}
             onChange={(e) => setEditedDate(e.target.value)}
             onKeyDown={handleKeyDown}
-            className={`w-full px-2 py-1 rounded border ${
-              errors.date ? 'border-red-500' : 'border-border'
-            } bg-background text-primary`}
-            placeholder={entryMode === 'annual' ? 'YYYY' : 'YYYY-MM-DD'}
+            className={`w-28 px-2 py-1.5 text-sm ${errors.date ? 'border-[var(--error)]' : ''}`}
+            placeholder={entryMode === 'annual' ? 'YYYY' : ''}
           />
-          {errors.date && (
-            <p className="text-xs text-red-500 mt-1">{errors.date}</p>
-          )}
         </td>
-        <td className="py-3 px-2 sm:px-4">
+        <td>
           <input
             type="text"
             value={editedLabel}
             onChange={(e) => setEditedLabel(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-2 py-1 rounded border border-border bg-background text-primary"
-            placeholder="Optional label"
+            className="w-full px-2 py-1.5 text-sm"
+            placeholder="Label"
           />
         </td>
-        <td className="py-3 px-2 sm:px-4">
+        <td>
           <input
             type="number"
             value={editedAmount}
             onChange={(e) => setEditedAmount(e.target.value)}
             onKeyDown={handleKeyDown}
-            className={`w-full px-2 py-1 rounded border text-right ${
-              errors.amount ? 'border-red-500' : 'border-border'
-            } bg-background text-primary`}
+            className={`w-28 px-2 py-1.5 text-sm text-right ${errors.amount ? 'border-[var(--error)]' : ''}`}
             placeholder="0"
             step="0.01"
           />
-          {errors.amount && (
-            <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
-          )}
         </td>
-        <td className="py-3 px-2 sm:px-4 hidden sm:table-cell">
-          {/* Skip today's value column when editing */}
-        </td>
-        <td className="py-3 px-2 sm:px-4">
-          {/* Skip % change column when editing */}
-        </td>
-        <td className="py-3 px-2 sm:px-4">
-          <div className="flex items-center justify-center space-x-2">
+        <td className="hidden sm:table-cell" />
+        <td />
+        <td className="pr-6">
+          <div className="flex items-center justify-center gap-1">
             <button
               onClick={handleSave}
-              className="p-2 rounded hover:bg-surface-hover text-accent transition-colors"
-              aria-label="Save changes"
+              className="p-1.5 rounded hover:bg-[var(--accent-light)] text-[var(--accent)]"
+              aria-label="Save"
             >
-              <i className="fas fa-check"></i>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </button>
             <button
               onClick={handleCancel}
-              className="p-2 rounded hover:bg-surface-hover text-muted transition-colors"
-              aria-label="Cancel editing"
+              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)]"
+              aria-label="Cancel"
             >
-              <i className="fas fa-times"></i>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </td>
@@ -223,87 +208,91 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   return (
     <>
       <motion.tr
-        className="border-b border-border hover:bg-surface-hover transition-colors group"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.3, delay: index * 0.05 }}
+        className="group"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, delay: index * 0.03 }}
       >
-      <td className="py-3 px-2 sm:px-4">
-        <span className="font-medium">{displayDate}</span>
-      </td>
-      <td className="py-3 px-2 sm:px-4">
-        <span className="text-secondary">
-          {entry.label || <span className="text-muted italic">—</span>}
-        </span>
-      </td>
-      <td className="py-3 px-2 sm:px-4 text-right">
-        <span className="font-mono font-medium">
+        <td className="pl-6 font-medium">{displayDate}</td>
+        <td className="text-[var(--text-secondary)]">
+          {entry.label || <span className="text-[var(--text-muted)]">—</span>}
+        </td>
+        <td className="text-right font-medium tabular-nums">
           {formatCurrency(entry.amount)}
-        </span>
-      </td>
-      <td className="py-3 px-2 sm:px-4 text-right hidden sm:table-cell">
-        {cpiDataLoaded ? (
-          <span className="font-mono text-accent" title="Adjusted for inflation to latest available data">
-            {todaysValue ? formatCurrency(todaysValue) : '—'}
-          </span>
-        ) : (
-          <span className="text-muted text-sm">...</span>
-        )}
-      </td>
-      <td className="py-3 px-2 sm:px-4 text-right">
-        {index > 0 && cpiDataLoaded ? (
-          <div className="text-sm">
-            <div className={`font-medium ${getPercentageColorClass(nominalChange)}`} title="Nominal wage change">
-              {formatPercentage(nominalChange)}
+        </td>
+        <td className="text-right hidden sm:table-cell">
+          {cpiDataLoaded ? (
+            <span className="text-[var(--accent)] tabular-nums">
+              {todaysValue ? formatCurrency(todaysValue) : '—'}
+            </span>
+          ) : (
+            <span className="text-[var(--text-muted)]">...</span>
+          )}
+        </td>
+        <td className="text-right">
+          {index > 0 && cpiDataLoaded ? (
+            <div>
+              <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
+                {formatPercentage(nominalChange)}
+              </div>
+              <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
+                real: {formatPercentage(realChange)}
+              </div>
             </div>
-            <div className={`text-xs ${getPercentageColorClass(realChange)}`} title="Real wage change (inflation-adjusted)">
-              real: {formatPercentage(realChange)}
-            </div>
+          ) : (
+            <span className="text-[var(--text-muted)]">—</span>
+          )}
+        </td>
+        <td className="pr-6">
+          <div className="flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => setShowCalculations(true)}
+              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              aria-label="Details"
+              title="Show details"
+              disabled={!cpiDataLoaded}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+              </svg>
+            </button>
+            <button
+              onClick={handleEditInModal}
+              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              aria-label="Edit"
+              title="Edit"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+            <button
+              onClick={handleEdit}
+              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              aria-label="Quick edit"
+              title="Quick edit"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </button>
+            <button
+              onClick={onDelete}
+              className="p-1.5 rounded hover:bg-[var(--primary-light)] text-[var(--text-muted)] hover:text-[var(--error)]"
+              aria-label="Delete"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </button>
           </div>
-        ) : (
-          <span className="text-muted">—</span>
-        )}
-      </td>
-      <td className="py-3 px-2 sm:px-4">
-        <div className="flex items-center justify-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => setShowCalculations(true)}
-            className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-primary transition-colors"
-            aria-label="Show calculations"
-            title="Show calculation details"
-            disabled={!cpiDataLoaded}
-          >
-            <i className="fas fa-calculator"></i>
-          </button>
-          <button
-            onClick={handleEditInModal}
-            className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-primary transition-colors"
-            aria-label="Edit entry"
-            title="Edit in modal"
-          >
-            <i className="fas fa-edit"></i>
-          </button>
-          <button
-            onClick={handleEdit}
-            className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-primary transition-colors"
-            aria-label="Quick edit"
-            title="Quick edit inline"
-          >
-            <i className="fas fa-pen"></i>
-          </button>
-          <button
-            onClick={onDelete}
-            className="p-2 rounded hover:bg-surface-hover text-secondary hover:text-red-500 transition-colors"
-            aria-label="Delete entry"
-          >
-            <i className="fas fa-trash"></i>
-          </button>
-        </div>
-      </td>
+        </td>
       </motion.tr>
-      
-      {/* Calculation Details Modal */}
+
       <CalculationDetails
         isOpen={showCalculations}
         onClose={() => setShowCalculations(false)}

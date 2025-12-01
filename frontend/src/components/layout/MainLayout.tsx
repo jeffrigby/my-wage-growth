@@ -9,12 +9,10 @@ interface MainLayoutProps extends BaseComponentProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children, className = '' }) => {
   return (
-    <div className={`min-h-screen flex flex-col ${className}`}>
+    <div className={`min-h-screen flex flex-col bg-[var(--background)] ${className}`}>
       <Header />
-      <main className="flex-1 w-full">
-        <div className="container mx-auto px-4 py-8">
-          {children}
-        </div>
+      <main className="flex-1">
+        {children}
       </main>
       <Footer />
     </div>
