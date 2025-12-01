@@ -79,8 +79,11 @@ const wageEntriesSlice = createSlice({
       const { country, currency } = action.payload;
       state.country = country;
       state.currency = currency;
-      // Clear entries when changing countries as CPI data differs
-      state.entries = [];
+      // Update currency on all existing entries to match new country
+      state.entries = state.entries.map(entry => ({
+        ...entry,
+        currency
+      }));
     },
     
     setEntryMode: (state, action: PayloadAction<EntryMode>) => {

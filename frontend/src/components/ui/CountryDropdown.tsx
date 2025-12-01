@@ -11,8 +11,6 @@ export const CountryDropdown: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const currentCountry = useAppSelector(state => state.wageEntries.country);
-  const hasEntries = useAppSelector(state => state.wageEntries.entries.length > 0);
-
   const countryInfo = COUNTRIES[currentCountry];
 
   useEffect(() => {
@@ -36,19 +34,12 @@ export const CountryDropdown: React.FC = () => {
   };
 
   const handleCountrySelect = (countryCode: Country) => {
-    const newCountryInfo = COUNTRIES[countryCode];
-
-    if (hasEntries && countryCode !== currentCountry) {
-      const confirmed = window.confirm(
-        `Switch to ${newCountryInfo.name}? This will clear your entries.`
-      );
-
-      if (!confirmed) {
-        setIsOpen(false);
-        return;
-      }
+    if (countryCode === currentCountry) {
+      setIsOpen(false);
+      return;
     }
 
+    const newCountryInfo = COUNTRIES[countryCode];
     dispatch(setCountry({
       country: countryCode,
       currency: newCountryInfo.currency
