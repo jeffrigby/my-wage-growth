@@ -17,7 +17,7 @@ export const COUNTRIES: Record<string, CountryMetadata> = {
     code: 'CA',
     name: 'Canada',
     currency: 'CAD',
-    currencySymbol: 'C$',
+    currencySymbol: 'Can$',
     flag: '🇨🇦',
     cpiSource: 'Statistics Canada',
     cpiDescription: 'Consumer Price Index (CPI)'

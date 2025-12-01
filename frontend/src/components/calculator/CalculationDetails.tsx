@@ -12,7 +12,6 @@ interface CalculationDetailsProps {
   previousEntry?: WageEntry;
   cpiData: CPIData | null;
   calculationType: TableSettings['cpiCalculationType'];
-  currency: string;
   country: string;
 }
 
@@ -23,7 +22,6 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
   previousEntry,
   cpiData,
   calculationType,
-  currency,
   country
 }) => {
   if (!cpiData) {
@@ -71,12 +69,11 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
+    const formatted = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount);
+    return `${countryInfo.currencySymbol}${formatted}`;
   };
 
   return (

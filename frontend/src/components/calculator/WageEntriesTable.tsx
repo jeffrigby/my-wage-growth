@@ -16,7 +16,6 @@ export const WageEntriesTable: React.FC = () => {
   const dispatch = useAppDispatch();
   const entries = useAppSelector(state => state.wageEntries.entries);
   const country = useAppSelector(state => state.wageEntries.country);
-  const currency = useAppSelector(state => state.wageEntries.currency);
   const entryMode = useAppSelector(state => state.wageEntries.entryMode);
   const calculationType = useAppSelector(state => state.wageEntries.tableSettings.cpiCalculationType);
   const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
@@ -62,12 +61,11 @@ export const WageEntriesTable: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
+    const formatted = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
+    return `${countryInfo.currencySymbol}${formatted}`;
   };
 
   return (
@@ -164,7 +162,6 @@ export const WageEntriesTable: React.FC = () => {
                       previousEntry={previousEntry}
                       cpiData={cpiData}
                       calculationType={calculationType}
-                      currency={currency}
                       country={country}
                     />
                   );

@@ -22,7 +22,6 @@ interface EditableTableRowProps {
   previousEntry?: WageEntry;
   cpiData: CPIData | null;
   calculationType: TableSettings['cpiCalculationType'];
-  currency: string;
   country: string;
 }
 
@@ -39,7 +38,6 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   previousEntry,
   cpiData,
   calculationType,
-  currency,
   country
 }) => {
   const dispatch = useAppDispatch();
@@ -407,7 +405,6 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         previousEntry={previousEntry}
         cpiData={cpiData}
         calculationType={calculationType}
-        currency={currency}
         country={country}
       />
     </>
