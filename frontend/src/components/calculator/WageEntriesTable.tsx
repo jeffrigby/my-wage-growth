@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { deleteWageEntry, loadSampleData, clearAllEntries } from '../../store/slices/wageEntriesSlice';
-import { fetchCPIData, selectCPIDataByCountry } from '../../store/slices/cpiSlice';
+import { fetchCPIData, selectCPIDataByCountry, selectCPIDateRangeByCountry } from '../../store/slices/cpiSlice';
 import { COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -20,6 +20,7 @@ export const WageEntriesTable: React.FC = () => {
   const entryMode = useAppSelector(state => state.wageEntries.entryMode);
   const calculationType = useAppSelector(state => state.wageEntries.tableSettings.cpiCalculationType);
   const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
+  const cpiDateRange = useAppSelector(state => selectCPIDateRangeByCountry(state, country));
   const countryInfo = COUNTRIES[country];
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -124,8 +125,7 @@ export const WageEntriesTable: React.FC = () => {
                 <th className="text-right hidden sm:table-cell">
                   Today's Value
                 </th>
-                <th className="text-right">Change</th>
-                <th className="text-center pr-6 w-20">Actions</th>
+                <th className="text-right pr-6">Change</th>
               </tr>
             </thead>
             <tbody>
@@ -215,6 +215,9 @@ export const WageEntriesTable: React.FC = () => {
                 : 'Monthly CPI'
               }
             </span>
+          )}
+          {cpiDateRange?.maxDate && (
+            <span> • Data through {format(new Date(cpiDateRange.maxDate + '-01'), 'MMM yyyy')}</span>
           )}
         </p>
       </div>

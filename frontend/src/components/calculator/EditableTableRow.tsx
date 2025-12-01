@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { format, parse } from 'date-fns';
 import { useAppDispatch } from '../../store';
 import { updateWageEntry } from '../../store/slices/wageEntriesSlice';
@@ -44,6 +44,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [showCalculations, setShowCalculations] = useState(false);
   const [editedDate, setEditedDate] = useState('');
   const [editedAmount, setEditedAmount] = useState('');
@@ -51,6 +52,35 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   const [errors, setErrors] = useState<{ date?: string; amount?: string }>({});
 
   const dateInputRef = useRef<HTMLInputElement>(null);
+  const rowRef = useRef<HTMLTableRowElement>(null);
+
+  // Close expanded row when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isExpanded && rowRef.current && !rowRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isExpanded]);
+
+  // Close expanded row on Escape
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isExpanded]);
 
   useEffect(() => {
     if (isEditing) {
@@ -59,17 +89,46 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
       setEditedAmount(entry.amount.toString());
       setEditedLabel(entry.label || '');
       setErrors({});
+      setIsExpanded(false); // Close expanded when entering edit mode
 
       setTimeout(() => dateInputRef.current?.focus(), 100);
     }
   }, [isEditing, entry, entryMode]);
 
+  const handleRowClick = useCallback((e: React.MouseEvent) => {
+    // Don't toggle if clicking on an interactive element
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('input') || target.closest('a')) {
+      return;
+    }
+    setIsExpanded(prev => !prev);
+  }, []);
+
+  const handleRowKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsExpanded(prev => !prev);
+    }
+  }, []);
+
   const handleEdit = () => {
     setIsEditing(true);
+    setIsExpanded(false);
   };
 
   const handleEditInModal = () => {
     dispatch(openWageEntryModal(entry.id));
+    setIsExpanded(false);
+  };
+
+  const handleShowDetails = () => {
+    setShowCalculations(true);
+    setIsExpanded(false);
+  };
+
+  const handleDelete = () => {
+    onDelete();
+    setIsExpanded(false);
   };
 
   const handleCancel = () => {
@@ -144,7 +203,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
 
   if (isEditing) {
     return (
-      <tr>
+      <tr ref={rowRef}>
         <td className="pl-6">
           <input
             ref={dateInputRef}
@@ -178,9 +237,8 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           />
         </td>
         <td className="hidden sm:table-cell" />
-        <td />
         <td className="pr-6">
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-end gap-1">
             <button
               onClick={handleSave}
               className="p-1.5 rounded hover:bg-[var(--accent-light)] text-[var(--accent)]"
@@ -208,11 +266,22 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   return (
     <>
       <motion.tr
-        className="group"
+        ref={rowRef}
+        className={`group cursor-pointer transition-colors duration-150 ${
+          isExpanded
+            ? 'bg-[var(--primary-light)]'
+            : 'hover:bg-[var(--border-light)]'
+        }`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2, delay: index * 0.03 }}
+        onClick={handleRowClick}
+        onKeyDown={handleRowKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-expanded={isExpanded}
+        aria-label={`${entry.label || displayDate} - ${formatCurrency(entry.amount)}. Click to ${isExpanded ? 'collapse' : 'expand'} actions.`}
       >
         <td className="pl-6 font-medium">{displayDate}</td>
         <td className="text-[var(--text-secondary)]">
@@ -230,68 +299,106 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             <span className="text-[var(--text-muted)]">...</span>
           )}
         </td>
-        <td className="text-right">
-          {index > 0 && cpiDataLoaded ? (
-            <div>
-              <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
-                {formatPercentage(nominalChange)}
-              </div>
-              <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
-                real: {formatPercentage(realChange)}
-              </div>
+        <td className="text-right pr-6">
+          <div className="flex items-center justify-end gap-3">
+            {/* Change data */}
+            <div className="flex-1">
+              {index > 0 && cpiDataLoaded ? (
+                <div>
+                  <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
+                    {formatPercentage(nominalChange)}
+                  </div>
+                  <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
+                    real: {formatPercentage(realChange)}
+                  </div>
+                </div>
+              ) : (
+                <span className="text-[var(--text-muted)]">—</span>
+              )}
             </div>
-          ) : (
-            <span className="text-[var(--text-muted)]">—</span>
-          )}
-        </td>
-        <td className="pr-6">
-          <div className="flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => setShowCalculations(true)}
-              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              aria-label="Details"
-              title="Show details"
-              disabled={!cpiDataLoaded}
+
+            {/* Expand indicator */}
+            <motion.div
+              className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4M12 8h.01" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
               </svg>
-            </button>
-            <button
-              onClick={handleEditInModal}
-              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              aria-label="Edit"
-              title="Edit"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleEdit}
-              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              aria-label="Quick edit"
-              title="Quick edit"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
-            </button>
-            <button
-              onClick={onDelete}
-              className="p-1.5 rounded hover:bg-[var(--primary-light)] text-[var(--text-muted)] hover:text-[var(--error)]"
-              aria-label="Delete"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-            </button>
+            </motion.div>
           </div>
         </td>
       </motion.tr>
+
+      {/* Expanded actions row */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.tr
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            <td
+              colSpan={5}
+              className="bg-[var(--primary-light)] border-b border-[var(--border)]"
+              style={{ padding: 0 }}
+            >
+              <motion.div
+                className="flex items-center justify-end gap-2 px-6 py-3"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15, delay: 0.05 }}
+              >
+                {cpiDataLoaded && (
+                  <button
+                    onClick={handleShowDetails}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                    Details
+                  </button>
+                )}
+                <button
+                  onClick={handleEditInModal}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  onClick={handleEdit}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                  </svg>
+                  Quick Edit
+                </button>
+                <div className="w-px h-5 bg-[var(--border)] mx-1" />
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--error)] hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Delete
+                </button>
+              </motion.div>
+            </td>
+          </motion.tr>
+        )}
+      </AnimatePresence>
 
       <CalculationDetails
         isOpen={showCalculations}
