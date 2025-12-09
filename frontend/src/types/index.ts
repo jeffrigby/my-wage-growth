@@ -175,6 +175,14 @@ export interface SetCountryPayload {
   currency: Currency;
 }
 
+// Payload for importing wage entries (id and createdAt are auto-generated)
+export interface ImportWageEntryPayload {
+  date: string; // ISO date string
+  amount: number;
+  entryType: WageEntry['entryType'];
+  label?: string;
+}
+
 // API response types
 export interface APIError {
   message: string;

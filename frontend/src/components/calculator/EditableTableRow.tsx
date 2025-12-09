@@ -202,7 +202,8 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   if (isEditing) {
     return (
       <tr ref={rowRef}>
-        <td className="pl-6">
+        <td className="pl-6 w-8" />
+        <td>
           <input
             ref={dateInputRef}
             type={entryMode === 'annual' ? 'number' : 'date'}
@@ -235,7 +236,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           />
         </td>
         <td className="hidden sm:table-cell" />
-        <td className="pr-6">
+        <td className="text-right pr-6">
           <div className="flex items-center justify-end gap-1">
             <button
               onClick={handleSave}
@@ -281,7 +282,18 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         aria-expanded={isExpanded}
         aria-label={`${entry.label || displayDate} - ${formatCurrency(entry.amount)}. Click to ${isExpanded ? 'collapse' : 'expand'} actions.`}
       >
-        <td className="pl-6 font-medium">{displayDate}</td>
+        <td className="pl-6 w-8">
+          <motion.div
+            className="text-[var(--text-muted)]"
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </motion.div>
+        </td>
+        <td className="font-medium">{displayDate}</td>
         <td className="text-[var(--text-secondary)]">
           {entry.label || <span className="text-[var(--text-muted)]">—</span>}
         </td>
@@ -298,34 +310,18 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           )}
         </td>
         <td className="text-right pr-6">
-          <div className="flex items-center justify-end gap-3">
-            {/* Change data */}
-            <div className="flex-1">
-              {index > 0 && cpiDataLoaded ? (
-                <div>
-                  <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
-                    {formatPercentage(nominalChange)}
-                  </div>
-                  <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
-                    real: {formatPercentage(realChange)}
-                  </div>
-                </div>
-              ) : (
-                <span className="text-[var(--text-muted)]">—</span>
-              )}
+          {index > 0 && cpiDataLoaded ? (
+            <div>
+              <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
+                {formatPercentage(nominalChange)}
+              </div>
+              <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
+                real: {formatPercentage(realChange)}
+              </div>
             </div>
-
-            {/* Expand indicator */}
-            <motion.div
-              className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </motion.div>
-          </div>
+          ) : (
+            <span className="text-[var(--text-muted)]">—</span>
+          )}
         </td>
       </motion.tr>
 
@@ -339,7 +335,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <td
-              colSpan={5}
+              colSpan={6}
               className="bg-[var(--primary-light)] border-b border-[var(--border)]"
               style={{ padding: 0 }}
             >

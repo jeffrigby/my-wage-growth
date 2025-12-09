@@ -6,10 +6,11 @@ import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { deleteWageEntry, loadSampleData, clearAllEntries } from '../../store/slices/wageEntriesSlice';
 import { fetchCPIData, selectCPIDataByCountry, selectCPIDateRangeByCountry } from '../../store/slices/cpiSlice';
-import { COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
+import { COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES, FEATURE_FLAGS } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { TableSettings } from './TableSettings';
+import { CSVImportModal } from './CSVImportModal';
 import { adjustToLatestCPI, calculatePercentageChange } from '../../utils/inflationCalculator';
 
 export const WageEntriesTable: React.FC = () => {
@@ -23,6 +24,7 @@ export const WageEntriesTable: React.FC = () => {
   const countryInfo = COUNTRIES[country];
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
     if (!cpiData && entries.length > 0) {
@@ -105,6 +107,16 @@ export const WageEntriesTable: React.FC = () => {
               </button>
             </>
           )}
+          {FEATURE_FLAGS.ENABLE_CSV_IMPORT && (
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="btn-secondary"
+              title="Import from CSV"
+            >
+              <i className="fas fa-file-import mr-1.5"></i>
+              Import
+            </button>
+          )}
           <button onClick={handleAddEntry} className="btn-primary">
             Add Entry
           </button>
@@ -117,8 +129,9 @@ export const WageEntriesTable: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="pl-6">Date</th>
-                <th>Label</th>
+                <th className="pl-6 w-8"></th>
+                <th className="text-left">Date</th>
+                <th className="text-left">Label</th>
                 <th className="text-right">Amount</th>
                 <th className="text-right hidden sm:table-cell">
                   Today's Value
@@ -233,6 +246,13 @@ export const WageEntriesTable: React.FC = () => {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
       />
+
+      {FEATURE_FLAGS.ENABLE_CSV_IMPORT && (
+        <CSVImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+        />
+      )}
     </div>
   );
 };

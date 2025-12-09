@@ -199,7 +199,8 @@ export const SUCCESS_MESSAGES = {
   ALL_ENTRIES_CLEARED: 'All wage entries have been cleared.',
   DATA_SHARED: 'Share link copied to clipboard.',
   SAMPLE_DATA_LOADED: 'Sample data loaded. You can now see how the calculator works!',
-  THEME_CHANGED: 'Theme updated successfully.'
+  THEME_CHANGED: 'Theme updated successfully.',
+  CSV_IMPORTED: 'Wage entries imported successfully.'
 } as const;
 
 // Sample wage data for different countries
@@ -230,6 +231,7 @@ export const SAMPLE_DATA = {
 // Feature flags for development
 export const FEATURE_FLAGS = {
   ENABLE_ADVANCED_CHARTS: false,
+  ENABLE_CSV_IMPORT: true,
   ENABLE_CSV_EXPORT: false,
   ENABLE_PDF_REPORTS: false,
   ENABLE_MULTIPLE_CURRENCIES: false,

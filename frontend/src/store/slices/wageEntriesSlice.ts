@@ -1,13 +1,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
-import type { 
-  WageEntriesState, 
-  WageEntry, 
-  AddWageEntryPayload, 
+import type {
+  WageEntriesState,
+  WageEntry,
+  AddWageEntryPayload,
   UpdateWageEntryPayload,
   SetCountryPayload,
   EntryMode,
-  SampleEntry
+  SampleEntry,
+  ImportWageEntryPayload
 } from '../../types';
 
 const initialState: WageEntriesState = {
@@ -139,18 +140,22 @@ const wageEntriesSlice = createSlice({
     },
     
     // Import/export helpers
-    importEntries: (state, action: PayloadAction<WageEntry[]>) => {
+    importEntries: (state, action: PayloadAction<ImportWageEntryPayload[]>) => {
       // Validate and add imported entries
-      const validEntries = action.payload.filter(entry => 
+      const validEntries = action.payload.filter(entry =>
         entry.date && entry.amount && entry.amount > 0
       );
-      
-      validEntries.forEach(entry => {
-        entry.id = uuidv4();
-        entry.createdAt = new Date().toISOString();
-      });
-      
-      state.entries = [...state.entries, ...validEntries];
+
+      const newEntries: WageEntry[] = validEntries.map(entry => ({
+        id: uuidv4(),
+        date: entry.date,
+        amount: entry.amount,
+        entryType: entry.entryType,
+        label: entry.label,
+        createdAt: new Date().toISOString()
+      }));
+
+      state.entries = [...state.entries, ...newEntries];
       state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     },
     
