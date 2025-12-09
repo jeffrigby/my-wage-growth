@@ -11,7 +11,8 @@ import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { TableSettings } from './TableSettings';
 import { CSVImportModal } from './CSVImportModal';
-import { adjustToLatestCPI, calculatePercentageChange } from '../../utils/inflationCalculator';
+import { adjustToLatestCPI, calculatePercentageChange, calculateInflationRate } from '../../utils/inflationCalculator';
+import { Tooltip } from '../ui/Tooltip';
 
 export const WageEntriesTable: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -130,13 +131,24 @@ export const WageEntriesTable: React.FC = () => {
             <thead>
               <tr>
                 <th className="pl-6 w-8"></th>
-                <th className="text-left">Date</th>
-                <th className="text-left">Label</th>
-                <th className="text-right">Amount</th>
-                <th className="text-right hidden sm:table-cell">
-                  Today's Value
+                <th className="text-left">
+                  <Tooltip content="When you earned this wage">Date</Tooltip>
                 </th>
-                <th className="text-right pr-6">Change</th>
+                <th className="text-right">
+                  <Tooltip content="Original wage at the time">Amount</Tooltip>
+                </th>
+                <th className="text-right">
+                  <Tooltip content="Nominal wage change from previous entry">Raise</Tooltip>
+                </th>
+                <th className="text-right">
+                  <Tooltip content="How much prices rose between entries (CPI)">Inflation</Tooltip>
+                </th>
+                <th className="text-right">
+                  <Tooltip content="Did your raise beat inflation? This is what you actually gained (or lost).">Gain</Tooltip>
+                </th>
+                <th className="text-right pr-6">
+                  <Tooltip content="What your wage is worth in today's dollars">Today's Value</Tooltip>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -159,6 +171,15 @@ export const WageEntriesTable: React.FC = () => {
                   const realChange = todaysValue && previousTodaysValue
                     ? calculatePercentageChange(todaysValue, previousTodaysValue)
                     : null;
+                  const inflationRate = previousEntry && cpiData
+                    ? calculateInflationRate(
+                        new Date(previousEntry.date),
+                        new Date(entry.date),
+                        cpiData,
+                        isAnnualEntry,
+                        calculationType
+                      )
+                    : null;
 
                   return (
                     <EditableTableRow
@@ -171,6 +192,7 @@ export const WageEntriesTable: React.FC = () => {
                       todaysValue={todaysValue}
                       nominalChange={nominalChange}
                       realChange={realChange}
+                      inflationRate={inflationRate}
                       cpiDataLoaded={!!cpiData}
                       previousEntry={previousEntry}
                       cpiData={cpiData}

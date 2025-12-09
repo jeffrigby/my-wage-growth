@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { Modal } from '../ui/Modal';
-import { getLatestCPI, getCPIForDate, formatPercentage, getPercentageColorClass } from '../../utils/inflationCalculator';
+import { getLatestCPI, getCPIForDate, formatPercentage, getPercentageColorClass, calculateInflationRate } from '../../utils/inflationCalculator';
 import { COUNTRIES, DATE_FORMATS } from '../../constants';
 import type { WageEntry, CPIData, TableSettings } from '../../types';
 
@@ -48,20 +48,30 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
   // Calculate growth percentages if previous entry exists
   let nominalGrowth: number | null = null;
   let realGrowth: number | null = null;
+  let inflationRate: number | null = null;
   let previousCPI: number | null = null;
   let previousTodaysValue: number | null = null;
 
   if (previousEntry) {
     const previousIsAnnual = previousEntry.entryType.includes('annual');
     previousCPI = getCPIForDate(new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType);
-    
+
     if (previousCPI && latestCPIData) {
       previousTodaysValue = previousEntry.amount * (latestCPIData.value / previousCPI);
     }
 
     // Nominal growth
     nominalGrowth = ((entry.amount - previousEntry.amount) / previousEntry.amount) * 100;
-    
+
+    // Inflation rate between entries
+    inflationRate = calculateInflationRate(
+      new Date(previousEntry.date),
+      entryDate,
+      cpiData,
+      isAnnualEntry,
+      calculationType
+    );
+
     // Real growth
     if (todaysValue && previousTodaysValue) {
       realGrowth = ((todaysValue - previousTodaysValue) / previousTodaysValue) * 100;
@@ -155,7 +165,7 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
             <div className="space-y-3">
               {/* Nominal Growth */}
               <div className="bg-surface-secondary p-4 rounded-lg">
-                <h4 className="text-xs font-medium text-muted mb-2">Nominal Growth</h4>
+                <h4 className="text-xs font-medium text-muted mb-2">Raise (Nominal Growth)</h4>
                 <div className="text-sm font-mono mb-2">
                   ({formatCurrency(entry.amount)} - {formatCurrency(previousEntry.amount)}) / {formatCurrency(previousEntry.amount)} × 100
                 </div>
@@ -167,10 +177,26 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
                 </div>
               </div>
 
+              {/* Inflation Rate */}
+              {entryCPI && previousCPI && (
+                <div className="bg-surface-secondary p-4 rounded-lg">
+                  <h4 className="text-xs font-medium text-muted mb-2">Inflation (CPI Change)</h4>
+                  <div className="text-sm font-mono mb-2">
+                    ({entryCPI.toFixed(2)} - {previousCPI.toFixed(2)}) / {previousCPI.toFixed(2)} × 100
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-secondary">Result:</span>
+                    <span className="font-semibold text-[var(--text-secondary)]">
+                      {formatPercentage(inflationRate)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Real Growth */}
               {todaysValue && previousTodaysValue && (
                 <div className="bg-surface-secondary p-4 rounded-lg">
-                  <h4 className="text-xs font-medium text-muted mb-2">Real Growth (Inflation-Adjusted)</h4>
+                  <h4 className="text-xs font-medium text-muted mb-2">Real Growth (Buying Power Change)</h4>
                   <div className="text-sm font-mono mb-2">
                     ({formatCurrency(todaysValue)} - {formatCurrency(previousTodaysValue)}) / {formatCurrency(previousTodaysValue)} × 100
                   </div>
@@ -179,6 +205,15 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
                     <span className={`font-semibold ${getPercentageColorClass(realGrowth)}`}>
                       {formatPercentage(realGrowth)}
                     </span>
+                  </div>
+                  <div className="text-xs text-secondary mt-2 pt-2 border-t border-border">
+                    {realGrowth !== null && realGrowth > 0 ? (
+                      <span className="text-green-600 dark:text-green-400">Your buying power increased</span>
+                    ) : realGrowth !== null && realGrowth < 0 ? (
+                      <span className="text-red-600 dark:text-red-400">Your buying power decreased</span>
+                    ) : (
+                      <span>Your buying power stayed the same</span>
+                    )}
                   </div>
                 </div>
               )}

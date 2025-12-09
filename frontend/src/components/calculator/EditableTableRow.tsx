@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, parse } from 'date-fns';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { useAppDispatch } from '../../store';
 import { updateWageEntry } from '../../store/slices/wageEntriesSlice';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
@@ -18,6 +19,7 @@ interface EditableTableRowProps {
   todaysValue: number | null;
   nominalChange: number | null;
   realChange: number | null;
+  inflationRate: number | null;
   cpiDataLoaded: boolean;
   previousEntry?: WageEntry;
   cpiData: CPIData | null;
@@ -34,6 +36,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   todaysValue,
   nominalChange,
   realChange,
+  inflationRate,
   cpiDataLoaded,
   previousEntry,
   cpiData,
@@ -204,25 +207,25 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
       <tr ref={rowRef}>
         <td className="pl-6 w-8" />
         <td>
-          <input
-            ref={dateInputRef}
-            type={entryMode === 'annual' ? 'number' : 'date'}
-            value={editedDate}
-            onChange={(e) => setEditedDate(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={`w-28 px-2 py-1.5 text-sm ${errors.date ? 'border-[var(--error)]' : ''}`}
-            placeholder={entryMode === 'annual' ? 'YYYY' : ''}
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            value={editedLabel}
-            onChange={(e) => setEditedLabel(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full px-2 py-1.5 text-sm"
-            placeholder="Label"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              ref={dateInputRef}
+              type={entryMode === 'annual' ? 'number' : 'date'}
+              value={editedDate}
+              onChange={(e) => setEditedDate(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className={`w-28 px-2 py-1.5 text-sm ${errors.date ? 'border-[var(--error)]' : ''}`}
+              placeholder={entryMode === 'annual' ? 'YYYY' : ''}
+            />
+            <input
+              type="text"
+              value={editedLabel}
+              onChange={(e) => setEditedLabel(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 px-2 py-1.5 text-sm"
+              placeholder="Label (optional)"
+            />
+          </div>
         </td>
         <td>
           <input
@@ -235,7 +238,9 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             step="0.01"
           />
         </td>
-        <td className="hidden sm:table-cell" />
+        {/* Empty cells for Raise, Inflation, Real columns */}
+        <td />
+        <td />
         <td className="text-right pr-6">
           <div className="flex items-center justify-end gap-1">
             <button
@@ -293,34 +298,75 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             </svg>
           </motion.div>
         </td>
-        <td className="font-medium">{displayDate}</td>
-        <td className="text-[var(--text-secondary)]">
-          {entry.label || <span className="text-[var(--text-muted)]">—</span>}
+        <td className="font-medium">
+          {entry.label ? (
+            <TooltipPrimitive.Provider delayDuration={200}>
+              <TooltipPrimitive.Root>
+                <TooltipPrimitive.Trigger asChild>
+                  <span className="inline-flex items-center cursor-help">
+                    {displayDate}
+                    <svg className="ml-1.5 w-3.5 h-3.5 text-[var(--text-muted)] opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                  </span>
+                </TooltipPrimitive.Trigger>
+                <TooltipPrimitive.Portal>
+                  <TooltipPrimitive.Content
+                    className="z-[9999] px-3 py-2 text-xs font-normal bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg shadow-lg select-none animate-in fade-in-0 zoom-in-95"
+                    sideOffset={5}
+                  >
+                    {entry.label}
+                    <TooltipPrimitive.Arrow className="fill-[var(--surface-elevated)]" />
+                  </TooltipPrimitive.Content>
+                </TooltipPrimitive.Portal>
+              </TooltipPrimitive.Root>
+            </TooltipPrimitive.Provider>
+          ) : (
+            displayDate
+          )}
         </td>
         <td className="text-right font-medium tabular-nums">
           {formatCurrency(entry.amount)}
         </td>
-        <td className="text-right hidden sm:table-cell">
+        {/* Raise column (nominal change) */}
+        <td className="text-right">
+          {index > 0 && cpiDataLoaded ? (
+            <span className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
+              {formatPercentage(nominalChange)}
+            </span>
+          ) : (
+            <span className="text-[var(--text-muted)]">—</span>
+          )}
+        </td>
+        {/* Inflation column */}
+        <td className="text-right">
+          {index > 0 && cpiDataLoaded ? (
+            <span className="tabular-nums text-[var(--text-secondary)]">
+              {formatPercentage(inflationRate)}
+            </span>
+          ) : (
+            <span className="text-[var(--text-muted)]">—</span>
+          )}
+        </td>
+        {/* Real change column */}
+        <td className="text-right">
+          {index > 0 && cpiDataLoaded && realChange !== null ? (
+            <span className={`font-medium tabular-nums ${getPercentageColorClass(realChange)}`}>
+              {formatPercentage(realChange)}
+            </span>
+          ) : (
+            <span className="text-[var(--text-muted)]">—</span>
+          )}
+        </td>
+        {/* Today's Value column */}
+        <td className="text-right pr-6">
           {cpiDataLoaded ? (
             <span className="text-[var(--accent)] tabular-nums">
               {todaysValue ? formatCurrency(todaysValue) : '—'}
             </span>
           ) : (
             <span className="text-[var(--text-muted)]">...</span>
-          )}
-        </td>
-        <td className="text-right pr-6">
-          {index > 0 && cpiDataLoaded ? (
-            <div>
-              <div className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
-                {formatPercentage(nominalChange)}
-              </div>
-              <div className={`text-xs tabular-nums ${getPercentageColorClass(realChange)}`}>
-                real: {formatPercentage(realChange)}
-              </div>
-            </div>
-          ) : (
-            <span className="text-[var(--text-muted)]">—</span>
           )}
         </td>
       </motion.tr>
@@ -335,7 +381,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <td
-              colSpan={6}
+              colSpan={7}
               className="bg-[var(--primary-light)] border-b border-[var(--border)]"
               style={{ padding: 0 }}
             >

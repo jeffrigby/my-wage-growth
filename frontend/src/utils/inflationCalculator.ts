@@ -206,3 +206,24 @@ export const getPercentageColorClass = (percentage: number | null): string => {
   if (percentage < 0) return 'text-red-600 dark:text-red-400';
   return 'text-muted';
 };
+
+/**
+ * Calculate the inflation rate between two dates
+ * Uses year-over-year CPI change following BLS methodology
+ */
+export const calculateInflationRate = (
+  fromDate: Date,
+  toDate: Date,
+  cpiData: CPIData,
+  isAnnualEntry: boolean = false,
+  calculationType: TableSettings['cpiCalculationType'] = 'annual-average'
+): number | null => {
+  const fromCPI = getCPIForDate(fromDate, cpiData, isAnnualEntry, calculationType);
+  const toCPI = getCPIForDate(toDate, cpiData, isAnnualEntry, calculationType);
+
+  if (!fromCPI || !toCPI || fromCPI === 0) {
+    return null;
+  }
+
+  return ((toCPI - fromCPI) / fromCPI) * 100;
+};
