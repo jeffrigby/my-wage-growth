@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { useAppDispatch } from '../../store';
-import { updateWageEntry } from '../../store/slices/wageEntriesSlice';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
-import { DATE_FORMATS, VALIDATION } from '../../constants';
+import { DATE_FORMATS } from '../../constants';
 import type { WageEntry, EntryMode, CPIData, TableSettings } from '../../types';
 import { formatPercentage, getPercentageColorClass } from '../../utils/inflationCalculator';
 import { CalculationDetails } from './CalculationDetails';
@@ -44,15 +43,9 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   country
 }) => {
   const dispatch = useAppDispatch();
-  const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCalculations, setShowCalculations] = useState(false);
-  const [editedDate, setEditedDate] = useState('');
-  const [editedAmount, setEditedAmount] = useState('');
-  const [editedLabel, setEditedLabel] = useState('');
-  const [errors, setErrors] = useState<{ date?: string; amount?: string }>({});
 
-  const dateInputRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLTableRowElement>(null);
 
   // Close expanded row when clicking outside
@@ -83,19 +76,6 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
     }
   }, [isExpanded]);
 
-  useEffect(() => {
-    if (isEditing) {
-      const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
-      setEditedDate(format(new Date(entry.date), dateFormat));
-      setEditedAmount(entry.amount.toString());
-      setEditedLabel(entry.label || '');
-      setErrors({});
-      setIsExpanded(false); // Close expanded when entering edit mode
-
-      setTimeout(() => dateInputRef.current?.focus(), 100);
-    }
-  }, [isEditing, entry, entryMode]);
-
   const handleRowClick = useCallback((e: React.MouseEvent) => {
     // Don't toggle if clicking on an interactive element
     const target = e.target as HTMLElement;
@@ -112,11 +92,6 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
     }
   }, []);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setIsExpanded(false);
-  };
-
   const handleEditInModal = () => {
     dispatch(openWageEntryModal(entry.id));
     setIsExpanded(false);
@@ -132,140 +107,9 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
     setIsExpanded(false);
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-    setErrors({});
-  };
-
-  const validateInputs = (): boolean => {
-    const newErrors: { date?: string; amount?: string } = {};
-
-    try {
-      const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
-      const parsedDate = parse(editedDate, dateFormat, new Date());
-
-      if (isNaN(parsedDate.getTime())) {
-        newErrors.date = 'Invalid';
-      } else {
-        const year = parsedDate.getFullYear();
-        if (year < VALIDATION.MIN_YEAR || year > VALIDATION.MAX_YEAR) {
-          newErrors.date = `${VALIDATION.MIN_YEAR}-${VALIDATION.MAX_YEAR}`;
-        }
-      }
-    } catch {
-      newErrors.date = 'Invalid';
-    }
-
-    const amount = parseFloat(editedAmount);
-    if (isNaN(amount) || amount <= 0) {
-      newErrors.amount = 'Invalid';
-    } else if (amount > VALIDATION.MAX_WAGE_AMOUNT) {
-      newErrors.amount = 'Too high';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = () => {
-    if (!validateInputs()) return;
-
-    const dateFormat = entryMode === 'annual' ? 'yyyy' : DATE_FORMATS.ISO;
-    const parsedDate = parse(editedDate, dateFormat, new Date());
-
-    if (entryMode === 'annual') {
-      parsedDate.setMonth(0, 1);
-    }
-
-    dispatch(updateWageEntry({
-      id: entry.id,
-      updates: {
-        date: parsedDate,
-        amount: parseFloat(editedAmount),
-        label: editedLabel.trim() || undefined
-      }
-    }));
-
-    setIsEditing(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSave();
-    } else if (e.key === 'Escape') {
-      handleCancel();
-    }
-  };
-
   const displayDate = entryMode === 'annual'
     ? format(new Date(entry.date), DATE_FORMATS.DISPLAY_YEAR_ONLY)
     : format(new Date(entry.date), DATE_FORMATS.DISPLAY);
-
-  if (isEditing) {
-    return (
-      <tr ref={rowRef}>
-        <td className="pl-6 w-8" />
-        <td>
-          <div className="flex items-center gap-2">
-            <input
-              ref={dateInputRef}
-              type={entryMode === 'annual' ? 'number' : 'date'}
-              value={editedDate}
-              onChange={(e) => setEditedDate(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className={`w-28 px-2 py-1.5 text-sm ${errors.date ? 'border-[var(--error)]' : ''}`}
-              placeholder={entryMode === 'annual' ? 'YYYY' : ''}
-            />
-            <input
-              type="text"
-              value={editedLabel}
-              onChange={(e) => setEditedLabel(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1 px-2 py-1.5 text-sm"
-              placeholder="Label (optional)"
-            />
-          </div>
-        </td>
-        <td>
-          <input
-            type="number"
-            value={editedAmount}
-            onChange={(e) => setEditedAmount(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={`w-28 px-2 py-1.5 text-sm text-right ${errors.amount ? 'border-[var(--error)]' : ''}`}
-            placeholder="0"
-            step="0.01"
-          />
-        </td>
-        {/* Empty cells for Raise, Inflation, Real columns */}
-        <td />
-        <td />
-        <td className="text-right pr-6">
-          <div className="flex items-center justify-end gap-1">
-            <button
-              onClick={handleSave}
-              className="p-1.5 rounded hover:bg-[var(--accent-light)] text-[var(--accent)]"
-              aria-label="Save"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </button>
-            <button
-              onClick={handleCancel}
-              className="p-1.5 rounded hover:bg-[var(--border-light)] text-[var(--text-muted)]"
-              aria-label="Cancel"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </td>
-      </tr>
-    );
-  }
 
   return (
     <>
@@ -329,7 +173,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         <td className="text-right font-medium tabular-nums">
           {formatCurrency(entry.amount)}
         </td>
-        {/* Raise column (nominal change) */}
+        {/* Change column (nominal change) */}
         <td className="text-right">
           {index > 0 && cpiDataLoaded ? (
             <span className={`font-medium tabular-nums ${getPercentageColorClass(nominalChange)}`}>
@@ -413,15 +257,6 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
                   Edit
-                </button>
-                <button
-                  onClick={handleEdit}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                  </svg>
-                  Quick Edit
                 </button>
                 <div className="w-px h-5 bg-[var(--border)] mx-1" />
                 <button

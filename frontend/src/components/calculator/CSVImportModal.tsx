@@ -293,7 +293,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
                       <tr>
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">#</th>
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">Date</th>
-                        <th className="text-right px-3 py-2 font-medium text-[var(--text-secondary)]">Amount</th>
+                        <th className="text-right px-3 py-2 font-medium text-[var(--text-secondary)]">Gross Pay</th>
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">Label</th>
                         <th className="text-center px-3 py-2 font-medium text-[var(--text-secondary)]">Status</th>
                       </tr>

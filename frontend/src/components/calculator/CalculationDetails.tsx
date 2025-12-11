@@ -165,7 +165,7 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
             <div className="space-y-3">
               {/* Nominal Growth */}
               <div className="bg-surface-secondary p-4 rounded-lg">
-                <h4 className="text-xs font-medium text-muted mb-2">Raise (Nominal Growth)</h4>
+                <h4 className="text-xs font-medium text-muted mb-2">Change (Nominal Growth)</h4>
                 <div className="text-sm font-mono mb-2">
                   ({formatCurrency(entry.amount)} - {formatCurrency(previousEntry.amount)}) / {formatCurrency(previousEntry.amount)} × 100
                 </div>
