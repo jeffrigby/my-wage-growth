@@ -72,9 +72,9 @@ export const WageEntriesTable: React.FC = () => {
   };
 
   return (
-    <div className="card p-6">
+    <div className="card p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           <h2
             className="text-xl font-medium"
@@ -87,7 +87,7 @@ export const WageEntriesTable: React.FC = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {entries.length > 0 && (
             <>
               {entryMode === 'annual' && (
@@ -126,11 +126,11 @@ export const WageEntriesTable: React.FC = () => {
 
       {/* Table or Empty State */}
       {entries.length > 0 ? (
-        <div className="overflow-x-auto -mx-6">
+        <div className="overflow-x-auto -mx-4 sm:-mx-6">
           <table className="w-full">
             <thead>
               <tr>
-                <th className="pl-6 w-8"></th>
+                <th className="pl-4 sm:pl-6 w-8"></th>
                 <th className="text-left">
                   <Tooltip content="When you earned this wage">Date</Tooltip>
                 </th>
@@ -146,7 +146,7 @@ export const WageEntriesTable: React.FC = () => {
                 <th className="text-right">
                   <Tooltip content="Your gain/loss adjusted for inflation — did your raise beat rising prices?">Real Gain/Loss</Tooltip>
                 </th>
-                <th className="text-right pr-6">
+                <th className="text-right pr-4 sm:pr-6">
                   <Tooltip content="What your wage is worth in today's dollars">Today's Value</Tooltip>
                 </th>
               </tr>

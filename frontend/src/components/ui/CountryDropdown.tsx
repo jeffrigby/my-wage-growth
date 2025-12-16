@@ -79,7 +79,7 @@ export const CountryDropdown: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-1 w-48 rounded-md card-elevated shadow-lg overflow-hidden z-50"
+            className="absolute right-0 mt-1 w-48 max-w-[calc(100vw-2rem)] rounded-md card-elevated shadow-lg overflow-hidden z-50"
           >
             <div className="py-1">
               {Object.entries(COUNTRIES).map(([code, country]) => (

@@ -167,11 +167,11 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
           <p className="text-sm text-[var(--text-secondary)]">
             Download a template to see the expected format:
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
               type="button"
               onClick={() => handleDownloadTemplate('annual')}
-              className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1.5"
+              className="btn-secondary text-sm py-1.5 px-3 flex items-center justify-center gap-1.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -181,7 +181,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
             <button
               type="button"
               onClick={() => handleDownloadTemplate('paycheck')}
-              className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1.5"
+              className="btn-secondary text-sm py-1.5 px-3 flex items-center justify-center gap-1.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

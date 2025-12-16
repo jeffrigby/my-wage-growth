@@ -131,7 +131,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         aria-expanded={isExpanded}
         aria-label={`${entry.label || displayDate} - ${formatCurrency(entry.amount)}. Click to ${isExpanded ? 'collapse' : 'expand'} actions.`}
       >
-        <td className="pl-6 w-8">
+        <td className="pl-4 sm:pl-6 w-8">
           <motion.div
             className="text-[var(--text-muted)]"
             animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -204,7 +204,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
           )}
         </td>
         {/* Today's Value column */}
-        <td className="text-right pr-6">
+        <td className="text-right pr-4 sm:pr-6">
           {cpiDataLoaded ? (
             <span className="text-[var(--accent)] tabular-nums">
               {todaysValue ? formatCurrency(todaysValue) : '—'}
@@ -230,7 +230,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
               style={{ padding: 0 }}
             >
               <motion.div
-                className="flex items-center justify-end gap-2 px-6 py-3"
+                className="flex items-center justify-end gap-2 px-4 sm:px-6 py-3"
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
