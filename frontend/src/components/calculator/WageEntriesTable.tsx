@@ -138,13 +138,13 @@ export const WageEntriesTable: React.FC = () => {
                   <Tooltip content="Original gross pay at the time">Gross Pay</Tooltip>
                 </th>
                 <th className="text-right">
-                  <Tooltip content="Nominal income change from previous entry">Change</Tooltip>
+                  <Tooltip content="Nominal income change from previous entry">Gain/Loss</Tooltip>
                 </th>
                 <th className="text-right">
                   <Tooltip content="How much prices rose between entries (CPI)">Inflation</Tooltip>
                 </th>
                 <th className="text-right">
-                  <Tooltip content="Did your income change beat inflation? This is what you actually gained (or lost).">Gain</Tooltip>
+                  <Tooltip content="Your gain/loss adjusted for inflation — did your raise beat rising prices?">Real Gain/Loss</Tooltip>
                 </th>
                 <th className="text-right pr-6">
                   <Tooltip content="What your wage is worth in today's dollars">Today's Value</Tooltip>
