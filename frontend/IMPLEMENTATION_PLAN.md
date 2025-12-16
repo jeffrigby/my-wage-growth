@@ -4,11 +4,12 @@
 A responsive web application that helps users visualize their wage growth compared to inflation over time. Users enter their historical wages, and the app shows them their real purchasing power adjusted for inflation using CPI data.
 
 ## Design Philosophy
-- **Modern & Slick**: Clean, minimalist interface with smooth animations and micro-interactions
-- **Glass-morphism**: Subtle blur effects and transparency for depth
+- **Editorial Aesthetic** (commit 71d56ed): Clean, data-journalism inspired design
+- **Typography**: Fraunces serif for headlines, DM Sans for body text
+- **Color Palette**: Deep navy primary (#1E3A5F light, #5B8BD4 dark), warm accents
+- **Visual Style**: Minimal decoration, functional UI, let data be the hero
 - **Smooth Transitions**: Framer Motion for delightful animations
-- **Professional Color Palette**: Sophisticated gradients and accent colors
-- **Typography**: Modern font stack with clear hierarchy
+- **Accessibility**: Radix UI primitives, keyboard navigation, ARIA labels
 - **Best Practices**: Following latest patterns from Redux Toolkit v2.8, React Router v7, and React 19
 
 ## Technical Stack
@@ -16,9 +17,10 @@ A responsive web application that helps users visualize their wage growth compar
 - **Bundler**: Vite 6.3
 - **Routing**: React Router v7
 - **State Management**: Redux Toolkit v2.8 with listener middleware
-- **Styling**: Tailwind CSS v4.1 with dark mode support
-- **Icons**: Font Awesome ✅
-- **Charts**: Recharts ✅
+- **Styling**: Tailwind CSS v4.1 with editorial design system
+- **Icons**: Font Awesome ✅ + custom SVG icons
+- **UI Primitives**: Radix UI ✅ (tooltips)
+- **Charts**: Recharts 3.1 ✅
 - **Date handling**: date-fns ✅
 - **Compression**: pako ✅ (for URL sharing)
 - **Animations**: Framer Motion ✅
@@ -238,99 +240,144 @@ App
 1. **Country & Currency Selection** ✅
    - ✅ Dropdown with flag icons (Font Awesome)
    - ✅ Update Redux state on change
-   - ✅ Clear entries when country changes with confirmation
+   - ✅ Preserve entries when country changes (commit 996073f)
+   - ✅ Recalculate inflation with new country's CPI data
+   - ✅ Update currency symbols automatically
 
 2. **Wage Entry Form** ✅
    - ✅ Mode selector (annual vs paycheck) with locking after first entry
+   - ✅ Modal-based editing (commit c896d07 removed inline quick-edit)
    - ✅ Conditional date picker
-   - ✅ Currency-formatted input with proper validation
+   - ✅ Currency-formatted input with proper validation (step="0.01")
    - ✅ Pre-tax information tooltip with expandable help
+   - ✅ Context-aware help adapting to country and entry mode (commit a35c795)
    - ✅ Validation against available CPI dates
    - ✅ Support for future dates with informative messaging
+   - ✅ Terminology: "Gross Pay" instead of "Amount" (commit c896d07)
 
 3. **Entries Management** ✅
-   - ✅ Sortable table/list view
-   - ✅ Inline editing with validation
+   - ✅ Table with expandable row drawers (commit 710451c)
+   - ✅ Click row to reveal actions (Details, Edit, Delete)
+   - ✅ Keyboard accessibility (Enter/Space to toggle, Escape to close)
+   - ✅ Click-outside-to-close behavior
    - ✅ Delete with confirmation
    - ✅ Minimum 2 entries validation
    - ✅ Today's value column (inflation-adjusted)
-   - ✅ Percentage change columns (nominal & real)
+   - ✅ Three-column metrics: Raise, Inflation, Gain (commit b7e2397)
+   - ✅ Column header tooltips with Radix UI (commit b7e2397)
+   - ✅ Parallel terminology: "Gain/Loss" and "Real Gain/Loss" (commit ef7cf78)
+   - ✅ Color-coded growth indicators
+   - ✅ Calculation details modal with formulas
+   - ✅ CPI data date range display in table footer
+   - ✅ CSV bulk import with drag-and-drop (commit c71e866)
+   - ✅ Auto-detection of annual vs paycheck formats
+   - ✅ Preview and validate before importing
+   - ✅ Template generation for easy setup
    - ✅ Clear all button with confirmation dialog
    - ✅ Toast notifications for all actions
    - ✅ Entry mode locking to prevent data inconsistency
-   - ⚪ Mobile responsive design improvements needed
 
-### Phase 4: Calculations & Visualization (Days 7-8) ⚪ PARTIALLY COMPLETE
-1. **Calculation Engine** ✅
+4. **Help & Guidance** ✅
+   - ✅ Pre-tax income help page at /help/pre-tax (commit a35c795)
+   - ✅ Country-specific guidance (W-2, T4, P60)
+   - ✅ Context-aware modal help text
+   - ✅ Adapts to selected country and entry mode
+
+### Phase 4: Calculations & Visualization (Days 7-8) 🟡 IN PROGRESS
+1. **Calculation Engine** ✅ COMPLETE
    - ✅ Implemented in `utils/inflationCalculator.ts`
    - ✅ `getCPIForDate()` with interpolation and future date handling
    - ✅ `adjustToLatestCPI()` for current dollar calculations
    - ✅ `calculatePercentageChange()` for growth tracking
-   - ✅ Formatting utilities with color coding
+   - ✅ `calculateInflationRate()` following BLS methodology (commit b7e2397)
+   - ✅ Formatting utilities with color coding (`formatPercentage`, `getPercentageColorClass`)
+   - ✅ Support for both annual and paycheck calculation modes
 
-2. **Chart Component**
-   - Line chart with nominal vs real wages
-   - Inflation impact shading
-   - Responsive with Recharts
-   - Dark mode support
-   - Interactive tooltips
+2. **Chart Component** ⏳ NOT STARTED
+   - ⏳ Line chart with nominal vs real wages
+   - ⏳ Inflation impact shading
+   - ⏳ Responsive with Recharts 3.1
+   - ⏳ Dark mode support matching editorial theme
+   - ⏳ Interactive tooltips
 
-3. **Statistics Panel**
-   - Best/worst years
-   - Growth percentages
-   - Cumulative inflation impact
-   - Win/loss record
+3. **Statistics Panel** ⏳ NOT STARTED
+   - ⏳ Best/worst years
+   - ⏳ Growth percentages
+   - ⏳ Cumulative inflation impact
+   - ⏳ Win/loss record
 
-### Phase 5: Sharing & Polish (Days 9-10) ⚪ PARTIALLY COMPLETE
-1. **URL Sharing** ⏳ Not Started
-   - Compress entries with pako
-   - Base64 encode for URL
-   - Generate shareable link
-   - Handle shared route decoding
+### Phase 5: Sharing & Polish (Days 9-10) 🟡 IN PROGRESS
+1. **URL Sharing** ⏳ NOT STARTED
+   - ⏳ Compress entries with pako (already installed)
+   - ⏳ Base64 encode for URL
+   - ⏳ Generate shareable link
+   - ⏳ Handle shared route decoding
 
-2. **Sample Data** ✅
+2. **Sample Data** ✅ COMPLETE
    - ✅ Realistic wage progression for each country
    - ✅ Toast notification when loaded
    - ✅ Clear all button with confirmation
 
-3. **Educational Content**
-   - About page with inflation explanation
-   - Expandable info sections
-   - Links to source data
+3. **Educational Content** 🟡 PARTIALLY COMPLETE
+   - ✅ Pre-tax income help page (commit a35c795)
+   - ✅ Country-specific guidance
+   - ⏳ About page with inflation explanation
+   - ⏳ Expandable info sections
+   - ⏳ Links to source data
 
-4. **Final Polish**
-   - Loading states
-   - Error boundaries
-   - Empty states
-   - Accessibility improvements
+4. **Final Polish** 🟡 PARTIALLY COMPLETE
+   - ✅ Loading states (CPILoadingOverlay)
+   - ✅ Toast notifications with react-hot-toast
+   - ✅ Empty states (sample data prompt)
+   - ✅ Accessibility improvements (Radix UI, keyboard navigation, ARIA labels)
+   - ⏳ Error boundaries
+   - ⏳ Mobile responsive design improvements
 
 ## Key Implementation Details
 
-### Modern Design System
+### Editorial Design System (commit 71d56ed)
 ```css
 /* Tailwind v4.1 Config */
 :root {
-  /* Modern color palette */
-  --primary: #4f46e5; /* Indigo */
-  --primary-dark: #6366f1;
-  --accent: #10b981; /* Emerald */
-  --background: #ffffff;
-  --background-dark: #0f172a;
-  --surface: rgba(255, 255, 255, 0.8);
-  --surface-dark: rgba(15, 23, 42, 0.8);
-  
-  /* Glass morphism */
-  --blur: blur(10px);
-  --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  /* Editorial color palette */
+  --primary: #1E3A5F;           /* Deep navy */
+  --primary-hover: #2C4A73;
+  --primary-light: #E8EDF2;
+
+  --accent: #2D6A4F;            /* Warm green */
+  --accent-light: #D8E9E0;
+
+  /* Neutral palette - warm undertones */
+  --background: #FAFAF8;
+  --surface: #FFFFFF;
+  --border: #E8E6E1;
+  --border-light: #F2F0EB;
+
+  /* Text colors */
+  --text-primary: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-muted: #7A7A7A;
+
+  /* Data visualization */
+  --positive: #2D6A4F;
+  --negative: #64748B;
+
+  /* Shadows - subtle, warm */
+  --shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.04);
+  --shadow-md: 0 4px 12px rgba(26, 26, 26, 0.06);
+  --shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.08);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Component styling */
-.glass-card {
+.card {
   background: var(--surface);
-  backdrop-filter: var(--blur);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: var(--shadow);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 ```
 
@@ -411,10 +458,48 @@ interface SharedData {
 - Cache CPI data in localStorage
 - Code split routes
 
+## Recent Updates (Commits Since Documentation)
+
+### Editorial Redesign (commit 71d56ed)
+- Replaced cyberpunk/neon aesthetic with data-journalism design
+- New typography: Fraunces serif headlines, DM Sans body
+- Deep navy primary color with warm accents
+- Custom SVG icons replacing some Font Awesome icons
+- Minimal, functional UI focused on data
+
+### Table UX Improvements
+- **Expandable Row Drawers** (commit 710451c): Click-to-expand actions, keyboard navigation
+- **Three-Column Metrics** (commit b7e2397): Raise, Inflation, Gain columns with tooltips
+- **Terminology Updates** (commit c896d07, ef7cf78): "Gross Pay", "Change", "Gain/Loss"
+- **Radix UI Tooltips** (commit b7e2397): Accessible, well-positioned explanatory content
+
+### CSV Bulk Import (commit c71e866)
+- Drag-and-drop upload with preview
+- Auto-detection of annual vs paycheck formats
+- Comprehensive validation with error reporting
+- Template generation
+
+### Country Switching (commit 996073f)
+- Preserves entries when switching countries
+- Recalculates with new CPI data
+- Updates currency symbols
+
+### Help Pages (commit a35c795)
+- New /help/pre-tax page
+- Country-specific guidance (W-2, T4, P60)
+- Context-aware modal help text
+
+### Backend Updates
+- **AppConfig IAM** (commit 951ab1d): Fixed Lambda authorization errors
+- **Vitest v4** (commit bc94366): Upgraded test framework
+
 ## Future Enhancements (Phase 2+)
-- Additional countries (EU, Australia, etc.)
-- CSV import/export
+- Interactive charts with Recharts
+- Statistics panel
+- URL sharing with compressed data
+- CSV export
 - PDF report generation
 - Advanced chart options
 - Historical wage comparisons
+- Additional countries (EU, Australia, etc.)
 - API backend for user accounts

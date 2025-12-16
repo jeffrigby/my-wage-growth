@@ -111,12 +111,15 @@ npm run lint              # Run ESLint
 - **React 19 SPA**: Modern web application with TypeScript
 - **State Management**: Redux Toolkit 2.8 with listener middleware for persistence
 - **Routing**: React Router 7 with lazy loading
-- **UI/UX**: 
-  - Glass-morphism design with Tailwind CSS 4.1
+- **UI/UX**:
+  - Editorial/data-journalism aesthetic (Fraunces serif headlines, DM Sans body)
+  - Deep navy primary color (#1E3A5F light, #5B8BD4 dark)
+  - Tailwind CSS 4.1 with warm, subtle design
   - Framer Motion animations
   - Dark mode support
-  - Responsive design
-- **Data Visualization**: Recharts (to be implemented)
+  - Responsive design with SVG icons
+- **Data Visualization**: Recharts 3.1
+- **UI Components**: Radix UI Tooltip for accessible tooltips
 
 ## Key Patterns and Conventions
 
@@ -130,11 +133,14 @@ npm run lint              # Run ESLint
 
 ### Frontend Patterns
 - **Component Structure**: Organized by feature (calculator, layout, ui, providers)
-- **State Management**: Redux Toolkit with typed hooks
-- **Styling**: Tailwind CSS with custom glass-morphism utilities
-- **Error Handling**: Toast notifications for user feedback
+- **State Management**: Redux Toolkit with typed hooks (`useAppDispatch`, `useAppSelector`)
+- **Styling**: Tailwind CSS with editorial design system (warm tones, subtle shadows)
+- **Error Handling**: Toast notifications with react-hot-toast
 - **Data Persistence**: LocalStorage via Redux listener middleware
 - **Type Safety**: Strict TypeScript with comprehensive interfaces
+- **Accessibility**: Radix UI primitives for tooltips, keyboard navigation, ARIA labels
+- **Table UX**: Expandable row drawers instead of action columns (click-to-expand with keyboard support)
+- **Terminology**: "Gross Pay" (not "Amount"), "Change" (not "Raise"), "Gain/Loss" and "Real Gain/Loss" columns
 
 ## Project Structure
 
@@ -157,14 +163,31 @@ backend/src/
 frontend/src/
 ├── components/
 │   ├── calculator/   # Wage entry components
+│   │   ├── WageEntriesTable.tsx    # Main table with entry management
+│   │   ├── EditableTableRow.tsx    # Expandable row with action drawer
+│   │   ├── WageEntryModal.tsx      # Add/edit entry modal
+│   │   ├── CSVImportModal.tsx      # Bulk CSV import with validation
+│   │   ├── CalculationDetails.tsx  # Shows inflation calculation formulas
+│   │   └── TableSettings.tsx       # CPI calculation type settings
 │   ├── layout/       # App structure components
 │   ├── providers/    # Context providers
 │   └── ui/          # Reusable UI components
+│       ├── Tooltip.tsx              # Radix UI tooltip wrapper
+│       ├── Modal.tsx                # Base modal component
+│       ├── ConfirmDialog.tsx        # Confirmation dialog
+│       ├── CountryDropdown.tsx      # Country selector
+│       ├── ThemeToggle.tsx          # Dark mode toggle
+│       └── CPILoadingOverlay.tsx    # CPI data loading state
 ├── hooks/           # Custom React hooks
 ├── routes/          # Route components
+├── pages/           # Full page components
+│   ├── HomePage.tsx
+│   └── PreTaxHelpPage.tsx          # Help page for finding gross income
 ├── store/           # Redux store and slices
 ├── types/           # TypeScript definitions
 ├── utils/           # Utility functions
+│   ├── inflationCalculator.ts      # CPI calculations and formatting
+│   └── csvParser.ts                # CSV parsing with validation
 └── constants/       # App constants
 ```
 
@@ -193,13 +216,19 @@ frontend/src/
 ### Frontend
 - **Foundation (Phase 1)**: ✅ Complete - Project setup, routing, theme system
 - **Data Layer (Phase 2)**: ✅ Complete - Redux store, CPI data fetching
-- **Entry Components (Phase 3)**: 🟡 In Progress
+- **Entry Components (Phase 3)**: ✅ Complete
   - ✅ Wage entry form with validation
-  - ✅ Table with inflation calculations
+  - ✅ Modal-based entry editing
+  - ✅ Table with expandable row drawers
+  - ✅ Three-column inflation metrics (Raise, Inflation, Gain)
+  - ✅ Column header tooltips explaining metrics
+  - ✅ CSV bulk import with drag-and-drop
   - ✅ Entry mode locking
   - ✅ Clear all with confirmation
   - ✅ Toast notifications
-  - ⏳ Mobile responsive improvements needed
+  - ✅ Calculation details modal with formulas
+  - ✅ Pre-tax help page with country-specific guidance
+  - ✅ Country switching preserves entries (recalculates with new CPI)
 - **Visualization (Phase 4)**: ⏳ Not started - Charts and statistics
 - **Sharing (Phase 5)**: ⏳ Not started - URL sharing, export features
 
@@ -213,26 +242,75 @@ frontend/src/
    - Convenience scripts for cross-workspace commands
 
 ### Backend
-1. **CORS Configuration**: Added `AllowedOrigins` parameter for production deployments
-2. **S3 CORS Rules**: Configured bucket CORS for frontend access
-3. **CloudFront Headers**: Custom response headers policy for CORS
+1. **AppConfig IAM Permissions** (commit 951ab1d):
+   - Added StartConfigurationSession and GetLatestConfiguration actions
+   - Fixed authorization errors when Lambda functions access AppConfig
+   - Applied to all three CPI data functions (US, Canadian, UK)
+
+2. **Vitest v4 Upgrade** (commit bc94366):
+   - Upgraded from Vitest v2 to v4
+   - Fixed handler tests to work with new version
+   - Updated test configuration
+
+3. **CORS Configuration**: Added `AllowedOrigins` parameter for production deployments
+4. **S3 CORS Rules**: Configured bucket CORS for frontend access
+5. **CloudFront Headers**: Custom response headers policy for CORS
 
 ### Frontend
-1. **Entry Mode Locking**: Prevents mixing annual and paycheck entries
-2. **Enhanced Table**:
+1. **Editorial Redesign** (commit 71d56ed):
+   - Replaced cyberpunk/neon design with clean data-journalism aesthetic
+   - Typography: Fraunces serif headlines, DM Sans body text
+   - Color: Deep navy primary (#1E3A5F light, #5B8BD4 dark)
+   - Custom SVG icons replacing Font Awesome where appropriate
+   - Minimal, functional UI with stripped excessive copy
+
+2. **Table UX Improvements**:
+   - **Expandable Row Drawers** (commit 710451c): Click row to reveal action buttons (Details, Edit, Delete)
+   - **Three-Column Metrics** (commit b7e2397): Split into Raise, Inflation, and Gain columns
+   - **Column Tooltips** (commit b7e2397): Radix UI tooltips explaining each metric
+   - **Terminology Updates** (commit c896d07): "Gross Pay" instead of "Amount", "Change" instead of "Raise"
+   - **Gain/Loss Labels** (commit ef7cf78): Parallel terminology for nominal and real changes
    - Today's value column (inflation-adjusted)
-   - Percentage change columns (nominal & real)
    - Color-coded growth indicators
-   - Reordered columns for better UX
-3. **Form Improvements**:
+   - Keyboard accessibility (Enter/Space to toggle, Escape to close)
+   - CPI data date range display in table footer
+
+3. **CSV Bulk Import** (commit c71e866):
+   - CSVImportModal component with drag-and-drop upload
+   - Auto-detection of annual (YYYY) vs paycheck (YYYY-MM-DD) formats
+   - Preview table with validation before import
+   - Template generation for easy setup
+   - csvParser utility with comprehensive validation
+
+4. **Country Switching** (commit 996073f):
+   - Preserves wage entries when switching countries
+   - Recalculates inflation using new country's CPI data
+   - Updates currency symbols automatically
+
+5. **Pre-Tax Help** (commit a35c795):
+   - New /help/pre-tax page with country-specific guidance
+   - W-2 Box 3/5 for US, T4 Box 14 for Canada, P60 for UK
+   - Enhanced modal help text that adapts to country and entry mode
+
+6. **Entry Mode Locking**: Prevents mixing annual and paycheck entries
+
+7. **Form Improvements**:
    - Fixed amount input validation (step="0.01")
    - Allow future dates with CPI fallback
    - Fixed date display timezone issues
-4. **UI Components**:
+
+8. **UI Components**:
+   - Tooltip (Radix UI wrapper for accessible tooltips)
    - ConfirmDialog for destructive actions
    - CPILoadingOverlay for data fetching
    - Toast notifications with react-hot-toast
-5. **Inflation Calculator**: New utility module for CPI calculations
+
+9. **Inflation Calculator**: Comprehensive utility module with:
+   - getCPIForDate() with interpolation
+   - adjustToLatestCPI() for current dollar calculations
+   - calculatePercentageChange() for growth tracking
+   - calculateInflationRate() following BLS methodology
+   - Formatting utilities with color coding
 
 ## S3 Data Structure
 
@@ -287,14 +365,38 @@ To add EU or other countries:
 4. **Frontend - Update constants** with country metadata
 5. **Frontend - Add sample data** for the new country
 
+## Design Guidelines
+
+### Editorial Aesthetic
+The frontend uses a clean, data-journalism inspired design:
+- **Typography**: Fraunces for headlines (serif, editorial), DM Sans for body (clean, readable)
+- **Color Palette**: Deep navy primary, warm accent colors, subtle borders
+- **Visual Style**: Minimal decoration, functional UI, let data be the hero
+- **Icons**: Custom SVG icons for key actions (prefer over icon fonts)
+- **Spacing**: Generous whitespace, clear visual hierarchy
+- **Terminology**: Clear, professional language (e.g., "Gross Pay" not "Amount")
+
+### UX Patterns
+- **Tables**: Expandable row drawers instead of dedicated action columns (saves space)
+- **Tooltips**: Use Radix UI tooltips for explanatory content (accessible, well-positioned)
+- **Modals**: Full-featured modal editing (no inline quick-edit to reduce complexity)
+- **Terminology**: Use parallel language (Gain/Loss, Real Gain/Loss) for clarity
+- **Help**: Context-aware help that adapts to country and entry mode
+
 ## Claude Code Guidelines
 
-- Always present a todo or implementation plan before proceeding. I would like to approve it first.
-- When working with CPI data, use the shared utilities for consistency
-- Before a major refactor, please ask if I would like to commit uncommitted changes first
-- Keep documentation files updated as you make progress
-- Check official docs with websearch to ensure you're following modern best practices
+### Workflow
+- For non-trivial implementation tasks, use **plan mode** to design and get approval before coding
+- Before a major refactor, ask if I would like to commit uncommitted changes first
+- Never auto-commit to git; only commit when explicitly asked
 - Run the app locally to test changes when possible
+
+### Code Style
+- When working with CPI data, use the shared utilities for consistency
+- When adding tooltips, use the Radix UI Tooltip component (already installed)
+- Follow the editorial design aesthetic: minimal, functional, data-focused
+- Use proper terminology: "Gross Pay" (not "Amount"), "Gain/Loss" and "Real Gain/Loss" for change columns
+- Check official docs with web search to ensure you're following modern best practices
 
 ## Quick CLI Tips
 

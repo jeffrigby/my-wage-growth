@@ -14,31 +14,52 @@ Getting a 5% raise sounds great—until you realize inflation was 7%. Without ad
 
 ### Current Features
 - **Multi-Country Support**: Track wages in US (USD), Canada (CAD), or UK (GBP)
+  - Switch countries while preserving entries (recalculates with new CPI data)
 - **Flexible Entry Modes**: Enter annual salaries or individual paycheck amounts
+  - Mode locking prevents mixing entry types
 - **Inflation Adjustment**: Automatic CPI-based calculations showing real vs. nominal wages
-- **Visual Analysis**: See at a glance which years you gained or lost purchasing power
+  - Three-column metrics: Raise, Inflation, and Gain
+  - Inflation rate calculation following BLS methodology
+  - Column tooltips explaining each metric
+- **Data Entry**:
+  - Modal-based form with validation
+  - CSV bulk import with drag-and-drop
+  - Auto-detection of date formats (YYYY for annual, YYYY-MM-DD for paycheck)
+  - Preview and validate before importing
+- **Visual Analysis**:
+  - Expandable row drawers for detailed actions
+  - Color-coded growth indicators
+  - Today's value column (inflation-adjusted)
+  - See at a glance which years you gained or lost purchasing power
+- **Help & Guidance**:
+  - Pre-tax income help page with country-specific guidance
+  - W-2 Box 3/5 (US), T4 Box 14 (Canada), P60 (UK)
+  - Context-aware tooltips adapting to your settings
 - **Official Data**: Powered by CPI data from:
   - 🇺🇸 U.S. Bureau of Labor Statistics
   - 🇨🇦 Statistics Canada
   - 🇬🇧 UK Office for National Statistics
 - **Privacy First**: All calculations happen in your browser; your data never leaves your device
-- **Dark Mode**: Easy on the eyes with automatic theme detection
+- **Dark Mode**: Editorial aesthetic with automatic theme detection
+- **Accessibility**: Keyboard navigation, ARIA labels, Radix UI components
 
 ### Coming Soon
-- Advanced visualizations and charts
-- Export to CSV/PDF
+- Interactive charts with Recharts
+- Statistics panel (best/worst years, cumulative impact)
 - Share results via URL
-- Multi-currency comparisons
+- Export to CSV/PDF
 
 ## Tech Stack
 
 ### Frontend
 - **React 19** - Modern UI with hooks and concurrent features
 - **TypeScript** - Type-safe development
-- **Redux Toolkit 2.8** - Predictable state management with RTK Query
+- **Redux Toolkit 2.8** - Predictable state management with listener middleware
 - **React Router 7** - Client-side routing with lazy loading
-- **Tailwind CSS 4.1** - Utility-first styling with custom glass-morphism design
+- **Tailwind CSS 4.1** - Editorial design system (Fraunces serif + DM Sans)
+- **Radix UI** - Accessible tooltip components
 - **Framer Motion** - Smooth animations and transitions
+- **Recharts 3.1** - Data visualization charts
 - **Vite 7** - Lightning-fast development and optimized production builds
 
 ### Backend (AWS Serverless)
@@ -51,7 +72,7 @@ Getting a 5% raise sounds great—until you realize inflation was 7%. Without ad
 - **AWS AppConfig** - Centralized configuration management
 
 ### Testing & Quality
-- **Vitest** - Fast unit testing with great TypeScript support
+- **Vitest 4** - Fast unit testing with great TypeScript support
 - **ESLint** - Code linting and style enforcement
 - **Prettier** - Consistent code formatting
 
@@ -106,17 +127,33 @@ Getting a 5% raise sounds great—until you realize inflation was 7%. Without ad
 ### Prerequisites
 
 - **Node.js** 18+ (22.x recommended)
-- **npm** or **yarn**
+- **npm** (project uses npm workspaces)
 - **AWS CLI** configured with credentials (for backend deployment)
 - **AWS SAM CLI** (for backend development)
 
 ### Installation
 
+This project uses **npm workspaces** for monorepo management. Install from the root:
+
+```bash
+# From project root
+npm install  # Installs all workspace dependencies
+
+# Start frontend dev server
+npm run dev  # or: npm run dev -w frontend
+
+# Run backend tests
+npm run unit -w backend
+```
+
 #### Frontend Development
 
 ```bash
+# From root
+npm run dev
+
+# Or from frontend directory
 cd frontend
-npm install
 npm run dev
 ```
 
@@ -125,7 +162,7 @@ The app will be available at `http://localhost:5173`
 #### Backend Development
 
 ```bash
-cd backend
+# From root - install all dependencies
 npm install
 ```
 
@@ -185,18 +222,31 @@ npm run lint:sam      # Validate SAM template
 
 ```
 my-wage-growth/
+├── package.json            # Root workspace configuration
+├── package-lock.json       # Single lockfile for all workspaces
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── components/     # React components
 │   │   │   ├── calculator/ # Wage entry components
+│   │   │   │   ├── WageEntriesTable.tsx
+│   │   │   │   ├── EditableTableRow.tsx
+│   │   │   │   ├── WageEntryModal.tsx
+│   │   │   │   ├── CSVImportModal.tsx
+│   │   │   │   ├── CalculationDetails.tsx
+│   │   │   │   └── TableSettings.tsx
 │   │   │   ├── layout/     # App layout components
 │   │   │   ├── providers/  # Context providers
-│   │   │   └── ui/         # Reusable UI components
+│   │   │   └── ui/         # Reusable UI components (Radix UI wrappers)
 │   │   ├── store/          # Redux store and slices
 │   │   ├── hooks/          # Custom React hooks
 │   │   ├── pages/          # Route components
+│   │   │   ├── HomePage.tsx
+│   │   │   └── PreTaxHelpPage.tsx
 │   │   ├── types/          # TypeScript type definitions
 │   │   ├── utils/          # Utility functions
+│   │   │   ├── inflationCalculator.ts
+│   │   │   └── csvParser.ts
 │   │   └── constants/      # App constants
 │   ├── package.json
 │   └── vite.config.ts
@@ -213,13 +263,14 @@ my-wage-growth/
 │   │   │   ├── uk-ons-api.ts
 │   │   │   ├── cpi-shared.ts
 │   │   │   └── aws.*.ts    # AWS service clients
-│   │   └── test/           # Test files
+│   │   └── test/           # Test files (Vitest 4)
 │   ├── events/             # Sample Lambda events
 │   ├── config/             # Local development config
 │   ├── template.yaml       # SAM/CloudFormation template
 │   └── package.json
 │
-└── README.md
+├── CLAUDE.md               # AI agent guidance
+└── README.md               # This file
 ```
 
 ## Deployment
