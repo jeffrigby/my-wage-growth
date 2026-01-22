@@ -130,6 +130,12 @@ export const WageEntryModal: React.FC = () => {
     setErrors({});
   };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Strip commas from pasted values (e.g., "1,234.56" -> "1234.56")
+    const sanitized = e.target.value.replace(/,/g, '');
+    setAmount(sanitized);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -201,14 +207,12 @@ export const WageEntryModal: React.FC = () => {
             </span>
             <input
               id="amount"
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={handleAmountChange}
               className={`!pl-10 ${errors.amount ? 'border-[var(--error)]' : ''}`}
               placeholder="0"
-              step="0.01"
-              min="0.01"
-              max={VALIDATION.MAX_WAGE_AMOUNT}
             />
           </div>
           {errors.amount && (
