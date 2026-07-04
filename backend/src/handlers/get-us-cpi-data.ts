@@ -35,11 +35,12 @@ const cpiExportEventSchema = z.object({
         // Validate that all keys exist in the enum
         return keys.every((key) => key in CpiSeriesId);
       },
-      (keys) => {
-        const invalidKey = keys.find((key) => !(key in CpiSeriesId));
-        return {
-          message: `Invalid series ID: ${invalidKey}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`,
-        };
+      {
+        error: (issue) => {
+          const keys = issue.input as string[];
+          const invalidKey = keys.find((key) => !(key in CpiSeriesId));
+          return `Invalid series ID: ${invalidKey}. Must be one of: ${Object.keys(CpiSeriesId).join(', ')}`;
+        },
       },
     )
     .transform((keys): SeriesMapping<CpiSeriesId>[] => {
