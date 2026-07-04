@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { ANIMATION_VARIANTS, COUNTRIES } from '../constants';
 
 export const AboutPage: React.FC = () => {

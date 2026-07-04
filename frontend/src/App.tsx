@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { Toaster } from 'react-hot-toast';
 import { store } from './store';
 import { ThemeProvider } from './contexts/ThemeContext';
