@@ -43,7 +43,7 @@
   "devDependencies": {
     "@eslint/json": "^2.0.1",
     "@types/aws-lambda": "^8.10.109",
-    "@types/node": "^22.15.23",
+    "@types/node": "^24.3.0",
     "@types/unzipper": "^0.10.11",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
