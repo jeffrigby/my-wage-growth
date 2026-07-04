@@ -309,7 +309,7 @@ export function parseCSV(content: string): ParseResult {
 
   const uniqueModes = [...new Set(modes)];
 
-  let detectedMode: ParseResult['detectedMode'] = null;
+  let detectedMode: ParseResult['detectedMode'];
 
   if (uniqueModes.length === 0) {
     detectedMode = null;
