@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
@@ -30,7 +30,14 @@ export const WageEntryModal: React.FC = () => {
   const [label, setLabel] = useState('');
   const [errors, setErrors] = useState<{ date?: string; amount?: string }>({});
 
-  useEffect(() => {
+  // Sync form fields from the entry being edited (or reset for a new entry) each
+  // time the modal opens. Done during render with a change guard rather than in an
+  // effect — React's recommended pattern to avoid setState-triggered cascading renders.
+  const [syncedKey, setSyncedKey] = useState<string | null>(null);
+  const openKey = isOpen ? (editingId ?? '__new__') : null;
+
+  if (openKey !== syncedKey) {
+    setSyncedKey(openKey);
     if (isOpen) {
       if (editingEntry) {
         setLocalEntryMode(editingEntry.entryType.includes('annual') ? 'annual' : 'paycheck');
@@ -46,7 +53,7 @@ export const WageEntryModal: React.FC = () => {
       }
       setErrors({});
     }
-  }, [isOpen, editingEntry, globalEntryMode]);
+  }
 
   const handleClose = () => {
     dispatch(closeWageEntryModal());
