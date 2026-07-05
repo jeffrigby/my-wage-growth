@@ -15,6 +15,7 @@ import {
   validateCpiData,
   validateProcessedCpiData,
 } from '@/lib/cpi-shared';
+import { invalidateCPICache } from '@/lib/aws.cloudfront';
 import { checkEnvVar } from '@/lib/utils';
 
 const WAGE_GROWTH_BUCKET = checkEnvVar('WAGE_GROWTH_BUCKET');
@@ -142,6 +143,9 @@ export const lambdaHandler = async (event: CpiExportEvent, context: Context): Pr
 
     // Save processed data to S3
     const keys = await saveProcessedCpiData(simplifiedData, seriesIds, 'us', 'BLS');
+
+    // Invalidate CloudFront cache so users get fresh data
+    await invalidateCPICache('us');
 
     return {
       status: 'success',

@@ -29,6 +29,7 @@ Globals:
         APPCONFIG_ENV_ID: !Ref AppConfigEnvironment
         APPCONFIG_PROFILE_ID: !Ref AppConfigConfigurationProfile
         WAGE_GROWTH_BUCKET: !Ref WageGrowthBucket
+        CLOUDFRONT_DISTRIBUTION_ID: !Ref CloudFrontDistribution
 
 Resources:
   GetUSCPIDataFunction:
@@ -46,6 +47,10 @@ Resources:
                 - appconfig:StartConfigurationSession
                 - appconfig:GetLatestConfiguration
               Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
+            - Effect: Allow
+              Action:
+                - cloudfront:CreateInvalidation
+              Resource: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -85,6 +90,10 @@ Resources:
                 - appconfig:StartConfigurationSession
                 - appconfig:GetLatestConfiguration
               Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
+            - Effect: Allow
+              Action:
+                - cloudfront:CreateInvalidation
+              Resource: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -122,6 +131,10 @@ Resources:
                 - appconfig:StartConfigurationSession
                 - appconfig:GetLatestConfiguration
               Resource: !Sub arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}
+            - Effect: Allow
+              Action:
+                - cloudfront:CreateInvalidation
+              Resource: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -351,19 +364,19 @@ Resources:
       LocationUri: hosted
       Type: AWS.Freeform
 
-  ApplicationResourceGroup:
-    Type: AWS::ResourceGroups::Group
-    Properties:
-      Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
-      ResourceQuery:
-        Type: CLOUDFORMATION_STACK_1_0
-
-  ApplicationInsightsMonitoring:
-    Type: AWS::ApplicationInsights::Application
-    Properties:
-      ResourceGroupName:
-        Ref: ApplicationResourceGroup
-      AutoConfigurationEnabled: "true"
+#  ApplicationResourceGroup:
+#    Type: AWS::ResourceGroups::Group
+#    Properties:
+#      Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
+#      ResourceQuery:
+#        Type: CLOUDFORMATION_STACK_1_0
+#
+#  ApplicationInsightsMonitoring:
+#    Type: AWS::ApplicationInsights::Application
+#    Properties:
+#      ResourceGroupName:
+#        Ref: ApplicationResourceGroup
+#      AutoConfigurationEnabled: "true"
 
 Outputs:
   GetUSCPIDataFunction:
@@ -431,16 +444,16 @@ Outputs:
     Value: !Ref AppConfigConfigurationProfile
     Export:
       Name: !Sub ${AWS::StackName}-AppConfigConfigurationProfileId
-  ApplicationResourceGroup:
-    Description: Application Resource Group Name
-    Value: !Ref ApplicationResourceGroup
-    Export:
-      Name: !Sub ${AWS::StackName}-ApplicationResourceGroupName
-  ApplicationInsightsMonitoring:
-    Description: Application Insights Application Name
-    Value: !Ref ApplicationInsightsMonitoring
-    Export:
-      Name: !Sub ${AWS::StackName}-ApplicationInsightsApplicationName
+#  ApplicationResourceGroup:
+#    Description: Application Resource Group Name
+#    Value: !Ref ApplicationResourceGroup
+#    Export:
+#      Name: !Sub ${AWS::StackName}-ApplicationResourceGroupName
+#  ApplicationInsightsMonitoring:
+#    Description: Application Insights Application Name
+#    Value: !Ref ApplicationInsightsMonitoring
+#    Export:
+#      Name: !Sub ${AWS::StackName}-ApplicationInsightsApplicationName
   CloudFrontDistribution:
     Description: CloudFront Distribution ID
     Value: !Ref CloudFrontDistribution

@@ -32,7 +32,7 @@ export const useCPIData = (country: Country) => {
     dispatch(clearError());
     dispatch(fetchCPIData({ country }));
   }, [country, dispatch]);
-  
+
   // Check if data is stale (older than 24 hours)
   const isStale = useCallback(() => {
     if (!cpiData?.lastUpdated) return true;
