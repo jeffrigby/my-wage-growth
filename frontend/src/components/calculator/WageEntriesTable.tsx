@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { deleteWageEntry, loadSampleData, clearAllEntries } from '../../store/slices/wageEntriesSlice';
-import { fetchCPIData, selectCPIDataByCountry, selectCPIDateRangeByCountry } from '../../store/slices/cpiSlice';
+import { fetchCPIData, selectCPIDataByCountry, selectCPIDateRangeByCountry, selectCPILoading } from '../../store/slices/cpiSlice';
 import { COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES, FEATURE_FLAGS } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -22,6 +22,7 @@ export const WageEntriesTable: React.FC = () => {
   const calculationType = useAppSelector(state => state.wageEntries.tableSettings.cpiCalculationType);
   const cpiData = useAppSelector(state => selectCPIDataByCountry(state, country));
   const cpiDateRange = useAppSelector(state => selectCPIDateRangeByCountry(state, country));
+  const cpiLoading = useAppSelector(selectCPILoading);
   const countryInfo = COUNTRIES[country];
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -61,6 +62,11 @@ export const WageEntriesTable: React.FC = () => {
     dispatch(clearAllEntries());
     setShowClearConfirm(false);
     toast.success(SUCCESS_MESSAGES.ALL_ENTRIES_CLEARED);
+  };
+
+  const handleRefreshCPIData = () => {
+    dispatch(fetchCPIData({ country, forceRefresh: true }));
+    toast.success('Refreshing CPI data...');
   };
 
   const formatCurrency = (amount: number) => {
@@ -238,20 +244,31 @@ export const WageEntriesTable: React.FC = () => {
 
       {/* Footer info */}
       <div className="mt-6 pt-4 border-t border-[var(--border)]">
-        <p className="text-xs text-[var(--text-muted)]">
-          {countryInfo.currency} • {countryInfo.cpiSource}
-          {entries.length > 0 && (
-            <span>
-              {' '}• {entryMode === 'annual'
-                ? `${calculationType === 'annual-average' ? 'Annual average' : 'December'} CPI`
-                : 'Monthly CPI'
-              }
-            </span>
-          )}
-          {cpiDateRange?.maxDate && (
-            <span> • Data through {format(new Date(cpiDateRange.maxDate + '-01'), 'MMM yyyy')}</span>
-          )}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-[var(--text-muted)]">
+            {countryInfo.currency} • {countryInfo.cpiSource}
+            {entries.length > 0 && (
+              <span>
+                {' '}• {entryMode === 'annual'
+                  ? `${calculationType === 'annual-average' ? 'Annual average' : 'December'} CPI`
+                  : 'Monthly CPI'
+                }
+              </span>
+            )}
+            {cpiDateRange?.maxDate && (
+              <span> • Data through {format(new Date(cpiDateRange.maxDate + '-01'), 'MMM yyyy')}</span>
+            )}
+          </p>
+          <button
+            onClick={handleRefreshCPIData}
+            disabled={cpiLoading}
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
+            title="Refresh CPI data (bypass cache)"
+          >
+            <i className={`fas fa-sync-alt ${cpiLoading ? 'fa-spin' : ''}`}></i>
+            <span className="ml-1.5 hidden sm:inline">Refresh</span>
+          </button>
+        </div>
       </div>
 
       <ConfirmDialog

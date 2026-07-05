@@ -32,6 +32,12 @@ export const useCPIData = (country: Country) => {
     dispatch(clearError());
     dispatch(fetchCPIData({ country }));
   }, [country, dispatch]);
+
+  // Force refresh - bypasses all caches (browser and CloudFront)
+  const forceRefresh = useCallback(() => {
+    dispatch(clearError());
+    dispatch(fetchCPIData({ country, forceRefresh: true }));
+  }, [country, dispatch]);
   
   // Check if data is stale (older than 24 hours)
   const isStale = useCallback(() => {
@@ -58,6 +64,7 @@ export const useCPIData = (country: Country) => {
     error,
     retry,
     refresh,
+    forceRefresh,
     isStale: isStale(),
     hasData: !!cpiData && !!cpiData.months && Object.keys(cpiData.months).length > 0
   };

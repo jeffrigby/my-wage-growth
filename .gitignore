@@ -38,6 +38,7 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+.playwright-mcp/
 
 # Local configuration files (contain AWS account info)
 backend/config/sandbox.json

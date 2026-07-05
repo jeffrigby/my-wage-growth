@@ -33,21 +33,23 @@ const calculateDateRange = (cpiData: CPIData): CPIDateRange => {
 // Async thunk for fetching CPI data with optional series support
 export const fetchCPIData = createAsyncThunk(
   'cpi/fetchCPIData',
-  async ({ country, series }: { country: Country; series?: string }, { rejectWithValue }) => {
+  async ({ country, series, forceRefresh = false }: { country: Country; series?: string; forceRefresh?: boolean }, { rejectWithValue }) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
-      
+
       const countryCode = country.toLowerCase();
       // Default to country-specific CPI series if no series specified
       const seriesName = series || CPI_SERIES_MAPPING[country];
       const url = `${API_CONFIG.CPI_BASE_URL}/${countryCode}/${seriesName}.json`;
-      
+
       const response = await fetch(url, {
         signal: controller.signal,
+        // Bypass browser cache when force refreshing
+        cache: forceRefresh ? 'no-store' : 'default',
         headers: {
           'Accept': 'application/json',
-          'Cache-Control': 'max-age=3600' // 1 hour cache
+          ...(forceRefresh ? {} : { 'Cache-Control': 'max-age=3600' })
         }
       });
       
