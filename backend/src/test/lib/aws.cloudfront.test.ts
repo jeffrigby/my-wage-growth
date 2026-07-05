@@ -26,7 +26,9 @@ describe('aws.cloudfront', () => {
       expect(input.DistributionId).toBe('DIST123');
       expect(input.InvalidationBatch?.Paths?.Quantity).toBe(1);
       expect(input.InvalidationBatch?.Paths?.Items).toEqual(['/cpi/processed/us/*']);
-      expect(input.InvalidationBatch?.CallerReference).toMatch(/^invalidation-\d+$/);
+      expect(input.InvalidationBatch?.CallerReference).toMatch(
+        /^invalidation-\d+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      );
       expect(result.Invalidation?.Id).toBe('I-123');
     });
 

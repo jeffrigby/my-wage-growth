@@ -1,4 +1,5 @@
 import { CloudFrontClient, CreateInvalidationCommand, CreateInvalidationResult } from '@aws-sdk/client-cloudfront';
+import { randomUUID } from 'node:crypto';
 import { getLogger } from '@/lib/logger';
 
 const logger = getLogger();
@@ -11,10 +12,14 @@ const cloudFrontClient = new CloudFrontClient();
  * @param distributionId - The CloudFront distribution ID
  * @param paths - Array of paths to invalidate (e.g., ['/cpi/processed/us/*'])
  * @returns - A promise that resolves to the invalidation result
- * @throws - Throws an error if unable to create the invalidation
+ * @throws - Throws (without logging) if unable to create the invalidation, so the
+ *   caller decides the severity — a strict caller can log at error, while the
+ *   best-effort invalidateCPICache logs at warn.
  */
 export const invalidateCache = async (distributionId: string, paths: string[]): Promise<CreateInvalidationResult> => {
-  const callerReference = `invalidation-${Date.now()}`;
+  // Include a UUID so concurrent invocations in the same millisecond can't collide
+  // on CallerReference (CloudFront rejects a duplicate reference with a different batch).
+  const callerReference = `invalidation-${Date.now()}-${randomUUID()}`;
 
   logger.info('Creating CloudFront cache invalidation', {
     distributionId,
@@ -22,34 +27,25 @@ export const invalidateCache = async (distributionId: string, paths: string[]): 
     callerReference,
   });
 
-  try {
-    const command = new CreateInvalidationCommand({
-      DistributionId: distributionId,
-      InvalidationBatch: {
-        CallerReference: callerReference,
-        Paths: {
-          Quantity: paths.length,
-          Items: paths,
-        },
+  const command = new CreateInvalidationCommand({
+    DistributionId: distributionId,
+    InvalidationBatch: {
+      CallerReference: callerReference,
+      Paths: {
+        Quantity: paths.length,
+        Items: paths,
       },
-    });
+    },
+  });
 
-    const result = await cloudFrontClient.send(command);
+  const result = await cloudFrontClient.send(command);
 
-    logger.info('CloudFront cache invalidation created', {
-      invalidationId: result.Invalidation?.Id,
-      status: result.Invalidation?.Status,
-    });
+  logger.info('CloudFront cache invalidation created', {
+    invalidationId: result.Invalidation?.Id,
+    status: result.Invalidation?.Status,
+  });
 
-    return result;
-  } catch (error) {
-    logger.error('Error creating CloudFront cache invalidation', {
-      error,
-      distributionId,
-      paths,
-    });
-    throw error;
-  }
+  return result;
 };
 
 /**
@@ -70,10 +66,16 @@ export const invalidateCPICache = async (country: string): Promise<CreateInvalid
 
   // Best-effort: a failed invalidation must not fail the caller's data refresh.
   // The processed data is already saved to S3 and the CloudFront cache expires
-  // naturally; invalidateCache has already logged the underlying error.
+  // naturally. Log at warn (not error) so an expected, non-fatal outcome — e.g.
+  // TooManyInvalidationsInProgress throttling — doesn't inflate the error signal.
   try {
     return await invalidateCache(distributionId, paths);
-  } catch {
+  } catch (error) {
+    logger.warn('CloudFront cache invalidation failed; continuing (best-effort)', {
+      error,
+      country,
+      paths,
+    });
     return null;
   }
 };

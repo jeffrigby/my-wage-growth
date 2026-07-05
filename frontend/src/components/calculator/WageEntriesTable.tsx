@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
 import { deleteWageEntry, loadSampleData, clearAllEntries } from '../../store/slices/wageEntriesSlice';
-import { fetchCPIData, selectCPIDataByCountry, selectCPIDateRangeByCountry, selectCPILoading } from '../../store/slices/cpiSlice';
+import { fetchCPIData, clearError, selectCPIDataByCountry, selectCPIDateRangeByCountry, selectCPILoading } from '../../store/slices/cpiSlice';
 import { COUNTRIES, SAMPLE_DATA, DATE_FORMATS, SUCCESS_MESSAGES, FEATURE_FLAGS } from '../../constants';
 import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -65,8 +65,19 @@ export const WageEntriesTable: React.FC = () => {
   };
 
   const handleRefreshCPIData = () => {
-    dispatch(fetchCPIData({ country, forceRefresh: true }));
-    toast.success('Refreshing CPI data...');
+    const loadingToast = toast.loading('Refreshing CPI data...');
+    dispatch(fetchCPIData({ country, forceRefresh: true }))
+      .unwrap()
+      .then(() => {
+        toast.success('CPI data refreshed', { id: loadingToast });
+      })
+      .catch(() => {
+        // The rejected thunk sets the shared cpi `error`; clear it so a later
+        // country switch isn't blocked by this failed refresh. Surface the
+        // failure to the user via the toast instead.
+        dispatch(clearError());
+        toast.error('Could not refresh CPI data', { id: loadingToast });
+      });
   };
 
   const formatCurrency = (amount: number) => {
@@ -256,16 +267,19 @@ export const WageEntriesTable: React.FC = () => {
               </span>
             )}
             {cpiDateRange?.maxDate && (
-              <span> • Data through {format(new Date(cpiDateRange.maxDate + '-01'), 'MMM yyyy')}</span>
+              // Parse as local time (append T00:00:00) so 'YYYY-MM' isn't shifted
+              // back a month for users in negative-UTC-offset timezones.
+              <span> • Data through {format(new Date(cpiDateRange.maxDate + '-01T00:00:00'), 'MMM yyyy')}</span>
             )}
           </p>
           <button
             onClick={handleRefreshCPIData}
             disabled={cpiLoading}
             className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
-            title="Refresh CPI data (bypass cache)"
+            aria-label="Refresh CPI data"
+            title="Reload the latest CPI data"
           >
-            <i className={`fas fa-sync-alt ${cpiLoading ? 'fa-spin' : ''}`}></i>
+            <i className={`fas fa-sync-alt ${cpiLoading ? 'fa-spin' : ''}`} aria-hidden="true"></i>
             <span className="ml-1.5 hidden sm:inline">Refresh</span>
           </button>
         </div>

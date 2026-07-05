@@ -61,8 +61,9 @@ export const fetchCPIData = createAsyncThunk(
       
       const data: CPIData = await response.json();
       
-      // Validate data structure
-      if (!data.months || typeof data.months !== 'object') {
+      // Validate data structure. Reject an empty `months` object too: it passes
+      // the type check but leaves calculateDateRange dereferencing an undefined date.
+      if (!data.months || typeof data.months !== 'object' || Object.keys(data.months).length === 0) {
         throw new Error('Invalid CPI data format');
       }
       
