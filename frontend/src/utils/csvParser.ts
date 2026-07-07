@@ -2,14 +2,15 @@
  * CSV Parser utility for wage entry bulk import
  */
 
-import { VALIDATION } from '../constants';
-import type { EntryMode, ImportWageEntryPayload } from '../types';
+import { VALIDATION, ERROR_MESSAGES, DEFAULT_PAY_FREQUENCY } from '../constants';
+import type { EntryMode, ImportWageEntryPayload, PayFrequency } from '../types';
 
 export interface ParsedRow {
   rowNumber: number;
   date: string;
   amount: number;
   label?: string;
+  payFrequency?: PayFrequency;
   errors: string[];
   isValid: boolean;
   detectedMode: 'annual' | 'paycheck' | null;
@@ -91,6 +92,26 @@ function parseAmount(amountValue: string): number | null {
 }
 
 /**
+ * Normalize a pay-frequency string to a canonical PayFrequency (case-insensitive)
+ */
+const normalizePayFrequency = (value: string): PayFrequency | null => {
+  switch (value.toLowerCase().trim()) {
+    case 'weekly':
+      return 'weekly';
+    case 'bi-weekly':
+    case 'biweekly':
+      return 'bi-weekly';
+    case 'semi-monthly':
+    case 'semimonthly':
+      return 'semi-monthly';
+    case 'monthly':
+      return 'monthly';
+    default:
+      return null;
+  }
+};
+
+/**
  * Detect CSV delimiter (comma, semicolon, or tab)
  */
 function detectDelimiter(content: string): string {
@@ -144,7 +165,7 @@ function parseCSVLine(line: string, delimiter: string): string[] {
 /**
  * Find column indices from header row
  */
-function findColumnIndices(headers: string[]): { date: number; amount: number; label: number } {
+function findColumnIndices(headers: string[]): { date: number; amount: number; label: number; frequency: number } {
   const normalized = headers.map(h => h.toLowerCase().trim());
 
   const dateIndex = normalized.findIndex(h =>
@@ -159,10 +180,27 @@ function findColumnIndices(headers: string[]): { date: number; amount: number; l
     h === 'label' || h === 'description' || h === 'note' || h === 'notes' || h === 'name'
   );
 
+  const frequencyIndex = normalized.findIndex(h =>
+    h === 'frequency' || h === 'pay frequency' || h === 'pay_frequency' || h === 'payfrequency' || h === 'pay-frequency'
+  );
+
+  const date = dateIndex >= 0 ? dateIndex : 0;
+  const amount = amountIndex >= 0 ? amountIndex : 1;
+
+  // Label positional fallback (index 2) only applies when no other recognized column
+  // already claims that slot — otherwise a headerless label swallows the frequency
+  // (or amount) value of a `date,amount,frequency`-style CSV.
+  let label = labelIndex;
+  if (label < 0) {
+    label = new Set([date, amount, frequencyIndex]).has(2) ? -1 : 2;
+  }
+
   return {
-    date: dateIndex >= 0 ? dateIndex : 0,
-    amount: amountIndex >= 0 ? amountIndex : 1,
-    label: labelIndex >= 0 ? labelIndex : 2
+    date,
+    amount,
+    label,
+    // No positional fallback: -1 means the column is absent so the default applies
+    frequency: frequencyIndex
   };
 }
 
@@ -174,6 +212,7 @@ function validateRow(
   date: string,
   amount: string,
   label: string | undefined,
+  frequency: string | undefined,
   minYear: number,
   maxYear: number
 ): ParsedRow {
@@ -215,11 +254,27 @@ function validateRow(
   // Validate label (optional, but truncate if too long)
   const trimmedLabel = label?.trim().slice(0, 50);
 
+  // Validate pay frequency (paycheck mode only; annual/null-mode rows ignore any value)
+  let payFrequency: PayFrequency | undefined;
+  if (detectedMode === 'paycheck') {
+    if (!frequency || frequency.trim() === '') {
+      payFrequency = DEFAULT_PAY_FREQUENCY;
+    } else {
+      const normalized = normalizePayFrequency(frequency);
+      if (!normalized) {
+        errors.push(ERROR_MESSAGES.INVALID_FREQUENCY);
+      } else {
+        payFrequency = normalized;
+      }
+    }
+  }
+
   return {
     rowNumber,
     date: date.trim(),
     amount: parsedAmount ?? 0,
     label: trimmedLabel || undefined,
+    payFrequency,
     errors,
     isValid: errors.length === 0,
     detectedMode
@@ -289,12 +344,14 @@ export function parseCSV(content: string): ParseResult {
     const date = values[columnIndices.date] || '';
     const amount = values[columnIndices.amount] || '';
     const label = values[columnIndices.label];
+    const frequencyValue = columnIndices.frequency >= 0 ? (values[columnIndices.frequency] || '') : '';
 
     const parsedRow = validateRow(
       i + 2, // Row number (1-indexed, accounting for header)
       date,
       amount,
       label,
+      frequencyValue,
       VALIDATION.MIN_YEAR,
       VALIDATION.MAX_YEAR
     );
@@ -387,7 +444,8 @@ export function convertToWageEntries(
         date: parsedDate.toISOString(),
         amount: row.amount,
         label: row.label,
-        entryType: detectedMode === 'annual' ? 'annual-simple' as const : 'point-in-time' as const
+        entryType: detectedMode === 'annual' ? 'annual-simple' as const : 'point-in-time' as const,
+        ...(detectedMode === 'paycheck' && { payFrequency: row.payFrequency ?? DEFAULT_PAY_FREQUENCY })
       };
     });
 }
@@ -405,12 +463,12 @@ export function generateTemplateCSV(mode: 'annual' | 'paycheck'): string {
 2024,62000,Current salary`;
   }
 
-  return `date,amount,label
-2024-01-15,2500.00,January paycheck
-2024-02-15,2500.00,February paycheck
-2024-03-15,2650.00,After raise
-2024-04-15,2650.00,April paycheck
-2024-05-15,2650.00,May paycheck`;
+  return `date,amount,label,frequency
+2024-01-15,2500.00,January paycheck,monthly
+2024-02-15,2500.00,February paycheck,monthly
+2024-03-15,2650.00,After raise,monthly
+2024-04-15,2650.00,April paycheck,monthly
+2024-05-15,2650.00,May paycheck,monthly`;
 }
 
 /**

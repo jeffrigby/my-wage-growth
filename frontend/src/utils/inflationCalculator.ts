@@ -1,4 +1,5 @@
-import type { CPIData, TableSettings } from '../types';
+import type { CPIData, TableSettings, PayFrequency, WageEntry } from '../types';
+import { PAY_FREQUENCIES, DEFAULT_PAY_FREQUENCY } from '../constants';
 
 /**
  * Calculate the annual average CPI for a given year
@@ -227,3 +228,38 @@ export const calculateInflationRate = (
 
   return ((toCPI - fromCPI) / fromCPI) * 100;
 };
+
+/**
+ * Resolve an entry's pay frequency, applying the migration default when absent.
+ * Single read-side default; see migration decision 6.
+ */
+export function getEntryPayFrequency(entry: Pick<WageEntry, 'payFrequency'>): PayFrequency {
+  return entry.payFrequency ?? DEFAULT_PAY_FREQUENCY;
+}
+
+/**
+ * Periods per year for a pay frequency (defaults when undefined).
+ */
+export function getPeriodsPerYear(payFrequency?: PayFrequency): number {
+  return PAY_FREQUENCIES[payFrequency ?? DEFAULT_PAY_FREQUENCY].periodsPerYear;
+}
+
+/**
+ * Annualize a per-paycheck amount: amount * periodsPerYear.
+ */
+export function annualizeAmount(amount: number, payFrequency?: PayFrequency): number {
+  return amount * getPeriodsPerYear(payFrequency);
+}
+
+/**
+ * Amount used in all comparison metrics: paycheck entries are annualized with
+ * their own frequency; annual entries pass through unchanged. This gate is what
+ * keeps annual math untouched.
+ */
+export function getAnnualizedAmount(
+  entry: Pick<WageEntry, 'amount' | 'entryType' | 'payFrequency'>
+): number {
+  return entry.entryType === 'point-in-time'
+    ? annualizeAmount(entry.amount, entry.payFrequency)
+    : entry.amount;
+}

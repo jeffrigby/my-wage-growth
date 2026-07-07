@@ -11,7 +11,7 @@ import { EditableTableRow } from './EditableTableRow';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { TableSettings } from './TableSettings';
 import { CSVImportModal } from './CSVImportModal';
-import { adjustToLatestCPI, calculatePercentageChange, calculateInflationRate } from '../../utils/inflationCalculator';
+import { adjustToLatestCPI, calculatePercentageChange, calculateInflationRate, getAnnualizedAmount } from '../../utils/inflationCalculator';
 import { Tooltip } from '../ui/Tooltip';
 
 export const WageEntriesTable: React.FC = () => {
@@ -152,10 +152,10 @@ export const WageEntriesTable: React.FC = () => {
                   <Tooltip content="When you earned this wage">Date</Tooltip>
                 </th>
                 <th className="text-right">
-                  <Tooltip content="Original gross pay at the time">Gross Pay</Tooltip>
+                  <Tooltip content="Original gross pay at the time. Paycheck entries also show the annualized equivalent.">Gross Pay</Tooltip>
                 </th>
                 <th className="text-right">
-                  <Tooltip content="Nominal income change from previous entry">Gain/Loss</Tooltip>
+                  <Tooltip content="Nominal income change from previous entry. Paycheck entries are compared on annualized amounts.">Gain/Loss</Tooltip>
                 </th>
                 <th className="text-right">
                   <Tooltip content="How much prices rose between entries (CPI)">Inflation</Tooltip>
@@ -164,7 +164,7 @@ export const WageEntriesTable: React.FC = () => {
                   <Tooltip content="Your gain/loss adjusted for inflation — did your raise beat rising prices?">Real Gain/Loss</Tooltip>
                 </th>
                 <th className="text-right pr-4 sm:pr-6">
-                  <Tooltip content="What your wage is worth in today's dollars">Today's Value</Tooltip>
+                  <Tooltip content="What your wage is worth in today's dollars. Shown per year for paycheck entries.">Today's Value</Tooltip>
                 </th>
               </tr>
             </thead>
@@ -174,16 +174,16 @@ export const WageEntriesTable: React.FC = () => {
                   const isAnnualEntry = entry.entryType.includes('annual');
 
                   const todaysValue = cpiData
-                    ? adjustToLatestCPI(entry.amount, new Date(entry.date), cpiData, isAnnualEntry, calculationType)
+                    ? adjustToLatestCPI(getAnnualizedAmount(entry), new Date(entry.date), cpiData, isAnnualEntry, calculationType)
                     : null;
                   const previousEntry = index > 0 ? entries[index - 1] : undefined;
                   const previousIsAnnual = previousEntry?.entryType.includes('annual') || false;
                   const previousTodaysValue = previousEntry && cpiData
-                    ? adjustToLatestCPI(previousEntry.amount, new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType)
+                    ? adjustToLatestCPI(getAnnualizedAmount(previousEntry), new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType)
                     : null;
 
                   const nominalChange = previousEntry
-                    ? calculatePercentageChange(entry.amount, previousEntry.amount)
+                    ? calculatePercentageChange(getAnnualizedAmount(entry), getAnnualizedAmount(previousEntry))
                     : null;
                   const realChange = todaysValue && previousTodaysValue
                     ? calculatePercentageChange(todaysValue, previousTodaysValue)

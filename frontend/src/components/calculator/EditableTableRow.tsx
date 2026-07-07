@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { useAppDispatch } from '../../store';
 import { openWageEntryModal } from '../../store/slices/uiSlice';
-import { DATE_FORMATS } from '../../constants';
+import { DATE_FORMATS, PAY_FREQUENCIES } from '../../constants';
 import type { WageEntry, EntryMode, CPIData, TableSettings } from '../../types';
-import { formatPercentage, getPercentageColorClass } from '../../utils/inflationCalculator';
+import { formatPercentage, getPercentageColorClass, annualizeAmount, getEntryPayFrequency } from '../../utils/inflationCalculator';
 import { CalculationDetails } from './CalculationDetails';
 
 interface EditableTableRowProps {
@@ -45,6 +45,10 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
   const dispatch = useAppDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCalculations, setShowCalculations] = useState(false);
+
+  const isPaycheckEntry = entry.entryType === 'point-in-time';
+  const freq = getEntryPayFrequency(entry);
+  const annualized = annualizeAmount(entry.amount, entry.payFrequency);
 
   const rowRef = useRef<HTMLTableRowElement>(null);
 
@@ -129,7 +133,7 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         tabIndex={0}
         role="button"
         aria-expanded={isExpanded}
-        aria-label={`${entry.label || displayDate} - ${formatCurrency(entry.amount)}. Click to ${isExpanded ? 'collapse' : 'expand'} actions.`}
+        aria-label={`${entry.label || displayDate} - ${formatCurrency(entry.amount)}${isPaycheckEntry ? ` ${PAY_FREQUENCIES[freq].label.toLowerCase()}` : ''}. Click to ${isExpanded ? 'collapse' : 'expand'} actions.`}
       >
         <td className="pl-4 sm:pl-6 w-8">
           <motion.div
@@ -172,6 +176,11 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         </td>
         <td className="text-right font-medium tabular-nums">
           {formatCurrency(entry.amount)}
+          {isPaycheckEntry && (
+            <div className="text-xs text-[var(--text-muted)] font-normal">
+              {PAY_FREQUENCIES[freq].label} · ≈ {formatCurrency(annualized)}/yr
+            </div>
+          )}
         </td>
         {/* Change column (nominal change) */}
         <td className="text-right">
@@ -207,7 +216,18 @@ export const EditableTableRow: React.FC<EditableTableRowProps> = ({
         <td className="text-right pr-4 sm:pr-6">
           {cpiDataLoaded ? (
             <span className="text-[var(--accent)] tabular-nums">
-              {todaysValue ? formatCurrency(todaysValue) : '—'}
+              {todaysValue ? (
+                isPaycheckEntry ? (
+                  <>
+                    {formatCurrency(todaysValue)}
+                    <span className="text-xs text-[var(--text-muted)]">/yr</span>
+                  </>
+                ) : (
+                  formatCurrency(todaysValue)
+                )
+              ) : (
+                '—'
+              )}
             </span>
           ) : (
             <span className="text-[var(--text-muted)]">...</span>

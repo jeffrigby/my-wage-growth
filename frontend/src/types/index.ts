@@ -3,6 +3,7 @@
 export type Country = 'US' | 'CA' | 'UK';
 export type Currency = 'USD' | 'CAD' | 'GBP';
 export type EntryMode = 'annual' | 'paycheck';
+export type PayFrequency = 'weekly' | 'bi-weekly' | 'semi-monthly' | 'monthly';
 export type Theme = 'light' | 'dark' | 'system';
 
 // CPI Data structure from backend
@@ -41,6 +42,7 @@ export interface WageEntry {
   date: string; // ISO date string for Redux serialization
   amount: number;
   entryType: 'point-in-time' | 'annual-simple' | 'annual-averaged';
+  payFrequency?: PayFrequency; // Meaningful only for entryType 'point-in-time'; annual entries ignore it
   label?: string;
   createdAt: string; // ISO date string for Redux serialization
 }
@@ -115,6 +117,7 @@ export interface SharedData {
     date: string; // ISO format
     amount: number;
     label?: string;
+    payFrequency?: PayFrequency;
   }>;
 }
 
@@ -151,6 +154,7 @@ export interface SampleEntry {
   date: Date;
   amount: number;
   label: string;
+  payFrequency?: PayFrequency;
 }
 
 // Redux action payload types
@@ -158,6 +162,7 @@ export interface AddWageEntryPayload {
   date: Date;
   amount: number;
   label?: string;
+  payFrequency?: PayFrequency;
 }
 
 export interface UpdateWageEntryPayload {
@@ -167,6 +172,7 @@ export interface UpdateWageEntryPayload {
     amount?: number;
     entryType?: WageEntry['entryType'];
     label?: string;
+    payFrequency?: PayFrequency;
   };
 }
 
@@ -181,6 +187,7 @@ export interface ImportWageEntryPayload {
   amount: number;
   entryType: WageEntry['entryType'];
   label?: string;
+  payFrequency?: PayFrequency;
 }
 
 // API response types

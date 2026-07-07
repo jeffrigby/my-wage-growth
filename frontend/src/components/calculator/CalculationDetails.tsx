@@ -1,8 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { Modal } from '../ui/Modal';
-import { getLatestCPI, getCPIForDate, formatPercentage, getPercentageColorClass, calculateInflationRate } from '../../utils/inflationCalculator';
-import { COUNTRIES, DATE_FORMATS } from '../../constants';
+import { getLatestCPI, getCPIForDate, formatPercentage, getPercentageColorClass, calculateInflationRate, getAnnualizedAmount, getPeriodsPerYear, getEntryPayFrequency } from '../../utils/inflationCalculator';
+import { COUNTRIES, DATE_FORMATS, PAY_FREQUENCIES } from '../../constants';
 import type { WageEntry, CPIData, TableSettings } from '../../types';
 
 interface CalculationDetailsProps {
@@ -40,9 +40,14 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
   const latestCPIData = getLatestCPI(cpiData);
   const countryInfo = COUNTRIES[country];
 
+  const isPaycheckEntry = entry.entryType === 'point-in-time';
+  const annualizedAmount = getAnnualizedAmount(entry);
+  const periods = getPeriodsPerYear(entry.payFrequency);
+  const previousAnnualized = previousEntry ? getAnnualizedAmount(previousEntry) : null;
+
   // Calculate today's value
-  const todaysValue = entryCPI && latestCPIData 
-    ? entry.amount * (latestCPIData.value / entryCPI)
+  const todaysValue = entryCPI && latestCPIData
+    ? annualizedAmount * (latestCPIData.value / entryCPI)
     : null;
 
   // Calculate growth percentages if previous entry exists
@@ -52,16 +57,16 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
   let previousCPI: number | null = null;
   let previousTodaysValue: number | null = null;
 
-  if (previousEntry) {
+  if (previousEntry && previousAnnualized !== null) {
     const previousIsAnnual = previousEntry.entryType.includes('annual');
     previousCPI = getCPIForDate(new Date(previousEntry.date), cpiData, previousIsAnnual, calculationType);
 
     if (previousCPI && latestCPIData) {
-      previousTodaysValue = previousEntry.amount * (latestCPIData.value / previousCPI);
+      previousTodaysValue = previousAnnualized * (latestCPIData.value / previousCPI);
     }
 
     // Nominal growth
-    nominalGrowth = ((entry.amount - previousEntry.amount) / previousEntry.amount) * 100;
+    nominalGrowth = ((annualizedAmount - previousAnnualized) / previousAnnualized) * 100;
 
     // Inflation rate between entries
     inflationRate = calculateInflationRate(
@@ -101,6 +106,12 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
               <span className="text-secondary">Amount:</span>
               <span>{formatCurrency(entry.amount)}</span>
             </div>
+            {isPaycheckEntry && (
+              <div className="flex justify-between">
+                <span className="text-secondary">Pay Frequency:</span>
+                <span>{PAY_FREQUENCIES[getEntryPayFrequency(entry)].label}</span>
+              </div>
+            )}
             {entry.label && (
               <div className="flex justify-between">
                 <span className="text-secondary">Label:</span>
@@ -145,8 +156,13 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
           <div>
             <h3 className="text-sm font-semibold text-muted mb-3">Today's Value Calculation</h3>
             <div className="bg-surface-secondary p-4 rounded-lg space-y-3">
+              {isPaycheckEntry && (
+                <div className="text-sm font-mono">
+                  Annualized: {formatCurrency(entry.amount)} × {periods} = {formatCurrency(annualizedAmount)}/yr
+                </div>
+              )}
               <div className="text-sm font-mono">
-                {formatCurrency(entry.amount)} × ({latestCPIData.value.toFixed(2)} / {entryCPI.toFixed(2)})
+                {formatCurrency(annualizedAmount)} × ({latestCPIData.value.toFixed(2)} / {entryCPI.toFixed(2)})
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-secondary">Result:</span>
@@ -159,15 +175,21 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
         )}
 
         {/* Growth Calculations */}
-        {previousEntry && (
+        {previousEntry && previousAnnualized !== null && (
           <div>
             <h3 className="text-sm font-semibold text-muted mb-3">Growth Calculations</h3>
             <div className="space-y-3">
               {/* Nominal Growth */}
               <div className="bg-surface-secondary p-4 rounded-lg">
                 <h4 className="text-xs font-medium text-muted mb-2">Change (Nominal Growth)</h4>
+                {isPaycheckEntry && (
+                  <div className="text-sm font-mono mb-2 space-y-1">
+                    <div>Annualized: {formatCurrency(entry.amount)} × {periods} = {formatCurrency(annualizedAmount)}/yr</div>
+                    <div>Previous: {formatCurrency(previousEntry.amount)} × {getPeriodsPerYear(previousEntry.payFrequency)} = {formatCurrency(previousAnnualized)}/yr</div>
+                  </div>
+                )}
                 <div className="text-sm font-mono mb-2">
-                  ({formatCurrency(entry.amount)} - {formatCurrency(previousEntry.amount)}) / {formatCurrency(previousEntry.amount)} × 100
+                  ({formatCurrency(annualizedAmount)}{isPaycheckEntry ? '/yr' : ''} - {formatCurrency(previousAnnualized)}{isPaycheckEntry ? '/yr' : ''}) / {formatCurrency(previousAnnualized)}{isPaycheckEntry ? '/yr' : ''} × 100
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-secondary">Result:</span>
@@ -198,7 +220,7 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
                 <div className="bg-surface-secondary p-4 rounded-lg">
                   <h4 className="text-xs font-medium text-muted mb-2">Real Growth (Buying Power Change)</h4>
                   <div className="text-sm font-mono mb-2">
-                    ({formatCurrency(todaysValue)} - {formatCurrency(previousTodaysValue)}) / {formatCurrency(previousTodaysValue)} × 100
+                    ({formatCurrency(todaysValue)}{isPaycheckEntry ? '/yr' : ''} - {formatCurrency(previousTodaysValue)}{isPaycheckEntry ? '/yr' : ''}) / {formatCurrency(previousTodaysValue)}{isPaycheckEntry ? '/yr' : ''} × 100
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-secondary">Result:</span>
@@ -236,6 +258,11 @@ export const CalculationDetails: React.FC<CalculationDetailsProps> = ({
               {isAnnualEntry && calculationType === 'annual-average' && (
                 <p>
                   Annual average CPI is calculated by averaging all 12 monthly CPI values for the year.
+                </p>
+              )}
+              {isPaycheckEntry && (
+                <p>
+                  Paycheck amounts are annualized (amount × pay periods per year) before comparison, so entries with different pay frequencies can be compared fairly.
                 </p>
               )}
             </div>

@@ -10,6 +10,7 @@ import type {
   SampleEntry,
   ImportWageEntryPayload
 } from '../../types';
+import { DEFAULT_PAY_FREQUENCY } from '../../constants';
 
 const initialState: WageEntriesState = {
   entries: [],
@@ -41,10 +42,14 @@ const wageEntriesSlice = createSlice({
         date: date.toISOString(),
         amount,
         entryType,
+        // payFrequency is meaningful only for paycheck entries
+        ...(entryType === 'point-in-time' && {
+          payFrequency: action.payload.payFrequency ?? DEFAULT_PAY_FREQUENCY
+        }),
         label,
         createdAt: new Date().toISOString()
       };
-      
+
       state.entries.push(newEntry);
       // Sort entries by date
       state.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -58,7 +63,9 @@ const wageEntriesSlice = createSlice({
         // Convert date to ISO string if provided
         const processedUpdates: Partial<WageEntry> = {
           ...updates,
-          date: updates.date ? updates.date.toISOString() : undefined
+          date: updates.date ? updates.date.toISOString() : undefined,
+          // Conditional spread avoids clobbering an existing frequency with undefined
+          ...(updates.payFrequency !== undefined && { payFrequency: updates.payFrequency })
         };
         
         state.entries[entryIndex] = {
@@ -95,6 +102,7 @@ const wageEntriesSlice = createSlice({
           entry.entryType = 'annual-simple';
         } else {
           entry.entryType = 'point-in-time';
+          entry.payFrequency = entry.payFrequency ?? DEFAULT_PAY_FREQUENCY;
         }
       });
     },
@@ -108,6 +116,7 @@ const wageEntriesSlice = createSlice({
         date: entry.date.toISOString(),
         amount: entry.amount,
         entryType: 'annual-simple',
+        payFrequency: entry.payFrequency,
         label: entry.label,
         createdAt: new Date().toISOString()
       }));
@@ -136,6 +145,9 @@ const wageEntriesSlice = createSlice({
     updateAllEntryTypes: (state, action: PayloadAction<WageEntry['entryType']>) => {
       state.entries.forEach(entry => {
         entry.entryType = action.payload;
+        if (action.payload === 'point-in-time') {
+          entry.payFrequency = entry.payFrequency ?? DEFAULT_PAY_FREQUENCY;
+        }
       });
     },
     
@@ -151,6 +163,10 @@ const wageEntriesSlice = createSlice({
         date: entry.date,
         amount: entry.amount,
         entryType: entry.entryType,
+        // payFrequency is meaningful only for paycheck entries
+        ...(entry.entryType === 'point-in-time' && {
+          payFrequency: entry.payFrequency ?? DEFAULT_PAY_FREQUENCY
+        }),
         label: entry.label,
         createdAt: new Date().toISOString()
       }));

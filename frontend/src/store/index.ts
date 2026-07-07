@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { cpiSlice } from './slices/cpiSlice';
 import { wageEntriesSlice } from './slices/wageEntriesSlice';
 import { uiSlice } from './slices/uiSlice';
-import { STORAGE_KEYS } from '../constants';
+import { STORAGE_KEYS, DEFAULT_PAY_FREQUENCY } from '../constants';
 
 // Load initial state from localStorage
 const loadState = () => {
@@ -19,7 +19,16 @@ const loadState = () => {
         cpiCalculationType: 'annual-average'
       };
     }
-    
+
+    // Migration: Backfill payFrequency for persisted paycheck entries (additive mutation)
+    if (parsedState.wageEntries && Array.isArray(parsedState.wageEntries.entries)) {
+      for (const entry of parsedState.wageEntries.entries) {
+        if (entry && entry.entryType === 'point-in-time' && entry.payFrequency == null) {
+          entry.payFrequency = DEFAULT_PAY_FREQUENCY;
+        }
+      }
+    }
+
     return parsedState;
   } catch (err) {
     console.warn('Failed to load state from localStorage:', err);

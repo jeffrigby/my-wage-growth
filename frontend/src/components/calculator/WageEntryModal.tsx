@@ -6,8 +6,9 @@ import { addWageEntry, updateWageEntry, setEntryMode } from '../../store/slices/
 import { closeWageEntryModal } from '../../store/slices/uiSlice';
 import { selectCPIDateRangeByCountry } from '../../store/slices/cpiSlice';
 import { Modal } from '../ui/Modal';
-import { COUNTRIES, VALIDATION, ERROR_MESSAGES, DATE_FORMATS, SUCCESS_MESSAGES } from '../../constants';
-import type { EntryMode } from '../../types';
+import { COUNTRIES, VALIDATION, ERROR_MESSAGES, DATE_FORMATS, SUCCESS_MESSAGES, PAY_FREQUENCY_OPTIONS, DEFAULT_PAY_FREQUENCY } from '../../constants';
+import { annualizeAmount } from '../../utils/inflationCalculator';
+import type { EntryMode, PayFrequency } from '../../types';
 
 export const WageEntryModal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export const WageEntryModal: React.FC = () => {
   const [date, setDate] = useState('');
   const [amount, setAmount] = useState('');
   const [label, setLabel] = useState('');
+  const [payFrequency, setPayFrequency] = useState<PayFrequency>(DEFAULT_PAY_FREQUENCY);
   const [errors, setErrors] = useState<{ date?: string; amount?: string }>({});
 
   // Sync form fields from the entry being edited (or reset for a new entry) each
@@ -45,11 +47,21 @@ export const WageEntryModal: React.FC = () => {
         setDate(format(new Date(editingEntry.date), dateFormat));
         setAmount(editingEntry.amount.toString());
         setLabel(editingEntry.label || '');
+        setPayFrequency(editingEntry.payFrequency ?? DEFAULT_PAY_FREQUENCY);
       } else {
         setLocalEntryMode(globalEntryMode);
         setDate('');
         setAmount('');
         setLabel('');
+        // Default to the most recent existing paycheck entry's frequency (ISO dates
+        // compare lexicographically, so a plain string comparison finds the latest).
+        const mostRecent = entries
+          .filter(e => e.entryType === 'point-in-time' && e.payFrequency)
+          .reduce<typeof entries[number] | null>(
+            (latest, e) => (!latest || e.date > latest.date ? e : latest),
+            null
+          );
+        setPayFrequency(mostRecent?.payFrequency ?? DEFAULT_PAY_FREQUENCY);
       }
       setErrors({});
     }
@@ -113,7 +125,8 @@ export const WageEntryModal: React.FC = () => {
     const entryData = {
       date: entryDate,
       amount: parseFloat(amount),
-      label: label.trim() || undefined
+      label: label.trim() || undefined,
+      ...(entryMode === 'paycheck' && { payFrequency })
     };
 
     if (entryMode !== globalEntryMode) {
@@ -142,6 +155,12 @@ export const WageEntryModal: React.FC = () => {
     const sanitized = e.target.value.replace(/,/g, '');
     setAmount(sanitized);
   };
+
+  const parsedAmount = parseFloat(amount);
+  const annualizedPreview =
+    entryMode === 'paycheck' && Number.isFinite(parsedAmount) && parsedAmount > 0
+      ? Math.round(annualizeAmount(parsedAmount, payFrequency))
+      : null;
 
   return (
     <Modal
@@ -253,6 +272,38 @@ export const WageEntryModal: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* Pay Frequency (paycheck mode only) */}
+        {entryMode === 'paycheck' && (
+          <div className="space-y-1.5">
+            <label id="pay-frequency-label" className="text-sm font-medium text-[var(--text-secondary)]">Pay Frequency</label>
+            <div role="group" aria-labelledby="pay-frequency-label" className="grid grid-cols-2 gap-2">
+              {PAY_FREQUENCY_OPTIONS.map(option => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setPayFrequency(option.value)}
+                  aria-pressed={payFrequency === option.value}
+                  className={`p-3 rounded-md border text-sm font-medium transition-all ${
+                    payFrequency === option.value
+                      ? 'border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]'
+                      : 'border-[var(--border)] hover:border-[var(--text-muted)]'
+                  }`}
+                >
+                  {option.label}
+                  <span className="block text-xs text-[var(--text-muted)] font-normal">
+                    {option.periodsPerYear} / year
+                  </span>
+                </button>
+              ))}
+            </div>
+            {annualizedPreview !== null && (
+              <p className="text-xs text-[var(--text-muted)]">
+                ≈ {countryInfo.currencySymbol}{annualizedPreview.toLocaleString('en-US')}/yr
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Label */}
         <div className="space-y-1.5">

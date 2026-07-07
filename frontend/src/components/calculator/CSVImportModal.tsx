@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { importEntries, setEntryMode } from '../../store/slices/wageEntriesSlice';
 import { Modal } from '../ui/Modal';
-import { COUNTRIES, VALIDATION } from '../../constants';
+import { COUNTRIES, VALIDATION, PAY_FREQUENCIES } from '../../constants';
 import {
   parseCSV,
   checkEntryModeConflict,
@@ -224,7 +224,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
               Browse Files
             </button>
             <p className="text-xs text-[var(--text-muted)] mt-3">
-              CSV with columns: date, amount, label (optional)
+              CSV with columns: date, amount, label (optional), frequency (optional, paycheck only)
             </p>
           </div>
         ) : (
@@ -294,6 +294,9 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">#</th>
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">Date</th>
                         <th className="text-right px-3 py-2 font-medium text-[var(--text-secondary)]">Gross Pay</th>
+                        {parseResult.detectedMode === 'paycheck' && (
+                          <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">Frequency</th>
+                        )}
                         <th className="text-left px-3 py-2 font-medium text-[var(--text-secondary)]">Label</th>
                         <th className="text-center px-3 py-2 font-medium text-[var(--text-secondary)]">Status</th>
                       </tr>
@@ -311,6 +314,11 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ isOpen, onClose 
                           <td className="px-3 py-2 text-right tabular-nums">
                             {row.amount > 0 ? formatAmount(row.amount) : '-'}
                           </td>
+                          {parseResult.detectedMode === 'paycheck' && (
+                            <td className="px-3 py-2 text-[var(--text-muted)]">
+                              {row.payFrequency ? PAY_FREQUENCIES[row.payFrequency].label : '-'}
+                            </td>
+                          )}
                           <td className="px-3 py-2 text-[var(--text-muted)] truncate max-w-24">
                             {row.label || '-'}
                           </td>

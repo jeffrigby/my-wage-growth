@@ -1,6 +1,6 @@
 // Application constants and configuration
 
-import type { CountryMetadata } from '../types';
+import type { CountryMetadata, PayFrequency } from '../types';
 
 // Country metadata with icons and settings
 export const COUNTRIES: Record<string, CountryMetadata> = {
@@ -55,6 +55,27 @@ export const ENTRY_MODE_OPTIONS = [
     icon: 'fa-money-check'
   }
 ] as const;
+
+// Pay frequency (paycheck mode only): periods-per-year used to annualize amounts
+export const DEFAULT_PAY_FREQUENCY: PayFrequency = 'bi-weekly';
+
+export const PAY_FREQUENCIES: Record<PayFrequency, { label: string; periodsPerYear: number }> = {
+  weekly: { label: 'Weekly', periodsPerYear: 52 },
+  'bi-weekly': { label: 'Bi-weekly', periodsPerYear: 26 },
+  'semi-monthly': { label: 'Semi-monthly', periodsPerYear: 24 },
+  monthly: { label: 'Monthly', periodsPerYear: 12 }
+};
+
+export const PAY_FREQUENCY_OPTIONS: ReadonlyArray<{
+  value: PayFrequency;
+  label: string;
+  periodsPerYear: number;
+}> = [
+  { value: 'weekly', label: 'Weekly', periodsPerYear: 52 },
+  { value: 'bi-weekly', label: 'Bi-weekly', periodsPerYear: 26 },
+  { value: 'semi-monthly', label: 'Semi-monthly', periodsPerYear: 24 },
+  { value: 'monthly', label: 'Monthly', periodsPerYear: 12 }
+];
 
 // Date format constants
 export const DATE_FORMATS = {
@@ -181,6 +202,7 @@ export const ERROR_MESSAGES = {
   CPI_FETCH_ERROR: 'Failed to load inflation data. Please try again.',
   INVALID_DATE: 'Please enter a valid date.',
   INVALID_AMOUNT: 'Please enter a valid wage amount.',
+  INVALID_FREQUENCY: 'Frequency must be weekly, bi-weekly, semi-monthly, or monthly',
   AMOUNT_TOO_LOW: `Wage amount must be at least $${VALIDATION.MIN_WAGE_AMOUNT}.`,
   AMOUNT_TOO_HIGH: `Wage amount cannot exceed $${VALIDATION.MAX_WAGE_AMOUNT.toLocaleString()}.`,
   DATE_TOO_EARLY: `Date must be ${VALIDATION.MIN_YEAR} or later.`,
